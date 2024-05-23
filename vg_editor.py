@@ -6,7 +6,7 @@ from vg_node import GraphNode
 from vg_view import VisualGraphicsView
 from vg_scene import VisualGraphScene
 
-from vg_node_port import EXECPort, EXECInPort, EXECOutPort
+from vg_node_port import EXECInPort, EXECOutPort, ParamPort, OutputPort
 
 
 class VisualGraphEditor(QWidget):
@@ -32,7 +32,13 @@ class VisualGraphEditor(QWidget):
     def debug_add_node(self):
         port = EXECInPort()
         port2 = EXECOutPort()
+        port_param = ParamPort('width', 'float', '#99ff22')
+        port_output = OutputPort('area', 'float', '#99ff22')
+
+        # 创建一个port
         node = GraphNode(title="Area")
         node.add_port(port)
         node.add_port(port2)
+        node.add_port(port_param)
+        node.add_port(port_output)
         self.view.add_graph_node(node, [100, 100])

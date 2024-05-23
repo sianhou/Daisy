@@ -6,6 +6,8 @@ from PySide6.QtGui import QPainter, QMouseEvent
 from PySide6.QtWidgets import QGraphicsView, QGraphicsItem
 from PySide6.QtCore import Qt, QEvent
 
+from vg_node import GraphNode
+
 
 class VisualGraphicsView(QGraphicsView):
     def __init__(self, scene, parent=None):
@@ -91,6 +93,7 @@ class VisualGraphicsView(QGraphicsView):
         self.resetTransform()
         self._view_scale = 1.0
 
-    def add_graph_node(self, node: QGraphicsItem, pos=[0, 0]):
+    def add_graph_node(self, node: GraphNode, pos=[0, 0]):
         self._scene.addItem(node)
+        node.set_scene(self._scene)
         node.setPos(pos[0], pos[1])

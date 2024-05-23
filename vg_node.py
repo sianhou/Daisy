@@ -38,6 +38,9 @@ class GraphNode(QGraphicsItem):
         # Port
         self._port_padding = 6
 
+    def set_scene(self, scene):
+        self._scene = scene
+
     def init_title(self):
         self._title_item = QGraphicsTextItem(self)
         self._title_item.setPlainText(self._title)
@@ -81,6 +84,10 @@ class GraphNode(QGraphicsItem):
             self.add_exec_in_port(port)
         elif port._port_type == NodePort.PORT_TYPE_EXEC_OUT:
             self.add_exec_out_port(port)
+        elif port._port_type == NodePort.PORT_TYPE_PARAM:
+            self.add_param_port(port)
+        elif port._port_type == NodePort.PORT_TYPE_OUTPUT:
+            self.add_output_port(port)
 
     def add_exec_in_port(self, port: NodePort):
         port.add_to_paraent_node(self, self._scene)
@@ -90,3 +97,12 @@ class GraphNode(QGraphicsItem):
         port.add_to_paraent_node(self, self._scene)
         port.setPos(self._node_width + 0.5 * port._port_icon_size - port._port_width - self._port_padding,
                     self._title_height)
+
+    def add_param_port(self, port: NodePort):
+        port.add_to_paraent_node(self, self._scene)
+        port.setPos(self._port_padding, self._title_height + self._port_padding + port._port_icon_size)
+
+    def add_output_port(self, port: NodePort):
+        port.add_to_paraent_node(self, self._scene)
+        port.setPos(self._node_width - port._port_width - self._port_padding,
+                    self._title_height + self._port_padding + port._port_icon_size)
