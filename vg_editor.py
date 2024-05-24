@@ -30,15 +30,28 @@ class VisualGraphEditor(QWidget):
         self.show()
 
     def debug_add_node(self):
-        port = EXECInPort()
-        port2 = EXECOutPort()
-        port_param = ParamPort('width', 'float', '#99ff22')
-        port_output = OutputPort('area', 'float', '#99ff22')
+        # port_param1 = ParamPort('width', 'float', '#99ff22')
+        # port_param2 = ParamPort('width', 'float', '#99ff22')
+        # port_output1 = OutputPort('area', 'float', '#99ff22')
+        # port_output2 = OutputPort('area', 'float', '#99ff22')
+
+        params = []
+        params.append(ParamPort('width', 'float', '#99ff22'))
+        params.append(ParamPort('width', 'float', '#99ff22'))
+        params.append(ParamPort('width', 'float', '#99ff22'))
+        # params.append(ParamPort('width', 'float', '#99ff22'))
+        # params.append(ParamPort('width', 'float', '#99ff22'))
+        # params.append(ParamPort('width', 'float', '#99ff22'))
+        # params.append(ParamPort('width', 'float', '#99ff22'))
+
+        outputs = []
+        outputs.append(OutputPort('area', 'float', '#99ff22'))
+        # outputs.append(OutputPort('area', 'float', '#99ff22'))
+        # outputs.append(OutputPort('area', 'float', '#99ff22'))
+        # outputs.append(OutputPort('area', 'float', '#99ff22'))
+        # outputs.append(OutputPort('area', 'float', '#99ff22'))
 
         # 创建一个port
-        node = GraphNode(title="Area")
-        node.add_port(port)
-        node.add_port(port2)
-        node.add_port(port_param)
-        node.add_port(port_output)
+        node = GraphNode(title="Area", param_ports=params, output_ports=outputs, is_pure=True)
+
         self.view.add_graph_node(node, [100, 100])
