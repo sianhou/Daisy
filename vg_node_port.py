@@ -1,4 +1,6 @@
 # coding:utf-8
+from abc import abstractmethod
+
 from PySide6.QtCore import QRectF, QPointF, Qt
 from PySide6.QtGui import QPen, QColor, QBrush, QFont, QPainter, QPainterPath, QPolygonF
 from PySide6.QtWidgets import QGraphicsItem
@@ -40,6 +42,12 @@ class NodePort(QGraphicsItem):
         self.setParentItem(parent_node)
         self._parent_node = parent_node
         self._scene = scene
+
+    def get_port_pos(self) -> QPointF:
+        # 获得本身在scene的位置
+        self._port_pos = self.scenePos()
+        return QPointF(self._port_pos.x() + 0.25 * self._port_icon_size,
+                       self._port_pos.y() + 0.5 * self._port_icon_size)
 
 
 class EXECPort(NodePort):
@@ -97,6 +105,12 @@ class ParamPort(NodePort):
             QRectF(self._port_icon_size, 0.1 * self._port_icon_size, self._port_label_size, self._port_icon_size),
             Qt.AlignmentFlag.AlignLeft, self._port_label)
 
+    def get_port_pos(self) -> QPointF:
+        # 获得本身在scene的位置
+        self._port_pos = self.scenePos()
+        return QPointF(self._port_pos.x() + 0.25 * self._port_icon_size,
+                       self._port_pos.y() + 0.5 * self._port_icon_size)
+
 
 class OutputPort(NodePort):
     def __init__(self, port_label='', port_class='str', port_color='#ffffff', parent=None):
@@ -123,3 +137,8 @@ class OutputPort(NodePort):
         poly.append(QPointF(self._port_label_size + 0.95 * self._port_icon_size, 0.50 * self._port_icon_size))
         poly.append(QPointF(self._port_label_size + 0.85 * self._port_icon_size, 0.65 * self._port_icon_size))
         painter.drawPolygon(poly)
+
+    def get_port_pos(self) -> QPointF:
+        self._port_pos = self.scenePos()
+        return QPointF(self._port_pos.x() + self._port_label_size + 0.5 * self._port_icon_size,
+                       self._port_pos.y() + 0.5 * self._port_icon_size)

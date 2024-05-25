@@ -6,12 +6,16 @@ from PySide6.QtGui import QPainter, QMouseEvent
 from PySide6.QtWidgets import QGraphicsView, QGraphicsItem
 from PySide6.QtCore import Qt, QEvent
 
+from vg_edge import NodeEdge
 from vg_node import GraphNode
 
 
 class VisualGraphicsView(QGraphicsView):
     def __init__(self, scene, parent=None):
         super(VisualGraphicsView, self).__init__(parent)
+        self._nodes = []
+        self._edges = []
+
         self._scene = scene
         self.setScene(self._scene)
 
@@ -97,3 +101,8 @@ class VisualGraphicsView(QGraphicsView):
         self._scene.addItem(node)
         node.set_scene(self._scene)
         node.setPos(pos[0], pos[1])
+        self._nodes.append(node)
+
+    def add_node_edge(self, source_node, target_node):
+        edge = NodeEdge(source_node, target_node, scene=self._scene)
+        self._edges.append(edge)

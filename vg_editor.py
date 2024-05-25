@@ -29,30 +29,32 @@ class VisualGraphEditor(QWidget):
         self.show()
 
     def debug_add_node(self, pos=[0, 0]):
-        # port_param1 = ParamPort('width', 'float', '#99ff22')
-        # port_param2 = ParamPort('width', 'float', '#99ff22')
-        # port_output1 = OutputPort('area', 'float', '#99ff22')
-        # port_output2 = OutputPort('area', 'float', '#99ff22')
 
         params = []
         params.append(ParamPort('width', 'float', '#99ff22'))
         params.append(ParamPort('height', 'float', '#99ff22'))
-        # params.append(ParamPort('width', 'float', '#99ff22'))
-        # params.append(ParamPort('width', 'float', '#99ff22'))
-        # params.append(ParamPort('width', 'float', '#99ff22'))
-        # params.append(ParamPort('width', 'float', '#99ff22'))
 
         outputs = []
         outputs.append(OutputPort('area', 'float', '#99ff22'))
-        # outputs.append(OutputPort('area', 'float', '#99ff22'))
-        # outputs.append(OutputPort('area', 'float', '#99ff22'))
-        # outputs.append(OutputPort('area', 'float', '#99ff22'))
-        # outputs.append(OutputPort('area', 'float', '#99ff22'))
 
         # 创建一个port
         node = GraphNode(title="Area", param_ports=params, output_ports=outputs, is_pure=False)
 
         self.view.add_graph_node(node, pos)
+
+        params2 = []
+        params2.append(ParamPort('width', 'float', '#99ff22'))
+        params2.append(ParamPort('height', 'float', '#99ff22'))
+
+        outputs2 = []
+        outputs2.append(OutputPort('area', 'float', '#99ff22'))
+
+        # 创建一个port
+        node2 = GraphNode(title="Area2", param_ports=params2, output_ports=outputs2, is_pure=False)
+
+        self.view.add_graph_node(node2, [pos[0] + 200, pos[1] + 200])
+
+        self.view.add_node_edge(outputs[0], params2[0])
 
     def right_click_add_node(self, mouse_pos):
         self.debug_add_node([mouse_pos.x(), mouse_pos.y()])
