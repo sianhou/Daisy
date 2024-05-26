@@ -19,7 +19,7 @@ class NodeEdge(QGraphicsPathItem):
         self._pen_default = QPen(QColor(self._edge_color))
         self._pen_default.setWidthF(2)
 
-        self.setZValue(-1)
+        self.setZValue(0.5)
 
         # 选中投影
         self._shadow = QGraphicsDropShadowEffect()
@@ -33,6 +33,8 @@ class NodeEdge(QGraphicsPathItem):
     def add_to_scene(self):
         self._scene.addItem(self)
         # 添加到相关的节点的port
+        self._source_port.add_edge(self, self._target_port)
+        self._target_port.add_edge(self, self._source_port)
 
     def paint(self, painter: QPainter, option, widget) -> None:
         self.update_edge_path()
@@ -55,7 +57,7 @@ class NodeEdge(QGraphicsPathItem):
 
         path = QPainterPath(source_pos)
 
-        x_width = abs(target_pos.x() - source_pos.x())
+        x_width = abs(target_pos.x() - source_pos.x()) + 1
         y_height = abs(target_pos.y() - source_pos.y())
 
         tagnent = float(y_height) / float(x_width) * 0.5

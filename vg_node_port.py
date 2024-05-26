@@ -12,13 +12,17 @@ class NodePort(QGraphicsItem):
     PORT_TYPE_PARAM = 1003
     PORT_TYPE_OUTPUT = 1004
 
-    def __init__(self, port_label='', port_class='str', port_color='#ffffff', port_type=PORT_TYPE_EXEC_IN, parent=None):
+    def __init__(self, port_label='', port_class='str', port_color='#ffffff', port_type=PORT_TYPE_EXEC_IN,
+                 connected_ports=None, edges=None, parent=None):
         super(NodePort, self).__init__(parent)
 
         self._port_label = port_label
         self._port_class = port_class
         self._port_color = port_color
         self._port_type = port_type
+
+        self._edges = edges if edges is not None else []
+        self._connected_ports = connected_ports if connected_ports is not None else []
 
         # 定义PenheBrush
         self._pen_default = QPen(QColor(self._port_color))
@@ -49,6 +53,14 @@ class NodePort(QGraphicsItem):
         return QPointF(self._port_pos.x() + 0.25 * self._port_icon_size,
                        self._port_pos.y() + 0.5 * self._port_icon_size)
 
+    def add_edge(self, edge, port):
+        self._parent_node.add_connected_node(port._parent_node, edge)
+        self._edges.append(edge)
+        self._connected_ports.append(port)
+
+    def is_connected(self):
+        return len(self._edges) > 0
+
 
 class EXECPort(NodePort):
     def __init__(self, port_label='', port_class='str', port_color='#ffffff', port_type=NodePort.PORT_TYPE_EXEC_IN,
@@ -63,11 +75,16 @@ class EXECPort(NodePort):
         poly.append(QPointF(0.5 * self._port_icon_size, 0.5 * self._port_icon_size))
         poly.append(QPointF(0.25 * self._port_icon_size, 0.8 * self._port_icon_size))
         poly.append(QPointF(0, 0.8 * self._port_icon_size))
-
         port_outline.addPolygon(poly)
-        painter.setPen(self._pen_default)
-        painter.setBrush(Qt.NoBrush)
-        painter.drawPath(port_outline.simplified())
+
+        if not self.is_connected():
+            painter.setPen(self._pen_default)
+            painter.setBrush(Qt.NoBrush)
+            painter.drawPath(port_outline.simplified())
+        else:
+            painter.setPen(Qt.NoPen)
+            painter.setBrush(self._brush_default)
+            painter.drawPath(port_outline.simplified())
 
 
 class EXECInPort(EXECPort):
@@ -86,10 +103,17 @@ class ParamPort(NodePort):
 
     def paint(self, painter: QPainter, option, widget) -> None:
         # icon o> 表示
-        painter.setPen(self._pen_default)
-        painter.setBrush(Qt.NoBrush)
-        painter.drawEllipse(QPointF(0.25 * self._port_icon_size, 0.5 * self._port_icon_size),
-                            0.25 * self._port_icon_size, 0.25 * self._port_icon_size)
+
+        if not self.is_connected():
+            painter.setPen(self._pen_default)
+            painter.setBrush(Qt.NoBrush)
+            painter.drawEllipse(QPointF(0.25 * self._port_icon_size, 0.5 * self._port_icon_size),
+                                0.25 * self._port_icon_size, 0.25 * self._port_icon_size)
+        else:
+            painter.setPen(Qt.NoPen)
+            painter.setBrush(self._brush_default)
+            painter.drawEllipse(QPointF(0.25 * self._port_icon_size, 0.5 * self._port_icon_size),
+                                0.25 * self._port_icon_size, 0.25 * self._port_icon_size)
 
         painter.setPen(Qt.NoPen)
         painter.setBrush(self._brush_default)
@@ -124,11 +148,18 @@ class OutputPort(NodePort):
             Qt.AlignmentFlag.AlignRight, self._port_label)
 
         # icon o> 表示
-        painter.setPen(self._pen_default)
-        painter.setBrush(Qt.NoBrush)
-        painter.drawEllipse(QPointF(self._port_label_size + 0.5 * self._port_icon_size,
-                                    0.5 * self._port_icon_size), 0.25 * self._port_icon_size,
-                            0.25 * self._port_icon_size)
+        if not self.is_connected():
+            painter.setPen(self._pen_default)
+            painter.setBrush(Qt.NoBrush)
+            painter.drawEllipse(QPointF(self._port_label_size + 0.5 * self._port_icon_size,
+                                        0.5 * self._port_icon_size), 0.25 * self._port_icon_size,
+                                0.25 * self._port_icon_size)
+        else:
+            painter.setPen(Qt.NoPen)
+            painter.setBrush(self._brush_default)
+            painter.drawEllipse(QPointF(self._port_label_size + 0.5 * self._port_icon_size,
+                                        0.5 * self._port_icon_size), 0.25 * self._port_icon_size,
+                                0.25 * self._port_icon_size)
 
         painter.setPen(Qt.NoPen)
         painter.setBrush(self._brush_default)

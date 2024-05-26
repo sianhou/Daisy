@@ -7,10 +7,15 @@ from vg_node_port import NodePort, EXECInPort, EXECOutPort, ParamPort, OutputPor
 
 
 class GraphNode(QGraphicsItem):
-    def __init__(self, title="", param_ports=None, output_ports=None, is_pure=False, scene=None, parent=None):
+    def __init__(self, title="", param_ports=None, output_ports=None, is_pure=False, scene=None, node_position=None,
+                 connected_nodes=None, edges=None, parent=None):
         super(GraphNode, self).__init__(parent)
 
         self._scene = scene
+
+        self._node_position = node_position
+        self._connected_nodes = connected_nodes if connected_nodes is not None else []
+        self._edges = edges if edges is not None else []
 
         # 定义node大小
         self._node_width = 100
@@ -26,7 +31,8 @@ class GraphNode(QGraphicsItem):
         # node背景
         self._brush_background = QBrush(QColor('#aa151515'))
 
-        self.setFlags(QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemIsMovable)
+        self.setFlags(
+            QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemIsMovable | QGraphicsItem.ItemSendsGeometryChanges)
 
         # 节点的title
         self._title = title
@@ -147,6 +153,18 @@ class GraphNode(QGraphicsItem):
             painter.setPen(self._pen_selected)
             painter.setBrush(Qt.NoBrush)
             painter.drawPath(node_line)
+
+    def add_connected_node(self, node, edge):
+        self._connected_nodes.append(node)
+        self._edges.append(edge)
+
+    def itemChange(self, change, value):
+        if change == QGraphicsItem.ItemPositionChange:
+            if len(self._edges) > 0:
+                for edge in self._edges:
+                    edge.update()
+
+        return super().itemChange(change, value)
 
     def add_port(self, port: NodePort, index=0):
         if port._port_type == NodePort.PORT_TYPE_EXEC_IN:
