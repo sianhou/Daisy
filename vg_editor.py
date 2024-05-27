@@ -54,7 +54,7 @@ class VisualGraphEditor(QWidget):
 
         self.view.add_graph_node(node2, [pos[0] + 200, pos[1] + 200])
 
-        self.view.add_node_edge(outputs[0], params2[0])
+        # self.view.add_node_edge(outputs[0], params2[0])
 
     def right_click_add_node(self, mouse_pos):
         self.debug_add_node([mouse_pos.x(), mouse_pos.y()])

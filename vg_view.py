@@ -4,10 +4,11 @@ QGraphicsView class
 '''
 from PySide6.QtGui import QPainter, QMouseEvent
 from PySide6.QtWidgets import QGraphicsView, QGraphicsItem
-from PySide6.QtCore import Qt, QEvent
+from PySide6.QtCore import Qt, QEvent, QPointF
 
-from vg_edge import NodeEdge
+from vg_edge import NodeEdge, DraggingEdge
 from vg_node import GraphNode
+from vg_node_port import NodePort
 
 
 class VisualGraphicsView(QGraphicsView):
@@ -34,9 +35,15 @@ class VisualGraphicsView(QGraphicsView):
         # 画布拖动
         self._drag_mode = False
 
+        # 可拖动的边
+        self._drag_edge = None
+        self._drag_edge_mode = False
+
     def mousePressEvent(self, event):
 
-        if event.button() == Qt.MiddleButton:
+        if event.button() == Qt.LeftButton:
+            self.rightButtonPressed(event)
+        elif event.button() == Qt.MiddleButton:
             self.middleButtonPressed(event)
         else:
             return super().mousePressEvent(event)
@@ -48,10 +55,55 @@ class VisualGraphicsView(QGraphicsView):
             return super().mouseDoubleClickEvent(event)
 
     def mouseReleaseEvent(self, event):
-        if event.button() == Qt.MiddleButton:
+        if event.button() == Qt.LeftButton:
+            self.leftButtonReleased(event)
+        elif event.button() == Qt.MiddleButton:
             self.middleButtonReleased(event)
         else:
             return super().mouseReleaseEvent(event)
+
+    def rightButtonPressed(self, event: QMouseEvent):
+        mouse_pos = event.pos()
+        item = self.itemAt(mouse_pos)
+        if isinstance(item, NodePort):
+            # 设置drag edge mode
+            self._drag_edge_mode = True
+            self.create_dragging_edge(item)
+        else:
+            super().mousePressEvent(event)
+
+    def create_dragging_edge(self, port: NodePort):
+        port_pos = port.get_port_pos()
+        if port._port_type == NodePort.PORT_TYPE_OUTPUT or port._port_type == NodePort.PORT_TYPE_OUTPUT:
+            drag_from_source = True
+        else:
+            drag_from_source = False
+
+        if self._drag_edge is None:
+            self._drag_edge = DraggingEdge(port_pos, port_pos, edge_color=port._port_color, scene=self._scene,
+                                           drag_from_source=drag_from_source)
+            self._drag_edge.set_first_port(port)
+            self._scene.addItem(self._drag_edge)
+
+    def mouseMoveEvent(self, event: QMouseEvent) -> None:
+        if self._drag_edge_mode:
+            self._drag_edge.update_position(self.mapToScene(event.pos()))
+        else:
+            super().mouseMoveEvent(event)
+
+    def leftButtonReleased(self, event: QMouseEvent):
+        if self._drag_edge_mode:
+            self._drag_edge_mode = False
+            item = self.itemAt(event.pos())
+            if isinstance(item, NodePort):
+                # 创建一个NodeEdge
+                self._drag_edge.set_second_port(item)
+                self._drag_edge.create_node_edge()
+            # 删除 self._drag_edge
+            self._scene.removeItem(self._drag_edge)
+            self._drag_edge = None
+        else:
+            super().mouseReleaseEvent(event)
 
     def middleButtonPressed(self, event):
         if self.itemAt(event.pos()) is not None:
