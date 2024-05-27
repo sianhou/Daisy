@@ -2,9 +2,9 @@
 '''
 QGraphicsView class
 '''
+from PySide6.QtCore import Qt, QEvent
 from PySide6.QtGui import QPainter, QMouseEvent
-from PySide6.QtWidgets import QGraphicsView, QGraphicsItem
-from PySide6.QtCore import Qt, QEvent, QPointF
+from PySide6.QtWidgets import QGraphicsView
 
 from vg_edge import NodeEdge, DraggingEdge
 from vg_node import GraphNode
@@ -73,6 +73,7 @@ class VisualGraphicsView(QGraphicsView):
             super().mousePressEvent(event)
 
     def create_dragging_edge(self, port: NodePort):
+
         port_pos = port.get_port_pos()
         if port._port_type == NodePort.PORT_TYPE_EXEC_OUT or port._port_type == NodePort.PORT_TYPE_OUTPUT:
             drag_from_source = True
