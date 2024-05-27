@@ -1,9 +1,10 @@
 # coding:utf-8
 import math
 
-from PySide6.QtCore import Qt, QLine
+from PySide6.QtCore import QLine
 from PySide6.QtGui import QBrush, QColor, QPen, QPainter
 from PySide6.QtWidgets import QGraphicsScene
+
 from vg_config import EditorConfig
 
 
@@ -26,20 +27,6 @@ class VisualGraphScene(QGraphicsScene):
 
         self._dark_line_pen = QPen(QColor(EditorConfig.editor_scene_grid_dark_line_color))
         self._dark_line_pen.setWidthF(EditorConfig.editor_scene_grid_dark_line_width)
-
-    def drawBackground(self, painter: QPainter, rect) -> None:
-
-        super().drawBackground(painter, rect)
-
-        lines, dark_lines = self.cal_grid_lines(rect)
-
-        # 画普通线
-        painter.setPen(self._normal_line_pen)
-        painter.drawLines(lines)
-
-        # 画粗线
-        painter.setPen(self._dark_line_pen)
-        painter.drawLines(dark_lines)
 
     def cal_grid_lines(self, rect):
         lines = []
@@ -67,3 +54,17 @@ class VisualGraphScene(QGraphicsScene):
                 lines.append(line)
 
         return lines, dark_lines
+
+    def drawBackground(self, painter: QPainter, rect) -> None:
+
+        super().drawBackground(painter, rect)
+
+        lines, dark_lines = self.cal_grid_lines(rect)
+
+        # 画普通线
+        painter.setPen(self._normal_line_pen)
+        painter.drawLines(lines)
+
+        # 画粗线
+        painter.setPen(self._dark_line_pen)
+        painter.drawLines(dark_lines)

@@ -107,6 +107,36 @@ class DraggingEdge(QGraphicsPathItem):
         self._shadow.setColor(self._shadow_color)
         self.setGraphicsEffect(self._shadow)
 
+    def is_connectable(self):
+        # 判断是否可以链接
+        if self.is_pair():
+            return True
+        return False
+
+    def is_pair(self):
+        if self._source_port._port_type == NodePort.PORT_TYPE_EXEC_OUT and self._target_port._port_type == NodePort.PORT_TYPE_EXEC_IN:
+            return True
+        elif self._source_port._port_type == NodePort.PORT_TYPE_OUTPUT and self._target_port._port_type == NodePort.PORT_TYPE_PARAM:
+            return True
+        else:
+            return False
+
+    def create_node_edge(self):
+        if self.is_connectable():
+            NodeEdge(self._source_port, self._target_port, self._scene, self._edge_color)
+
+    def set_first_port(self, port: NodePort):
+        if self._drag_from_source:
+            self._source_port = port
+        else:
+            self._target_port = port
+
+    def set_second_port(self, port: NodePort):
+        if not self._drag_from_source:
+            self._source_port = port
+        else:
+            self._target_port = port
+
     def update_edge_path(self):
         source_pos = self._source_pos
         target_pos = self._target_pos
@@ -127,39 +157,9 @@ class DraggingEdge(QGraphicsPathItem):
 
         self.setPath(path)
 
-    def set_first_port(self, port: NodePort):
-        if self._drag_from_source:
-            self._source_port = port
-        else:
-            self._target_port = port
-
-    def set_second_port(self, port: NodePort):
-        if not self._drag_from_source:
-            self._source_port = port
-        else:
-            self._target_port = port
-
     def update_position(self, position):
         if self._drag_from_source:
             self._target_pos = position
         else:
             self._source_pos = position
         self.update()
-
-    def create_node_edge(self):
-        if self.is_connectable():
-            NodeEdge(self._source_port, self._target_port, self._scene, self._edge_color)
-
-    def is_connectable(self):
-        # 判断是否可以链接
-        if self.is_pair():
-            return True
-        return False
-
-    def is_pair(self):
-        if self._source_port._port_type == NodePort.PORT_TYPE_EXEC_OUT and self._target_port._port_type == NodePort.PORT_TYPE_EXEC_IN:
-            return True
-        elif self._source_port._port_type == NodePort.PORT_TYPE_OUTPUT and self._target_port._port_type == NodePort.PORT_TYPE_PARAM:
-            return True
-        else:
-            return False

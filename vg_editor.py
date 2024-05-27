@@ -1,32 +1,18 @@
 # coding:utf-8
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QMouseEvent
 from PySide6.QtWidgets import QWidget, QVBoxLayout
-from PySide6.QtCore import Qt
 
 from vg_node import GraphNode
-from vg_view import VisualGraphicsView
+from vg_node_port import ParamPort, OutputPort
 from vg_scene import VisualGraphScene
-
-from vg_node_port import EXECInPort, EXECOutPort, ParamPort, OutputPort
+from vg_view import VisualGraphicsView
 
 
 class VisualGraphEditor(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setup_editor()
-
-    def setup_editor(self):
-        self.setGeometry(100, 100, 1440, 720)
-        self.setWindowTitle("Visual Graph Editor")
-        self.layout = QVBoxLayout(self)
-        self.layout.setContentsMargins(0, 0, 0, 0)
-
-        # 初始化scene
-        self.scene = VisualGraphScene()
-        self.view = VisualGraphicsView(self.scene, self)
-        self.layout.addWidget(self.view)
-
-        self.show()
 
     def debug_add_node(self, pos=[0, 0]):
 
@@ -56,11 +42,24 @@ class VisualGraphEditor(QWidget):
 
         # self.view.add_node_edge(outputs[0], params2[0])
 
-    def right_click_add_node(self, mouse_pos):
-        self.debug_add_node([mouse_pos.x(), mouse_pos.y()])
-
     def mousePressEvent(self, event: QMouseEvent) -> None:
         if event.button() == Qt.RightButton:
             self.right_click_add_node(self.view.mapToScene(event.pos()))
         else:
             super().mousePressEvent(event)
+
+    def right_click_add_node(self, mouse_pos):
+        self.debug_add_node([mouse_pos.x(), mouse_pos.y()])
+
+    def setup_editor(self):
+        self.setGeometry(100, 100, 1440, 720)
+        self.setWindowTitle("Visual Graph Editor")
+        self.layout = QVBoxLayout(self)
+        self.layout.setContentsMargins(0, 0, 0, 0)
+
+        # 初始化scene
+        self.scene = VisualGraphScene()
+        self.view = VisualGraphicsView(self.scene, self)
+        self.layout.addWidget(self.view)
+
+        self.show()

@@ -39,38 +39,15 @@ class VisualGraphicsView(QGraphicsView):
         self._drag_edge = None
         self._drag_edge_mode = False
 
-    def mousePressEvent(self, event):
+    def add_graph_node(self, node: GraphNode, pos=[0, 0]):
+        self._scene.addItem(node)
+        node.set_scene(self._scene)
+        node.setPos(pos[0], pos[1])
+        self._nodes.append(node)
 
-        if event.button() == Qt.LeftButton:
-            self.rightButtonPressed(event)
-        elif event.button() == Qt.MiddleButton:
-            self.middleButtonPressed(event)
-        else:
-            return super().mousePressEvent(event)
-
-    def mouseDoubleClickEvent(self, event):
-        if event.button() == Qt.MiddleButton:
-            self.reset_scale()
-        else:
-            return super().mouseDoubleClickEvent(event)
-
-    def mouseReleaseEvent(self, event):
-        if event.button() == Qt.LeftButton:
-            self.leftButtonReleased(event)
-        elif event.button() == Qt.MiddleButton:
-            self.middleButtonReleased(event)
-        else:
-            return super().mouseReleaseEvent(event)
-
-    def rightButtonPressed(self, event: QMouseEvent):
-        mouse_pos = event.pos()
-        item = self.itemAt(mouse_pos)
-        if isinstance(item, NodePort):
-            # 设置drag edge mode
-            self._drag_edge_mode = True
-            self.create_dragging_edge(item)
-        else:
-            super().mousePressEvent(event)
+    def add_node_edge(self, source_node, target_node):
+        edge = NodeEdge(source_node, target_node, scene=self._scene)
+        self._edges.append(edge)
 
     def create_dragging_edge(self, port: NodePort):
 
@@ -85,12 +62,6 @@ class VisualGraphicsView(QGraphicsView):
                                            drag_from_source=drag_from_source)
             self._drag_edge.set_first_port(port)
             self._scene.addItem(self._drag_edge)
-
-    def mouseMoveEvent(self, event: QMouseEvent) -> None:
-        if self._drag_edge_mode:
-            self._drag_edge.update_position(self.mapToScene(event.pos()))
-        else:
-            super().mouseMoveEvent(event)
 
     def leftButtonReleased(self, event: QMouseEvent):
         if self._drag_edge_mode:
@@ -130,6 +101,49 @@ class VisualGraphicsView(QGraphicsView):
                                     event.modifiers())
         super().mouseReleaseEvent(release_event)
 
+    def mouseDoubleClickEvent(self, event):
+        if event.button() == Qt.MiddleButton:
+            self.reset_scale()
+        else:
+            return super().mouseDoubleClickEvent(event)
+
+    def mouseMoveEvent(self, event: QMouseEvent) -> None:
+        if self._drag_edge_mode:
+            self._drag_edge.update_position(self.mapToScene(event.pos()))
+        else:
+            super().mouseMoveEvent(event)
+
+    def mousePressEvent(self, event):
+
+        if event.button() == Qt.LeftButton:
+            self.rightButtonPressed(event)
+        elif event.button() == Qt.MiddleButton:
+            self.middleButtonPressed(event)
+        else:
+            return super().mousePressEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.leftButtonReleased(event)
+        elif event.button() == Qt.MiddleButton:
+            self.middleButtonReleased(event)
+        else:
+            return super().mouseReleaseEvent(event)
+
+    def reset_scale(self):
+        self.resetTransform()
+        self._view_scale = 1.0
+
+    def rightButtonPressed(self, event: QMouseEvent):
+        mouse_pos = event.pos()
+        item = self.itemAt(mouse_pos)
+        if isinstance(item, NodePort):
+            # 设置drag edge mode
+            self._drag_edge_mode = True
+            self.create_dragging_edge(item)
+        else:
+            super().mousePressEvent(event)
+
     def wheelEvent(self, event):
         if not self._drag_mode:
             if event.angleDelta().y() > 0:
@@ -145,17 +159,3 @@ class VisualGraphicsView(QGraphicsView):
 
             self._last_scale = self._view_scale
             self.scale(self._view_scale, self._last_scale)
-
-    def reset_scale(self):
-        self.resetTransform()
-        self._view_scale = 1.0
-
-    def add_graph_node(self, node: GraphNode, pos=[0, 0]):
-        self._scene.addItem(node)
-        node.set_scene(self._scene)
-        node.setPos(pos[0], pos[1])
-        self._nodes.append(node)
-
-    def add_node_edge(self, source_node, target_node):
-        edge = NodeEdge(source_node, target_node, scene=self._scene)
-        self._edges.append(edge)

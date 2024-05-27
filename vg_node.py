@@ -1,9 +1,9 @@
 # coding: utf-8
 from PySide6.QtCore import QRectF, Qt
 from PySide6.QtGui import QPen, QColor, QBrush, QPainterPath, QFont
-from PySide6.QtWidgets import QGraphicsItem, QGraphicsRectItem, QGraphicsTextItem
+from PySide6.QtWidgets import QGraphicsItem, QGraphicsTextItem
 
-from vg_node_port import NodePort, EXECInPort, EXECOutPort, ParamPort, OutputPort
+from vg_node_port import NodePort, EXECInPort, EXECOutPort
 
 
 class GraphNode(QGraphicsItem):
@@ -63,35 +63,47 @@ class GraphNode(QGraphicsItem):
         if not is_pure:
             self.init_exec_ports()
 
-    def set_scene(self, scene):
-        self._scene = scene
+    def add_connected_node(self, node, edge):
+        self._connected_nodes.append(node)
+        self._edges.append(edge)
 
-    def init_title(self):
-        self._title_item = QGraphicsTextItem(self)
-        self._title_item.setPlainText(self._title)
-        self._title_item.setFont(self._title_font)
-        self._title_item.setDefaultTextColor(self._title_color)
-        self._title_item.setPos(self._title_padding, self._title_padding)
-        width = self._title_font_size * len(self._title) + self._node_width_min
+    def add_exec_in_port(self, port: NodePort):
+        port.add_to_paraent_node(self, self._scene)
+        port.setPos(self._port_padding, self._title_height)
 
-        if self._node_width < width:
-            self._node_width = width
+    def add_exec_out_port(self, port: NodePort):
+        port.add_to_paraent_node(self, self._scene)
+        port.setPos(self._node_width + 0.5 * port._port_icon_size - port._port_width - self._port_padding,
+                    self._title_height)
+
+    def add_output_port(self, port: NodePort, index=0):
+        port.add_to_paraent_node(self, self._scene)
+        port.setPos(self._node_width - port._port_width - self._port_padding,
+                    self._title_height + index * (self._port_padding + port._port_icon_size))
+
+    def add_param_port(self, port: NodePort, index=0):
+        port.add_to_paraent_node(self, self._scene)
+        port.setPos(self._port_padding,
+                    self._title_height + index * (self._port_padding + port._port_icon_size))
+
+    def add_port(self, port: NodePort, index=0):
+        if port._port_type == NodePort.PORT_TYPE_EXEC_IN:
+            self.add_exec_in_port(port)
+        elif port._port_type == NodePort.PORT_TYPE_EXEC_OUT:
+            self.add_exec_out_port(port)
+        elif port._port_type == NodePort.PORT_TYPE_PARAM:
+            self.add_param_port(port, index)
+        elif port._port_type == NodePort.PORT_TYPE_OUTPUT:
+            self.add_output_port(port, index)
+
+    def boundingRect(self) -> QRectF:
+        return QRectF(0, 0, self._node_width, self._node_height)
 
     def init_exec_ports(self):
         execin = EXECInPort()
         execout = EXECOutPort()
         self.add_port(execin)
         self.add_port(execout)
-
-    def init_param_ports(self):
-        if self._param_ports != None:
-            for i, port in enumerate(self._param_ports):
-                self.add_port(port, index=i + self._port_index)
-
-    def init_output_ports(self):
-        if self._output_ports != None:
-            for i, port in enumerate(self._output_ports):
-                self.add_port(port, index=i + self._port_index)
 
     def init_node_height_and_width(self):
         # param_ports
@@ -123,8 +135,34 @@ class GraphNode(QGraphicsItem):
         if self._node_width < self._max_param_port + self._max_output_port + self._port_space:
             self._node_width = self._max_param_port + self._max_output_port + self._port_space
 
-    def boundingRect(self) -> QRectF:
-        return QRectF(0, 0, self._node_width, self._node_height)
+    def init_output_ports(self):
+        if self._output_ports != None:
+            for i, port in enumerate(self._output_ports):
+                self.add_port(port, index=i + self._port_index)
+
+    def init_param_ports(self):
+        if self._param_ports != None:
+            for i, port in enumerate(self._param_ports):
+                self.add_port(port, index=i + self._port_index)
+
+    def init_title(self):
+        self._title_item = QGraphicsTextItem(self)
+        self._title_item.setPlainText(self._title)
+        self._title_item.setFont(self._title_font)
+        self._title_item.setDefaultTextColor(self._title_color)
+        self._title_item.setPos(self._title_padding, self._title_padding)
+        width = self._title_font_size * len(self._title) + self._node_width_min
+
+        if self._node_width < width:
+            self._node_width = width
+
+    def itemChange(self, change, value):
+        if change == QGraphicsItem.ItemPositionChange:
+            if len(self._edges) > 0:
+                for edge in self._edges:
+                    edge.update()
+
+        return super().itemChange(change, value)
 
     def paint(self, painter, option, widget):
         # 画背景颜色
@@ -154,43 +192,5 @@ class GraphNode(QGraphicsItem):
             painter.setBrush(Qt.NoBrush)
             painter.drawPath(node_line)
 
-    def add_connected_node(self, node, edge):
-        self._connected_nodes.append(node)
-        self._edges.append(edge)
-
-    def itemChange(self, change, value):
-        if change == QGraphicsItem.ItemPositionChange:
-            if len(self._edges) > 0:
-                for edge in self._edges:
-                    edge.update()
-
-        return super().itemChange(change, value)
-
-    def add_port(self, port: NodePort, index=0):
-        if port._port_type == NodePort.PORT_TYPE_EXEC_IN:
-            self.add_exec_in_port(port)
-        elif port._port_type == NodePort.PORT_TYPE_EXEC_OUT:
-            self.add_exec_out_port(port)
-        elif port._port_type == NodePort.PORT_TYPE_PARAM:
-            self.add_param_port(port, index)
-        elif port._port_type == NodePort.PORT_TYPE_OUTPUT:
-            self.add_output_port(port, index)
-
-    def add_exec_in_port(self, port: NodePort):
-        port.add_to_paraent_node(self, self._scene)
-        port.setPos(self._port_padding, self._title_height)
-
-    def add_exec_out_port(self, port: NodePort):
-        port.add_to_paraent_node(self, self._scene)
-        port.setPos(self._node_width + 0.5 * port._port_icon_size - port._port_width - self._port_padding,
-                    self._title_height)
-
-    def add_param_port(self, port: NodePort, index=0):
-        port.add_to_paraent_node(self, self._scene)
-        port.setPos(self._port_padding,
-                    self._title_height + index * (self._port_padding + port._port_icon_size))
-
-    def add_output_port(self, port: NodePort, index=0):
-        port.add_to_paraent_node(self, self._scene)
-        port.setPos(self._node_width - port._port_width - self._port_padding,
-                    self._title_height + index * (self._port_padding + port._port_icon_size))
+    def set_scene(self, scene):
+        self._scene = scene
