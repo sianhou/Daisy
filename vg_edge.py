@@ -97,14 +97,6 @@ class DraggingEdge(QGraphicsPathItem):
         self._shadow_color = Qt.yellow
         self.setFlags(QGraphicsItem.ItemIsSelectable)
 
-        # self.add_to_scene()
-
-    def add_to_scene(self):
-        self._scene.addItem(self)
-        # 添加到相关的节点的port
-        # self._source_port.add_edge(self, self._target_port)
-        # self._target_port.add_edge(self, self._source_port)
-
     def paint(self, painter: QPainter, option, widget) -> None:
         self.update_edge_path()
 

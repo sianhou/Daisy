@@ -74,7 +74,7 @@ class VisualGraphicsView(QGraphicsView):
 
     def create_dragging_edge(self, port: NodePort):
         port_pos = port.get_port_pos()
-        if port._port_type == NodePort.PORT_TYPE_OUTPUT or port._port_type == NodePort.PORT_TYPE_OUTPUT:
+        if port._port_type == NodePort.PORT_TYPE_EXEC_OUT or port._port_type == NodePort.PORT_TYPE_OUTPUT:
             drag_from_source = True
         else:
             drag_from_source = False
