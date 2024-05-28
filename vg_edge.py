@@ -50,6 +50,11 @@ class NodeEdge(QGraphicsPathItem):
             self._shadow.setColor('#00000000')
             self.setGraphicsEffect(self._shadow)
 
+    def remove_self(self):
+        self._scene.removeItem(self)
+        self._source_port.remove_edge(self)
+        self._target_port.remove_edge(self)
+
     # 更新路径
     def update_edge_path(self):
         source_pos = self._source_port.get_port_pos()
@@ -109,7 +114,7 @@ class DraggingEdge(QGraphicsPathItem):
 
     def is_connectable(self):
         # 判断是否可以链接
-        if self.is_pair():
+        if self.is_pair() and not self.is_same_node() and self.is_same_class():
             return True
         return False
 
@@ -121,9 +126,21 @@ class DraggingEdge(QGraphicsPathItem):
         else:
             return False
 
+    def is_same_node(self):
+        if self._source_port._parent_node == self._target_port._parent_node:
+            return True
+        return False
+
+    def is_same_class(self):
+        if self._source_port._port_class == self._target_port._port_class:
+            return True
+        return False
+
     def create_node_edge(self):
         if self.is_connectable():
-            NodeEdge(self._source_port, self._target_port, self._scene, self._edge_color)
+            edge = NodeEdge(self._source_port, self._target_port, self._scene, self._edge_color)
+            return edge
+        return None
 
     def set_first_port(self, port: NodePort):
         if self._drag_from_source:

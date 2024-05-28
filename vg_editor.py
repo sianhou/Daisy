@@ -19,26 +19,16 @@ class VisualGraphEditor(QWidget):
         params = []
         params.append(ParamPort('width', 'float', '#99ff22'))
         params.append(ParamPort('height', 'float', '#99ff22'))
+        params.append(ParamPort('count', 'int', '#00ffee'))
 
         outputs = []
         outputs.append(OutputPort('area', 'float', '#99ff22'))
+        outputs.append(OutputPort('num', 'int', '#00ffee'))
 
         # 创建一个port
-        node = GraphNode(title="Area", param_ports=params, output_ports=outputs, is_pure=False)
+        node2 = GraphNode(title="Area", param_ports=params, output_ports=outputs, is_pure=False)
 
-        self.view.add_graph_node(node, pos)
-
-        params2 = []
-        params2.append(ParamPort('width', 'float', '#99ff22'))
-        params2.append(ParamPort('height', 'float', '#99ff22'))
-
-        outputs2 = []
-        outputs2.append(OutputPort('area', 'float', '#99ff22'))
-
-        # 创建一个port
-        node2 = GraphNode(title="Area2", param_ports=params2, output_ports=outputs2, is_pure=False)
-
-        self.view.add_graph_node(node2, [pos[0] + 200, pos[1] + 200])
+        self.view.add_graph_node(node2, [pos[0], pos[1]])
 
         # self.view.add_node_edge(outputs[0], params2[0])
 

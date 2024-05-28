@@ -67,6 +67,10 @@ class GraphNode(QGraphicsItem):
         self._connected_nodes.append(node)
         self._edges.append(edge)
 
+    def remove_connected_node(self, node, edge):
+        self._connected_nodes.remove(node)
+        self._edges.remove(edge)
+
     def add_exec_in_port(self, port: NodePort):
         port.add_to_paraent_node(self, self._scene)
         port.setPos(self._port_padding, self._title_height)

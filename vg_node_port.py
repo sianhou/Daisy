@@ -35,18 +35,35 @@ class NodePort(QGraphicsItem):
         self._port_width = self._port_icon_size + self._port_label_size
 
     def add_edge(self, edge, port):
+        self.conditioned_remove_edge()
         self._parent_node.add_connected_node(port._parent_node, edge)
         self._edges.append(edge)
         self._connected_ports.append(port)
 
     # 将本节点添加到parent node上
     def add_to_paraent_node(self, parent_node, scene):
+
         self.setParentItem(parent_node)
         self._parent_node = parent_node
         self._scene = scene
 
     def boundingRect(self) -> QRectF:
         return QRectF(0, 0, self._port_width, self._port_icon_size)
+
+    def conditioned_remove_edge(self):
+        # 如果port_type == PORT_TYPE_EXEC_IN or PORT_TYPE_PARAM, 删除已有edge
+        if self._port_type == NodePort.PORT_TYPE_EXEC_IN or self._port_type == NodePort.PORT_TYPE_PARAM:
+            if len(self._edges) > 0:
+                for edge in self._edges:
+                    # 因为self._port_type == NodePort.PORT_TYPE_EXEC_IN or self._port_type == NodePort.PORT_TYPE_PARAM
+                    # 所以当前port一定是一个target_port
+                    # edge需要从source_port,source_port._parent_node中删除
+                    # edge需要从target_port,target_port._parent_node中删除
+                    edge.remove_self()
+
+            # edge = self._edges.pop()
+            # self._scene._edges.remove(edge)
+            # self._
 
     def get_port_pos(self) -> QPointF:
         # 获得本身在scene的位置
@@ -56,6 +73,15 @@ class NodePort(QGraphicsItem):
 
     def is_connected(self):
         return len(self._edges) > 0
+
+    def remove_edge(self, edge):
+        self._edges.remove(edge)
+        if edge._source_port == self:
+            self._connected_ports.remove(edge._target_port)
+            self._parent_node.remove_connected_node(edge._target_port._parent_node, edge)
+        else:
+            self._connected_ports.remove(edge._source_port)
+            self._parent_node.remove_connected_node(edge._source_port._parent_node, edge)
 
 
 class EXECPort(NodePort):

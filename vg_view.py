@@ -70,7 +70,9 @@ class VisualGraphicsView(QGraphicsView):
             if isinstance(item, NodePort):
                 # 创建一个NodeEdge
                 self._drag_edge.set_second_port(item)
-                self._drag_edge.create_node_edge()
+                edge = self._drag_edge.create_node_edge()
+                if edge is not None:
+                    self._edges.append(edge)
             # 删除 self._drag_edge
             self._scene.removeItem(self._drag_edge)
             self._drag_edge = None
