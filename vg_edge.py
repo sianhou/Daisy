@@ -52,6 +52,7 @@ class NodeEdge(QGraphicsPathItem):
 
     def remove_self(self):
         self._scene.removeItem(self)
+        self._scene._view.remove_edge(self)
         self._source_port.remove_edge(self)
         self._target_port.remove_edge(self)
 

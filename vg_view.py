@@ -2,6 +2,7 @@
 '''
 QGraphicsView class
 '''
+from PySide6 import QtGui
 from PySide6.QtCore import Qt, QEvent
 from PySide6.QtGui import QPainter, QMouseEvent
 from PySide6.QtWidgets import QGraphicsView
@@ -19,6 +20,7 @@ class VisualGraphicsView(QGraphicsView):
 
         self._scene = scene
         self.setScene(self._scene)
+        self._scene.set_view(self)
 
         self.setRenderHint(QPainter.Antialiasing | QPainter.TextAntialiasing | QPainter.SmoothPixmapTransform)
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
@@ -32,6 +34,8 @@ class VisualGraphicsView(QGraphicsView):
         self._view_scale = 1.0
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
 
+        # 框体选择
+        self.setDragMode(QGraphicsView.RubberBandDrag)
         # 画布拖动
         self._drag_mode = False
 
@@ -62,6 +66,20 @@ class VisualGraphicsView(QGraphicsView):
                                            drag_from_source=drag_from_source)
             self._drag_edge.set_first_port(port)
             self._scene.addItem(self._drag_edge)
+
+    def delete_selected_items(self):
+        # 获得当前选中的items
+        for item in self._scene.selectedItems():
+            if isinstance(item, GraphNode):
+                item.remove_self()
+            elif isinstance(item, NodeEdge):
+                item.remove_self()
+
+    def keyReleaseEvent(self, event: QtGui.QKeyEvent) -> None:
+        if event.key() == Qt.Key_Delete or event.key() == Qt.Key_X:
+            self.delete_selected_items()
+        else:
+            super().keyReleaseEvent(event)
 
     def leftButtonReleased(self, event: QMouseEvent):
         if self._drag_edge_mode:
@@ -96,12 +114,12 @@ class VisualGraphicsView(QGraphicsView):
             super().mousePressEvent(click_event)
 
     def middleButtonReleased(self, event):
-        self.setDragMode(QGraphicsView.NoDrag)
-        self._drag_mode = False
         # 创建左键松开事件
         release_event = QMouseEvent(QEvent.MouseButtonRelease, event.localPos(), Qt.LeftButton, Qt.NoButton,
                                     event.modifiers())
         super().mouseReleaseEvent(release_event)
+        self.setDragMode(QGraphicsView.RubberBandDrag)
+        self._drag_mode = False
 
     def mouseDoubleClickEvent(self, event):
         if event.button() == Qt.MiddleButton:
@@ -131,6 +149,12 @@ class VisualGraphicsView(QGraphicsView):
             self.middleButtonReleased(event)
         else:
             return super().mouseReleaseEvent(event)
+
+    def remove_node(self, node: GraphNode):
+        self._nodes.remove(node)
+
+    def remove_edge(self, edge: NodeEdge):
+        self._edges.remove(edge)
 
     def reset_scale(self):
         self.resetTransform()

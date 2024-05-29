@@ -3,7 +3,7 @@ import math
 
 from PySide6.QtCore import QLine
 from PySide6.QtGui import QBrush, QColor, QPen, QPainter
-from PySide6.QtWidgets import QGraphicsScene
+from PySide6.QtWidgets import QGraphicsScene, QGraphicsView
 
 from vg_config import EditorConfig
 
@@ -27,6 +27,8 @@ class VisualGraphScene(QGraphicsScene):
 
         self._dark_line_pen = QPen(QColor(EditorConfig.editor_scene_grid_dark_line_color))
         self._dark_line_pen.setWidthF(EditorConfig.editor_scene_grid_dark_line_width)
+
+        self._view = None
 
     def cal_grid_lines(self, rect):
         lines = []
@@ -68,3 +70,6 @@ class VisualGraphScene(QGraphicsScene):
         # 画粗线
         painter.setPen(self._dark_line_pen)
         painter.drawLines(dark_lines)
+
+    def set_view(self, view: QGraphicsView) -> None:
+        self._view = view

@@ -196,5 +196,14 @@ class GraphNode(QGraphicsItem):
             painter.setBrush(Qt.NoBrush)
             painter.drawPath(node_line)
 
+    # 删除自己
+    def remove_self(self):
+        # 删除edge
+        for edge in self._edges:
+            edge.remove_self()
+        # 删除node
+        self._scene.removeItem(self)
+        self._scene._view.remove_node(self)
+
     def set_scene(self, scene):
         self._scene = scene
