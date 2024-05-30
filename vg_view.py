@@ -151,10 +151,12 @@ class VisualGraphicsView(QGraphicsView):
             return super().mouseReleaseEvent(event)
 
     def remove_node(self, node: GraphNode):
-        self._nodes.remove(node)
+        if node in self._nodes:
+            self._nodes.remove(node)
 
     def remove_edge(self, edge: NodeEdge):
-        self._edges.remove(edge)
+        if edge in self._edges:
+            self._edges.remove(edge)
 
     def reset_scale(self):
         self.resetTransform()

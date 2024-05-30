@@ -35,6 +35,8 @@ class NodeEdge(QGraphicsPathItem):
         # 添加到相关的节点的port
         self._source_port.add_edge(self, self._target_port)
         self._target_port.add_edge(self, self._source_port)
+        self._source_port.update()
+        self._target_port.update()
 
     def paint(self, painter: QPainter, option, widget) -> None:
         self.update_edge_path()
@@ -55,6 +57,8 @@ class NodeEdge(QGraphicsPathItem):
         self._scene._view.remove_edge(self)
         self._source_port.remove_edge(self)
         self._target_port.remove_edge(self)
+        self._source_port.update()
+        self._target_port.update()
 
     # 更新路径
     def update_edge_path(self):

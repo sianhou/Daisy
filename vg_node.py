@@ -1,7 +1,7 @@
 # coding: utf-8
 from PySide6.QtCore import QRectF, Qt
 from PySide6.QtGui import QPen, QColor, QBrush, QPainterPath, QFont
-from PySide6.QtWidgets import QGraphicsItem, QGraphicsTextItem
+from PySide6.QtWidgets import QGraphicsItem, QGraphicsTextItem, QGraphicsDropShadowEffect
 
 from vg_node_port import NodePort, EXECInPort, EXECOutPort
 
@@ -63,13 +63,20 @@ class GraphNode(QGraphicsItem):
         if not is_pure:
             self.init_exec_ports()
 
+        # 选中投影
+        self._shadow = QGraphicsDropShadowEffect()
+        self._shadow.setOffset(0, 0)
+        self._shadow.setBlurRadius(20)
+        self._shadow_color = QColor('#22eeee00')
+
     def add_connected_node(self, node, edge):
         self._connected_nodes.append(node)
         self._edges.append(edge)
 
     def remove_connected_node(self, node, edge):
         self._connected_nodes.remove(node)
-        self._edges.remove(edge)
+        if edge in self._edges:
+            self._edges.remove(edge)
 
     def add_exec_in_port(self, port: NodePort):
         port.add_to_paraent_node(self, self._scene)
@@ -169,6 +176,16 @@ class GraphNode(QGraphicsItem):
         return super().itemChange(change, value)
 
     def paint(self, painter, option, widget):
+
+        # 选中投影设置， 最先画是为了放在最底层
+        if not self.isSelected():
+            self._shadow.setColor('#00000000')
+            self.setGraphicsEffect(self._shadow)
+        else:
+            # 选中投影设置
+            self._shadow.setColor(self._shadow_color)
+            self.setGraphicsEffect(self._shadow)
+
         # 画背景颜色
         node_line = QPainterPath()
         node_line.addRoundedRect(0, 0, self._node_width, self._node_height, self._node_radius, self._node_radius)
@@ -199,7 +216,7 @@ class GraphNode(QGraphicsItem):
     # 删除自己
     def remove_self(self):
         # 删除edge
-        for edge in self._edges:
+        for edge in self._edges.copy():
             edge.remove_self()
         # 删除node
         self._scene.removeItem(self)
