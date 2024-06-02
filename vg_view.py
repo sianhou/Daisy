@@ -7,7 +7,7 @@ from PySide6.QtCore import Qt, QEvent
 from PySide6.QtGui import QPainter, QMouseEvent
 from PySide6.QtWidgets import QGraphicsView
 
-from vg_edge import NodeEdge, DraggingEdge
+from vg_edge import NodeEdge, DraggingEdge, CuttingLine
 from vg_node import GraphNode
 from vg_node_port import NodePort
 
@@ -42,6 +42,11 @@ class VisualGraphicsView(QGraphicsView):
         # 可拖动的边
         self._drag_edge = None
         self._drag_edge_mode = False
+
+        # cutting line
+        self._cutting_mode = False
+        self._cutting_line = CuttingLine()
+        self._scene.addItem(self._cutting_line)
 
     def add_graph_node(self, node: GraphNode, pos=[0, 0]):
         self._scene.addItem(node)
@@ -136,19 +141,23 @@ class VisualGraphicsView(QGraphicsView):
     def mousePressEvent(self, event):
 
         if event.button() == Qt.LeftButton:
-            self.rightButtonPressed(event)
+            self.leftButtonPressed(event)
         elif event.button() == Qt.MiddleButton:
             self.middleButtonPressed(event)
+        elif event.button() == Qt.RightButton:
+            self.rightButtonPressed(event)
         else:
-            return super().mousePressEvent(event)
+            super().mousePressEvent(event)
 
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.LeftButton:
             self.leftButtonReleased(event)
         elif event.button() == Qt.MiddleButton:
             self.middleButtonReleased(event)
+        elif event.button() == Qt.RightButton:
+            self.rightButtonReleased(event)
         else:
-            return super().mouseReleaseEvent(event)
+            super().mouseReleaseEvent(event)
 
     def remove_node(self, node: GraphNode):
         if node in self._nodes:
@@ -162,7 +171,7 @@ class VisualGraphicsView(QGraphicsView):
         self.resetTransform()
         self._view_scale = 1.0
 
-    def rightButtonPressed(self, event: QMouseEvent):
+    def leftButtonPressed(self, event: QMouseEvent):
         mouse_pos = event.pos()
         item = self.itemAt(mouse_pos)
         if isinstance(item, NodePort):
@@ -171,6 +180,14 @@ class VisualGraphicsView(QGraphicsView):
             self.create_dragging_edge(item)
         else:
             super().mousePressEvent(event)
+
+    def rightButtonPressed(self, event):
+        self.setDragMode(QGraphicsView.NoDrag)
+        super().mousePressEvent(event)
+
+    def rightButtonReleased(self, event):
+        self.setDragMode(QGraphicsView.RubberBandDrag)
+        super().mousePressEvent(event)
 
     def wheelEvent(self, event):
         if not self._drag_mode:

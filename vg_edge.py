@@ -1,6 +1,6 @@
 # coding:utf-8
 from PySide6.QtCore import QPointF
-from PySide6.QtGui import QPen, QColor, QPainter, QPainterPath, Qt
+from PySide6.QtGui import QPen, QColor, QPainter, QPainterPath, Qt, QPolygonF
 from PySide6.QtWidgets import QGraphicsPathItem, QGraphicsDropShadowEffect, QGraphicsItem
 
 from vg_node_port import NodePort
@@ -185,3 +185,21 @@ class DraggingEdge(QGraphicsPathItem):
         else:
             self._source_pos = position
         self.update()
+
+
+class CuttingLine(QGraphicsPathItem):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        self._line_points = []
+        self._pen = QPen(Qt.red)
+        self._pen.setWidthF(1.5)
+        self._pen.setDashPattern([3, 3])
+
+    def paint(self, painter: QPainter, option, widget) -> None:
+        painter.setRenderHint(QPainter.Antialiasing)
+        painter.setBrush(Qt.NoBrush)
+        painter.setPen(self._pen)
+        
+        poly = QPolygonF(self._line_points)
+        painter.drawPolygon(poly)
