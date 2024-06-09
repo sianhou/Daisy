@@ -200,6 +200,18 @@ class CuttingLine(QGraphicsPathItem):
         painter.setRenderHint(QPainter.Antialiasing)
         painter.setBrush(Qt.NoBrush)
         painter.setPen(self._pen)
-        
+
         poly = QPolygonF(self._line_points)
-        painter.drawPolygon(poly)
+        painter.drawPolyline(poly)
+
+    def update_points(self, point):
+        self._line_points.append(point)
+        self.update()
+
+    def remove_intersect_edges(self, edges):
+        for edge in edges.copy():
+            path = QPainterPath()
+            path.addPolygon(QPolygonF(self._line_points))
+
+            if edge.collidesWithPath(path):
+                edge.remove_self()

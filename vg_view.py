@@ -2,9 +2,10 @@
 '''
 QGraphicsView class
 '''
+from PySide6.QtWidgets import QApplication
 from PySide6 import QtGui
-from PySide6.QtCore import Qt, QEvent
-from PySide6.QtGui import QPainter, QMouseEvent
+from PySide6.QtCore import QEvent
+from PySide6.QtGui import QPainter, QMouseEvent, QCursor, Qt, QPainterPath
 from PySide6.QtWidgets import QGraphicsView
 
 from vg_edge import NodeEdge, DraggingEdge, CuttingLine
@@ -135,6 +136,8 @@ class VisualGraphicsView(QGraphicsView):
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
         if self._drag_edge_mode:
             self._drag_edge.update_position(self.mapToScene(event.pos()))
+        elif self._cutting_mode:
+            self._cutting_line.update_points(self.mapToScene(event.pos()))
         else:
             super().mouseMoveEvent(event)
 
@@ -182,10 +185,29 @@ class VisualGraphicsView(QGraphicsView):
             super().mousePressEvent(event)
 
     def rightButtonPressed(self, event):
-        self.setDragMode(QGraphicsView.NoDrag)
+
+        item = self.itemAt(event.pos())
+
+        # 当前位置item为空，并且按住了键盘的ctrl键
+        if item is None and (event.modifiers() == Qt.ControlModifier):
+            self._cutting_mode = True
+            # 此处setOverrideCursor是强制设置鼠标为某种模式，用于表示特定的信息
+            # 直到下一次设置setOverrideCursor或restoreOverrideCursor为止
+            QApplication.setOverrideCursor(Qt.CrossCursor)
+        else:
+            self.setDragMode(QGraphicsView.NoDrag)
         super().mousePressEvent(event)
 
     def rightButtonReleased(self, event):
+        # 获得和cuttingline相交的边并删除
+        self._cutting_line.remove_intersect_edges(self._edges)
+
+        # clean cutting line
+        self._cutting_mode = False
+        self._cutting_line._line_points = []
+        self._cutting_line.update()
+        QApplication.restoreOverrideCursor()
+
         self.setDragMode(QGraphicsView.RubberBandDrag)
         super().mousePressEvent(event)
 
