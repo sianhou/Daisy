@@ -1,4 +1,5 @@
 # coding:utf-8
+from abc import abstractmethod
 
 from PySide6.QtCore import QRectF, QPointF, Qt
 from PySide6.QtGui import QPen, QColor, QBrush, QFont, QPainter, QPainterPath, QPolygonF
@@ -27,7 +28,7 @@ class NodePort(QGraphicsItem):
         self._pen_default = QPen(QColor(self._port_color))
         self._pen_default.setWidthF(1.5)
         self._brush_default = QBrush(QColor(self._port_color))
-        self._font_size = 12
+        self._font_size = 14
         self._port_font = QFont('Consolas', self._font_size)
 
         self._port_icon_size = 20
@@ -41,7 +42,7 @@ class NodePort(QGraphicsItem):
         self._connected_ports.append(port)
 
     # 将本节点添加到parent node上
-    def add_to_paraent_node(self, parent_node, scene):
+    def add_to_parent_node(self, parent_node, scene):
 
         self.setParentItem(parent_node)
         self._parent_node = parent_node
@@ -91,6 +92,11 @@ class EXECPort(NodePort):
                  parent=None):
         super().__init__(port_label, port_class, port_color, port_type, parent)
 
+
+class EXECInPort(EXECPort):
+    def __init__(self, port_label=''):
+        super().__init__(port_label=port_label, port_type=NodePort.PORT_TYPE_EXEC_IN)
+
     def paint(self, painter: QPainter, option, widget) -> None:
         port_outline = QPainterPath()
         poly = QPolygonF()
@@ -110,15 +116,52 @@ class EXECPort(NodePort):
             painter.setBrush(self._brush_default)
             painter.drawPath(port_outline.simplified())
 
-
-class EXECInPort(EXECPort):
-    def __init__(self):
-        super().__init__(port_type=NodePort.PORT_TYPE_EXEC_IN)
+        # port label
+        painter.setPen(self._pen_default)
+        painter.drawText(
+            QRectF(0.8 * self._port_icon_size, 0.1 * self._port_icon_size, self._port_label_size, self._port_icon_size),
+            Qt.AlignmentFlag.AlignLeft, self._port_label)
 
 
 class EXECOutPort(EXECPort):
-    def __init__(self):
-        super().__init__(port_type=NodePort.PORT_TYPE_EXEC_OUT)
+    def __init__(self, port_label=''):
+        super().__init__(port_label=port_label, port_type=NodePort.PORT_TYPE_EXEC_OUT)
+
+    def paint(self, painter: QPainter, option, widget) -> None:
+        # paint label
+        painter.setPen(self._pen_default)
+        painter.drawText(
+            QRectF(0, 0.1 * self._port_icon_size, self._port_label_size, self._port_icon_size),
+            Qt.AlignmentFlag.AlignRight, self._port_label)
+
+        # paint icon
+        port_outline = QPainterPath()
+        poly = QPolygonF()
+        poly.append(QPointF(self._port_label_size + 0.5 * self._port_icon_size + 0, 0.2 * self._port_icon_size))
+        poly.append(QPointF(self._port_label_size + 0.5 * self._port_icon_size + 0.25 * self._port_icon_size,
+                            0.2 * self._port_icon_size))
+        poly.append(QPointF(self._port_label_size + 0.5 * self._port_icon_size + 0.5 * self._port_icon_size,
+                            0.5 * self._port_icon_size))
+        poly.append(QPointF(self._port_label_size + 0.5 * self._port_icon_size + 0.25 * self._port_icon_size,
+                            0.8 * self._port_icon_size))
+        poly.append(QPointF(self._port_label_size + 0.5 * self._port_icon_size + 0, 0.8 * self._port_icon_size))
+        port_outline.addPolygon(poly)
+
+        if not self.is_connected():
+            painter.setPen(self._pen_default)
+            painter.setBrush(Qt.NoBrush)
+            painter.drawPath(port_outline.simplified())
+        else:
+            painter.setPen(Qt.NoPen)
+            painter.setBrush(self._brush_default)
+            painter.drawPath(port_outline.simplified())
+
+    def get_port_pos(self) -> QPointF:
+        # 获得本身在scene的位置
+        self._port_pos = self.scenePos()
+        return QPointF(
+            self._port_pos.x() + self._port_label_size + 0.75 * self._port_icon_size,
+            self._port_pos.y() + 0.5 * self._port_icon_size)
 
 
 class ParamPort(NodePort):
@@ -197,3 +240,39 @@ class OutputPort(NodePort):
         poly.append(QPointF(self._port_label_size + 0.95 * self._port_icon_size, 0.50 * self._port_icon_size))
         poly.append(QPointF(self._port_label_size + 0.85 * self._port_icon_size, 0.65 * self._port_icon_size))
         painter.drawPolygon(poly)
+
+
+class Pin:
+    def __init__(self, pin_name='', pin_class='', pin_color='#ffffff', pin_type='data'):
+        self._pin_name = pin_name
+        self._pin_class = pin_class
+        self._pin_color = pin_color
+        self._pin_type = pin_type
+
+        self.init_port()
+
+    @abstractmethod
+    def init_port(self):
+        pass
+
+
+class NodeInput(Pin):
+    def init_port(self):
+        if self._pin_type == 'data':
+            self.port = ParamPort(port_label=self._pin_name, port_class=self._pin_class, port_color=self._pin_color)
+        elif self._pin_type == 'exec':
+            self.port = EXECInPort(port_label=self._pin_name)
+        else:
+            self.port = None
+            print("No such kinds of pin type")
+
+
+class NodeOutput(Pin):
+    def init_port(self):
+        if self._pin_type == 'data':
+            self.port = OutputPort(port_label=self._pin_name, port_class=self._pin_class, port_color=self._pin_color)
+        elif self._pin_type == 'exec':
+            self.port = EXECOutPort(port_label=self._pin_name)
+        else:
+            self.port = None
+            print("No such kinds of pin type")

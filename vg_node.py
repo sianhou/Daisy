@@ -1,4 +1,6 @@
 # coding: utf-8
+from abc import abstractmethod
+
 from PySide6.QtCore import QRectF, Qt
 from PySide6.QtGui import QPen, QColor, QBrush, QPainterPath, QFont
 from PySide6.QtWidgets import QGraphicsItem, QGraphicsTextItem, QGraphicsDropShadowEffect
@@ -7,7 +9,7 @@ from vg_node_port import NodePort, EXECInPort, EXECOutPort
 
 
 class GraphNode(QGraphicsItem):
-    def __init__(self, title="", param_ports=None, output_ports=None, is_pure=False, scene=None, node_position=None,
+    def __init__(self, title="", param_ports=None, output_ports=None, is_pure=True, scene=None, node_position=None,
                  connected_nodes=None, edges=None, parent=None):
         super(GraphNode, self).__init__(parent)
 
@@ -21,9 +23,9 @@ class GraphNode(QGraphicsItem):
         self._node_width = 100
         self._node_height = 100
         self._node_radius = 10
-        self._port_space = 50
+        self._port_space = 10
         self._node_width_min = 2 * self._node_radius
-        self._node_height_min = 40 + 2 * self._node_radius  # TODO(HOUSIAN): using self._title_height and self._node_radius to calculate a proper value
+        self._node_height_min = 40  # TODO(HOUSIAN): using self._title_height and self._node_radius to calculate a proper value
 
         # 定义node边框
         self._pen_default = QPen(QColor('#151515'))
@@ -38,10 +40,10 @@ class GraphNode(QGraphicsItem):
         self._title = title
         # title的高度
         self._title_height = 35
-        self._title_font_size = 13
+        self._title_font_size = 16
         self._title_font = QFont("Arial", self._title_font_size)
         self._title_color = Qt.white
-        self._title_padding = 3
+        self._title_padding = 8
         self._brush_title_back = QBrush(QColor('#aa00002f'))
         self.init_title()
 
@@ -51,17 +53,19 @@ class GraphNode(QGraphicsItem):
 
         # param ports &output ports
         self._port_index = 0
+
+        if not is_pure:
+            self._node_height_min = 20 + 2 * self._node_radius
+
+        # param ports
         self._param_ports = param_ports
         self._output_ports = output_ports
-        if is_pure:
-            self._node_height_min = 20 + 2 * self._node_radius
-        else:
-            self._port_index += 1
+
         self.init_node_height_and_width()
-        self.init_param_ports()
-        self.init_output_ports()
-        if not is_pure:
-            self.init_exec_ports()
+        self.init_ports()
+
+        # if not is_pure:
+        #     self.init_exec_ports()
 
         # 选中投影
         self._shadow = QGraphicsDropShadowEffect()
@@ -73,35 +77,30 @@ class GraphNode(QGraphicsItem):
         self._connected_nodes.append(node)
         self._edges.append(edge)
 
-    def remove_connected_node(self, node, edge):
-        self._connected_nodes.remove(node)
-        if edge in self._edges:
-            self._edges.remove(edge)
+    def add_exec_in_port(self, port: NodePort, index=0):
+        port.add_to_parent_node(self, self._scene)
+        port.setPos(self._port_padding, self._title_height + index * (self._port_padding + port._port_icon_size))
 
-    def add_exec_in_port(self, port: NodePort):
-        port.add_to_paraent_node(self, self._scene)
-        port.setPos(self._port_padding, self._title_height)
-
-    def add_exec_out_port(self, port: NodePort):
-        port.add_to_paraent_node(self, self._scene)
-        port.setPos(self._node_width + 0.5 * port._port_icon_size - port._port_width - self._port_padding,
-                    self._title_height)
+    def add_exec_out_port(self, port: NodePort, index=0):
+        port.add_to_parent_node(self, self._scene)
+        port.setPos(self._node_width - port._port_width - self._port_padding,
+                    self._title_height + index * (self._port_padding + port._port_icon_size))
 
     def add_output_port(self, port: NodePort, index=0):
-        port.add_to_paraent_node(self, self._scene)
+        port.add_to_parent_node(self, self._scene)
         port.setPos(self._node_width - port._port_width - self._port_padding,
                     self._title_height + index * (self._port_padding + port._port_icon_size))
 
     def add_param_port(self, port: NodePort, index=0):
-        port.add_to_paraent_node(self, self._scene)
+        port.add_to_parent_node(self, self._scene)
         port.setPos(self._port_padding,
                     self._title_height + index * (self._port_padding + port._port_icon_size))
 
     def add_port(self, port: NodePort, index=0):
         if port._port_type == NodePort.PORT_TYPE_EXEC_IN:
-            self.add_exec_in_port(port)
+            self.add_exec_in_port(port, index)
         elif port._port_type == NodePort.PORT_TYPE_EXEC_OUT:
-            self.add_exec_out_port(port)
+            self.add_exec_out_port(port, index)
         elif port._port_type == NodePort.PORT_TYPE_PARAM:
             self.add_param_port(port, index)
         elif port._port_type == NodePort.PORT_TYPE_OUTPUT:
@@ -110,11 +109,11 @@ class GraphNode(QGraphicsItem):
     def boundingRect(self) -> QRectF:
         return QRectF(0, 0, self._node_width, self._node_height)
 
-    def init_exec_ports(self):
-        execin = EXECInPort()
-        execout = EXECOutPort()
-        self.add_port(execin)
-        self.add_port(execout)
+    # def init_exec_ports(self):
+    #     execin = EXECInPort()
+    #     execout = EXECOutPort()
+    #     self.add_port(execin)
+    #     self.add_port(execout)
 
     def init_node_height_and_width(self):
         # param_ports
@@ -149,12 +148,18 @@ class GraphNode(QGraphicsItem):
     def init_output_ports(self):
         if self._output_ports != None:
             for i, port in enumerate(self._output_ports):
-                self.add_port(port, index=i + self._port_index)
+                self.add_port(port, index=i)
 
     def init_param_ports(self):
         if self._param_ports != None:
             for i, port in enumerate(self._param_ports):
-                self.add_port(port, index=i + self._port_index)
+                self.add_port(port, index=i)
+
+    def init_ports(self):
+        # 参数
+        self.init_param_ports()
+        # 输出
+        self.init_output_ports()
 
     def init_title(self):
         self._title_item = QGraphicsTextItem(self)
@@ -213,6 +218,11 @@ class GraphNode(QGraphicsItem):
             painter.setBrush(Qt.NoBrush)
             painter.drawPath(node_line)
 
+    def remove_connected_node(self, node, edge):
+        self._connected_nodes.remove(node)
+        if edge in self._edges:
+            self._edges.remove(edge)
+
     # 删除自己
     def remove_self(self):
         # 删除edge
@@ -224,3 +234,46 @@ class GraphNode(QGraphicsItem):
 
     def set_scene(self, scene):
         self._scene = scene
+
+
+class Node(GraphNode):
+
+    def __init__(self):
+        self.node_title = ''
+        self.node_description = ''
+
+        self.input_pins = None
+        self.output_pins = None
+
+        self.setup_node()
+
+        self.is_validate()
+
+        in_ports = [pin.port for pin in self.input_pins]
+        out_ports = [pin.port for pin in self.output_pins]
+        super().__init__(title=self.node_title, param_ports=in_ports, output_ports=out_ports, is_pure=True)
+
+        self._input_data_ready = False
+        self._output_data_ready = False
+
+    def is_validate(self):
+        if self.node_title == '' or self.node_title is None:
+            print('Node title could note be Empty or None.')
+            return False
+
+        if len(self.input_pins) == 0 or self.input_pins is None:
+            print('Node input pins could note be Empty or None.')
+            return False
+
+        if self.output_pins is None:
+            self.output_pins = []
+
+        return True
+
+    @abstractmethod
+    def run_node(self):
+        pass
+
+    @abstractmethod
+    def setup_node(self):
+        pass

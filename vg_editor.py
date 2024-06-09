@@ -8,11 +8,17 @@ from vg_node_port import ParamPort, OutputPort
 from vg_scene import VisualGraphScene
 from vg_view import VisualGraphicsView
 
+from nodes.branch_node import BranchNode
+
 
 class VisualGraphEditor(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setup_editor()
+
+    def debug_add_custom_node(self, pos):
+        node = BranchNode()
+        self.view.add_graph_node(node, [pos[0], pos[1]])
 
     def debug_add_node(self, pos=[0, 0]):
 
@@ -39,7 +45,8 @@ class VisualGraphEditor(QWidget):
             super().mousePressEvent(event)
 
     def right_click_add_node(self, mouse_pos):
-        self.debug_add_node([mouse_pos.x(), mouse_pos.y()])
+        # self.debug_add_node([mouse_pos.x(), mouse_pos.y()])
+        self.debug_add_custom_node([mouse_pos.x(), mouse_pos.y()])
 
     def setup_editor(self):
         self.setGeometry(100, 100, 1440, 720)
