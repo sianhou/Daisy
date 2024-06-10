@@ -289,6 +289,7 @@ class NodeInput(Pin):
         else:
             self.port = None
             print("No such kinds of pin type")
+        return self.port
 
 
 class NodeOutput(Pin):
@@ -300,3 +301,4 @@ class NodeOutput(Pin):
         else:
             self.port = None
             print("No such kinds of pin type")
+        return self.port

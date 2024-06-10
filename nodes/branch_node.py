@@ -3,6 +3,19 @@ from vg_node_port import NodeInput, NodeOutput
 
 
 class BranchNode(Node):
+    node_title = "Branch"
+    node_description = "Exectue based on input condition"
+
+    input_pins = [
+        NodeInput(pin_name='IF', pin_type='exec'),
+        NodeInput(pin_name='Condition', pin_class='bool', pin_color='#ff3300')
+    ]
+
+    output_pins = [
+        NodeOutput(pin_name='True', pin_type='exec'),
+        NodeOutput(pin_name='False', pin_type='exec')
+    ]
+
     def setup(self):
         self.node_title = "Branch"
         self.node_description = "Exectue based on input condition"

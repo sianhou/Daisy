@@ -243,20 +243,20 @@ class GraphNode(QGraphicsItem):
 
 
 class Node(GraphNode):
+    node_title = ''
+    node_description = ''
+
+    input_pins = None
+    output_pins = None
 
     def __init__(self):
-        self.node_title = ''
-        self.node_description = ''
 
-        self.input_pins = None
-        self.output_pins = None
-
-        self.setup()
+        # self.setup()
 
         self.is_validate()
 
-        in_ports = [pin.port for pin in self.input_pins]
-        out_ports = [pin.port for pin in self.output_pins]
+        in_ports = [pin.init_port() for pin in self.input_pins]
+        out_ports = [pin.init_port() for pin in self.output_pins]
         super().__init__(title=self.node_title, param_ports=in_ports, output_ports=out_ports, is_pure=True)
 
         self._input_data_ready = False
