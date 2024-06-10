@@ -5,6 +5,7 @@ from PySide6.QtCore import QRectF, Qt
 from PySide6.QtGui import QPen, QColor, QBrush, QPainterPath, QFont
 from PySide6.QtWidgets import QGraphicsItem, QGraphicsTextItem, QGraphicsDropShadowEffect
 
+from vg_config import EditorConfig
 from vg_node_port import NodePort, EXECInPort, EXECOutPort
 
 
@@ -40,15 +41,15 @@ class GraphNode(QGraphicsItem):
         self._title = title
         # title的高度
         self._title_height = 35
-        self._title_font_size = 16
-        self._title_font = QFont("Arial", self._title_font_size)
+        self._title_font_size = EditorConfig.editor_node_title_font_size
+        self._title_font = QFont(EditorConfig.editor_node_title_font, self._title_font_size)
         self._title_color = Qt.white
-        self._title_padding = 8
+        self._title_padding = 5
         self._brush_title_back = QBrush(QColor('#aa00002f'))
         self.init_title()
 
         # exec Port
-        self._port_padding = 6
+        self._port_padding = 7
         self._port_exec_index = 0
 
         # param ports &output ports
@@ -79,22 +80,27 @@ class GraphNode(QGraphicsItem):
 
     def add_exec_in_port(self, port: NodePort, index=0):
         port.add_to_parent_node(self, self._scene)
-        port.setPos(self._port_padding, self._title_height + index * (self._port_padding + port._port_icon_size))
+        x = self._port_padding
+        y = self._title_height + index * (self._port_padding + port._port_icon_size) + self._port_padding
+        port.setPos(x, y)
 
     def add_exec_out_port(self, port: NodePort, index=0):
         port.add_to_parent_node(self, self._scene)
-        port.setPos(self._node_width - port._port_width - self._port_padding,
-                    self._title_height + index * (self._port_padding + port._port_icon_size))
+        x = self._node_width - port._port_width - self._port_padding
+        y = self._title_height + index * (self._port_padding + port._port_icon_size) + self._port_padding
+        port.setPos(x, y)
 
     def add_output_port(self, port: NodePort, index=0):
         port.add_to_parent_node(self, self._scene)
-        port.setPos(self._node_width - port._port_width - self._port_padding,
-                    self._title_height + index * (self._port_padding + port._port_icon_size))
+        x = self._node_width - port._port_width - self._port_padding
+        y = self._title_height + index * (self._port_padding + port._port_icon_size) + self._port_padding
+        port.setPos(x, y)
 
     def add_param_port(self, port: NodePort, index=0):
         port.add_to_parent_node(self, self._scene)
-        port.setPos(self._port_padding,
-                    self._title_height + index * (self._port_padding + port._port_icon_size))
+        x = self._port_padding
+        y = self._title_height + index * (self._port_padding + port._port_icon_size) + self._port_padding
+        port.setPos(x, y)
 
     def add_port(self, port: NodePort, index=0):
         if port._port_type == NodePort.PORT_TYPE_EXEC_IN:

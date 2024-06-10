@@ -14,8 +14,7 @@ class BranchNode(Node):
 
         self.output_pins = [
             NodeOutput(pin_name='True', pin_type='exec'),
-            NodeOutput(pin_name='False', pin_type='exec'),
-            NodeOutput(pin_name='False', pin_type='data')
+            NodeOutput(pin_name='False', pin_type='exec')
         ]
 
     def run(self):

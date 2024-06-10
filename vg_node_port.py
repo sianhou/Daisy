@@ -5,6 +5,8 @@ from PySide6.QtCore import QRectF, QPointF, Qt
 from PySide6.QtGui import QPen, QColor, QBrush, QFont, QPainter, QPainterPath, QPolygonF
 from PySide6.QtWidgets import QGraphicsItem
 
+from vg_config import EditorConfig
+
 
 class NodePort(QGraphicsItem):
     PORT_TYPE_EXEC_IN = 1001
@@ -28,8 +30,8 @@ class NodePort(QGraphicsItem):
         self._pen_default = QPen(QColor(self._port_color))
         self._pen_default.setWidthF(1.5)
         self._brush_default = QBrush(QColor(self._port_color))
-        self._font_size = 14
-        self._port_font = QFont('Consolas', self._font_size)
+        self._font_size = EditorConfig.editor_node_pin_label_font_size
+        self._port_font = QFont(EditorConfig.editor_node_pin_label_font, self._font_size)
 
         self._port_icon_size = 20
         self._port_label_size = len(self._port_label) * self._font_size
@@ -118,9 +120,10 @@ class EXECInPort(EXECPort):
 
         # port label
         painter.setPen(self._pen_default)
+        painter.setFont(self._port_font)
         painter.drawText(
-            QRectF(0.8 * self._port_icon_size, 0.1 * self._port_icon_size, self._port_label_size, self._port_icon_size),
-            Qt.AlignmentFlag.AlignLeft, self._port_label)
+            QRectF(0.8 * self._port_icon_size, 0, self._port_label_size, self._port_icon_size),
+            Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter, self._port_label)
 
 
 class EXECOutPort(EXECPort):
@@ -130,9 +133,10 @@ class EXECOutPort(EXECPort):
     def paint(self, painter: QPainter, option, widget) -> None:
         # paint label
         painter.setPen(self._pen_default)
+        painter.setFont(self._port_font)
         painter.drawText(
-            QRectF(0, 0.1 * self._port_icon_size, self._port_label_size, self._port_icon_size),
-            Qt.AlignmentFlag.AlignRight, self._port_label)
+            QRectF(0, 0, self._port_label_size, self._port_icon_size),
+            Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter, self._port_label)
 
         # paint icon
         port_outline = QPainterPath()
@@ -198,9 +202,10 @@ class ParamPort(NodePort):
 
         # port label
         painter.setPen(self._pen_default)
+        painter.setFont(self._port_font)
         painter.drawText(
-            QRectF(self._port_icon_size, 0.1 * self._port_icon_size, self._port_label_size, self._port_icon_size),
-            Qt.AlignmentFlag.AlignLeft, self._port_label)
+            QRectF(self._port_icon_size, 0, self._port_label_size, self._port_icon_size),
+            Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter, self._port_label)
 
 
 class OutputPort(NodePort):
@@ -215,9 +220,10 @@ class OutputPort(NodePort):
     def paint(self, painter: QPainter, option, widget) -> None:
         # paint label
         painter.setPen(self._pen_default)
+        painter.setFont(self._port_font)
         painter.drawText(
-            QRectF(0, 0.1 * self._port_icon_size, self._port_label_size, self._port_icon_size),
-            Qt.AlignmentFlag.AlignRight, self._port_label)
+            QRectF(0, 0, self._port_label_size, self._port_icon_size),
+            Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter, self._port_label)
 
         # icon o> 表示
         if not self.is_connected():

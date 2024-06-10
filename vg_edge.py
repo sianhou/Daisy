@@ -173,6 +173,8 @@ class DraggingEdge(QGraphicsPathItem):
 
         tagnent *= x_width
 
+        tagnent = tagnent if tagnent > 100 else 100
+
         path.cubicTo(QPointF(source_pos.x() + tagnent, source_pos.y()),
                      QPointF(target_pos.x() - tagnent, target_pos.y()),
                      target_pos)
