@@ -251,7 +251,7 @@ class Node(GraphNode):
         self.input_pins = None
         self.output_pins = None
 
-        self.setup_node()
+        self.setup()
 
         self.is_validate()
 
@@ -261,6 +261,13 @@ class Node(GraphNode):
 
         self._input_data_ready = False
         self._output_data_ready = False
+
+    def exec(self, index):
+        pass
+
+    # 通过index获取一个pin的值如果pin的值为空，需要通过递归获取关联port的值
+    def input(self, index):
+        pass
 
     def is_validate(self):
         if self.node_title == '' or self.node_title is None:
@@ -276,10 +283,14 @@ class Node(GraphNode):
 
         return True
 
-    @abstractmethod
-    def run_node(self):
+    # 通过index设置一个pin的输出值，到下一个相连节点的port
+    def output(self, index):
         pass
 
     @abstractmethod
-    def setup_node(self):
+    def run(self):
+        pass
+
+    @abstractmethod
+    def setup(self):
         pass

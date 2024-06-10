@@ -3,6 +3,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QMouseEvent
 from PySide6.QtWidgets import QWidget, QVBoxLayout
 
+from nodes.basicmath import AddNode
 from vg_node import GraphNode
 from vg_node_port import ParamPort, OutputPort
 from vg_scene import VisualGraphScene
@@ -17,7 +18,8 @@ class VisualGraphEditor(QWidget):
         self.setup_editor()
 
     def debug_add_custom_node(self, pos):
-        node = BranchNode()
+        # node = BranchNode()
+        node = AddNode()
         self.view.add_graph_node(node, [pos[0], pos[1]])
 
     def debug_add_node(self, pos=[0, 0]):

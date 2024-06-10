@@ -255,11 +255,29 @@ class Pin:
         self._pin_color = pin_color
         self._pin_type = pin_type
 
+        self.current_session = -1
+        self.has_set_value = False
+
+        # init value, 初始化为None或相应class的默认值
+        # TODO(housian) 以后要创建一个字典
+        self.value = None
+
         self.init_port()
+
+    def getValue(self):
+        return self.value
 
     @abstractmethod
     def init_port(self):
         pass
+
+    def setSession(self, session):
+        self.current_session = session
+        self.has_set_value = False
+
+    def setValue(self, value):
+        self.value = value
+        self.has_set_value = True
 
 
 class NodeInput(Pin):
