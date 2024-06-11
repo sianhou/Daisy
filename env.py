@@ -1,4 +1,4 @@
-from nodetable import NodeTable
+from nodelist import NodeList
 from nodes.branch_node import BranchNode
 from nodes.basicmath import AddNode
 
@@ -6,8 +6,20 @@ from nodes.basicmath import AddNode
 class Env:
     @staticmethod
     def registerNode():
-        NodeTable.registerNode([AddNode, BranchNode])
+        NodeList.registerNode([AddNode, BranchNode])
 
     @staticmethod
     def getRegisteredNode():
-        return NodeTable.node_table
+        return NodeList._node_list
+
+    @staticmethod
+    def getNodeListJson():
+        data = {
+            'Basic Operation': {
+                'Add': AddNode,
+            },
+            'Control Structure': {
+                'Branch': BranchNode,
+            }
+        }
+        return data

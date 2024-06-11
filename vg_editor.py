@@ -11,6 +11,7 @@ from vg_scene import VisualGraphScene
 from vg_view import VisualGraphicsView
 
 from nodes.branch_node import BranchNode
+from widgets import NodeListWidget
 
 
 class VisualGraphEditor(QWidget):
@@ -63,8 +64,8 @@ class VisualGraphEditor(QWidget):
         self.layout.setContentsMargins(0, 0, 0, 0)
 
         # 初始化scene
-        self.scene = VisualGraphScene()
-        self.view = VisualGraphicsView(self.scene, self)
+        self._scene = VisualGraphScene()
+        self.view = VisualGraphicsView(self._scene, self)
         self.layout.addWidget(self.view)
 
         self.show()

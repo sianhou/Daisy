@@ -8,9 +8,11 @@ from PySide6.QtCore import QEvent
 from PySide6.QtGui import QPainter, QMouseEvent, QCursor, Qt, QPainterPath
 from PySide6.QtWidgets import QGraphicsView
 
+from env import Env
 from vg_edge import NodeEdge, DraggingEdge, CuttingLine
 from vg_node import GraphNode
 from vg_node_port import NodePort
+from widgets import NodeListWidget
 
 
 class VisualGraphicsView(QGraphicsView):
@@ -49,6 +51,9 @@ class VisualGraphicsView(QGraphicsView):
         self._cutting_line = CuttingLine()
         self._scene.addItem(self._cutting_line)
 
+        # Node List Widget
+        self.setupNodeListWidget()
+
     def add_graph_node(self, node: GraphNode, pos=[0, 0]):
         self._scene.addItem(node)
         node.set_scene(self._scene)
@@ -80,6 +85,9 @@ class VisualGraphicsView(QGraphicsView):
                 item.remove_self()
             elif isinstance(item, NodeEdge):
                 item.remove_self()
+
+    def hideNodeListWidget(self):
+        self._node_list_widget.setVisible(False)
 
     def keyReleaseEvent(self, event: QtGui.QKeyEvent) -> None:
         if event.key() == Qt.Key_Delete or event.key() == Qt.Key_X:
@@ -144,11 +152,11 @@ class VisualGraphicsView(QGraphicsView):
     def mousePressEvent(self, event):
 
         if event.button() == Qt.LeftButton:
-            self.leftButtonPressed(event)
+            self.pressMouseLeftButton(event)
         elif event.button() == Qt.MiddleButton:
             self.middleButtonPressed(event)
         elif event.button() == Qt.RightButton:
-            self.rightButtonPressed(event)
+            self.pressMouseRightButton(event)
         else:
             super().mousePressEvent(event)
 
@@ -158,7 +166,7 @@ class VisualGraphicsView(QGraphicsView):
         elif event.button() == Qt.MiddleButton:
             self.middleButtonReleased(event)
         elif event.button() == Qt.RightButton:
-            self.rightButtonReleased(event)
+            self.releaseMouseRightButton(event)
         else:
             super().mouseReleaseEvent(event)
 
@@ -174,31 +182,39 @@ class VisualGraphicsView(QGraphicsView):
         self.resetTransform()
         self._view_scale = 1.0
 
-    def leftButtonPressed(self, event: QMouseEvent):
+    def pressMouseLeftButton(self, event: QMouseEvent):
         mouse_pos = event.pos()
         item = self.itemAt(mouse_pos)
         if isinstance(item, NodePort):
             # 设置drag edge mode
             self._drag_edge_mode = True
             self.create_dragging_edge(item)
+        elif item is None:
+            self.hideNodeListWidget()
+            super().mousePressEvent(event)
         else:
             super().mousePressEvent(event)
 
-    def rightButtonPressed(self, event):
+    def pressMouseRightButton(self, event):
 
         item = self.itemAt(event.pos())
 
-        # 当前位置item为空，并且按住了键盘的ctrl键
-        if item is None and (event.modifiers() == Qt.ControlModifier):
-            self._cutting_mode = True
-            # 此处setOverrideCursor是强制设置鼠标为某种模式，用于表示特定的信息
-            # 直到下一次设置setOverrideCursor或restoreOverrideCursor为止
-            QApplication.setOverrideCursor(Qt.CrossCursor)
+        # 当前位置item为空
+        if item is None:
+            # 并且按住了键盘的ctrl键
+            if (event.modifiers() == Qt.ControlModifier):
+                self._cutting_mode = True
+                # 此处setOverrideCursor是强制设置鼠标为某种模式，用于表示特定的信息
+                # 直到下一次设置setOverrideCursor或restoreOverrideCursor为止
+                QApplication.setOverrideCursor(Qt.CrossCursor)
+            else:
+                # 右键显示self._node_list_widget
+                self.showNodeListWidget(self.mapToScene(event.pos()))
         else:
             self.setDragMode(QGraphicsView.NoDrag)
         super().mousePressEvent(event)
 
-    def rightButtonReleased(self, event):
+    def releaseMouseRightButton(self, event):
         # 获得和cuttingline相交的边并删除
         self._cutting_line.remove_intersect_edges(self._edges)
 
@@ -210,6 +226,18 @@ class VisualGraphicsView(QGraphicsView):
 
         self.setDragMode(QGraphicsView.RubberBandDrag)
         super().mousePressEvent(event)
+
+    def setupNodeListWidget(self):
+        # 获取data
+        data = Env.getNodeListJson()
+        self._node_list_widget = NodeListWidget(data)
+        self._scene.addWidget(self._node_list_widget)
+        self._node_list_widget.setGeometry(0, 0, 200, 300)
+        self.hideNodeListWidget()
+
+    def showNodeListWidget(self, pos):
+        self._node_list_widget.setGeometry(pos.x(), pos.y(), 200, 300)
+        self._node_list_widget.show()
 
     def wheelEvent(self, event):
         if not self._drag_mode:
