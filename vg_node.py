@@ -175,8 +175,7 @@ class GraphNode(QGraphicsItem):
         self._title_item.setFont(self._title_font)
         self._title_item.setDefaultTextColor(self._title_color)
         self._title_item.setPos(self._title_padding, self._title_padding)
-        width = self._title_font_size * len(self._title) + self._node_width_min
-
+        width = self._title_font_size * len(self._title)
         if self._node_width < width:
             self._node_width = width
 
