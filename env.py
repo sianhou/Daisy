@@ -1,5 +1,7 @@
+from collections import defaultdict
+
 from nodelist import NodeList
-from nodes.branch_node import BranchNode
+from nodes.control import BranchNode
 from nodes.basicmath import AddNode
 
 
@@ -14,12 +16,20 @@ class Env:
 
     @staticmethod
     def getNodeListJson():
-        data = {
-            'Basic Operation': {
-                'Add': AddNode,
-            },
-            'Control Structure': {
-                'Branch': BranchNode,
-            }
-        }
+        data = defaultdict(dict)
+        for cls in Env.getRegisteredNode():
+            pkg_name = cls.package_name
+            node_title = cls.node_title
+            data[pkg_name][node_title] = cls
+
+        # data = {
+        #     'Basic Operation': {
+        #         'Add': AddNode,
+        #     },
+        #     'Control Structure': {
+        #         'Branch': BranchNode,
+        #     }
+        # }
+
+        print(data)
         return data

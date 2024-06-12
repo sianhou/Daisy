@@ -40,7 +40,6 @@ class NodeListWidget(QTreeWidget):
         if isinstance(item, QTreeWidgetItem):
             cls = item.data(column, Qt.UserRole)
             if cls is not None:
-                print(QCursor.pos())
                 self._view.addGraphNode(cls, self._pos)
                 self.hide()
                 # print(item.data(0, Qt.UserRole))

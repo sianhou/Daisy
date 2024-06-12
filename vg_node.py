@@ -245,6 +245,7 @@ class GraphNode(QGraphicsItem):
 
 
 class Node(GraphNode):
+    package_name = ''
     node_title = ''
     node_description = ''
 

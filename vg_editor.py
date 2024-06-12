@@ -10,16 +10,16 @@ from vg_node_port import ParamPort, OutputPort
 from vg_scene import VisualGraphScene
 from vg_view import VisualGraphicsView
 
-from nodes.branch_node import BranchNode
+from nodes.control import BranchNode
 from widgets import NodeListWidget
 
 
 class VisualGraphEditor(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setup_editor()
 
         Env.registerNode()
+        self.setup_editor()
 
     def debug_add_custom_node(self, pos):
         # node = BranchNode()

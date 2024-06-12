@@ -3,6 +3,7 @@ from vg_node_port import NodeInput, NodeOutput
 
 
 class BranchNode(Node):
+    package_name = 'Control'
     node_title = "Branch"
     node_description = "Exectue based on input condition"
 

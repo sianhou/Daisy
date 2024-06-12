@@ -3,6 +3,7 @@ from vg_node_port import NodeInput, NodeOutput
 
 
 class AddNode(Node):
+    package_name = 'Basic Operation'
     node_title = 'Add'
     node_description = 'Adds two numbers'
     input_pins = [
