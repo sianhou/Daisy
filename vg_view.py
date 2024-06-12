@@ -4,7 +4,7 @@ QGraphicsView class
 '''
 from PySide6.QtWidgets import QApplication
 from PySide6 import QtGui
-from PySide6.QtCore import QEvent
+from PySide6.QtCore import QEvent, QPointF
 from PySide6.QtGui import QPainter, QMouseEvent, QCursor, Qt, QPainterPath
 from PySide6.QtWidgets import QGraphicsView
 
@@ -58,6 +58,13 @@ class VisualGraphicsView(QGraphicsView):
         self._scene.addItem(node)
         node.set_scene(self._scene)
         node.setPos(pos[0], pos[1])
+        self._nodes.append(node)
+
+    def addGraphNode(self, cls, pos):
+        node = cls()
+        self._scene.addItem(node)
+        node.set_scene(self._scene)
+        node.setPos(pos.x(), pos.y())
         self._nodes.append(node)
 
     def add_node_edge(self, source_node, target_node):
@@ -230,13 +237,14 @@ class VisualGraphicsView(QGraphicsView):
     def setupNodeListWidget(self):
         # 获取data
         data = Env.getNodeListJson()
-        self._node_list_widget = NodeListWidget(data)
+        self._node_list_widget = NodeListWidget(data, self._scene, self)
         self._scene.addWidget(self._node_list_widget)
         self._node_list_widget.setGeometry(0, 0, 200, 300)
         self.hideNodeListWidget()
 
     def showNodeListWidget(self, pos):
         self._node_list_widget.setGeometry(pos.x(), pos.y(), 200, 300)
+        self._node_list_widget._pos = pos
         self._node_list_widget.show()
 
     def wheelEvent(self, event):
