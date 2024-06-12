@@ -74,7 +74,7 @@ class GraphNode(QGraphicsItem):
         self._shadow.setBlurRadius(20)
         self._shadow_color = QColor('#22eeee00')
 
-        self.setZValue(-1)
+        # self.setZValue(0)
 
     def add_connected_node(self, node, edge):
         self._connected_nodes.append(node)

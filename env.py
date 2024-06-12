@@ -2,13 +2,13 @@ from collections import defaultdict
 
 from nodelist import NodeList
 from nodes.control import BranchNode
-from nodes.basicmath import AddNode
+from nodes.basicmath import AddNode, MinusNode, MultiplyNode, DivideNode, GreaterNode
 
 
 class Env:
     @staticmethod
     def registerNode():
-        NodeList.registerNode([AddNode, BranchNode])
+        NodeList.registerNode([AddNode, MinusNode, MultiplyNode, DivideNode, GreaterNode, BranchNode])
 
     @staticmethod
     def getRegisteredNode():
@@ -21,15 +21,4 @@ class Env:
             pkg_name = cls.package_name
             node_title = cls.node_title
             data[pkg_name][node_title] = cls
-
-        # data = {
-        #     'Basic Operation': {
-        #         'Add': AddNode,
-        #     },
-        #     'Control Structure': {
-        #         'Branch': BranchNode,
-        #     }
-        # }
-
-        print(data)
         return data

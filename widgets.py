@@ -16,7 +16,7 @@ class NodeListWidget(QTreeWidget):
         self.resize(200, 300)
         self.setColumnCount(1)
         self.setHeaderHidden(True)
-
+        
         self.setupTree()
 
         self.itemDoubleClicked.connect(self.clickTreeItemTwice)
