@@ -2,7 +2,7 @@
 '''
 QGraphicsView class
 '''
-from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication, QGraphicsProxyWidget
 from PySide6 import QtGui
 from PySide6.QtCore import QEvent, QPointF
 from PySide6.QtGui import QPainter, QMouseEvent, QCursor, Qt, QPainterPath
@@ -12,7 +12,7 @@ from env import Env
 from vg_edge import NodeEdge, DraggingEdge, CuttingLine
 from vg_node import GraphNode
 from vg_node_port import NodePort
-from widgets import NodeListWidget
+from MouseBtnWidget import NodeListWidget
 
 
 class VisualGraphicsView(QGraphicsView):
@@ -87,11 +87,14 @@ class VisualGraphicsView(QGraphicsView):
 
     def delete_selected_items(self):
         # 获得当前选中的items
+        # TODO(housian), 如果不在remove_self()后面增加item.update()，会在显示上残留最后一个node
         for item in self._scene.selectedItems():
             if isinstance(item, GraphNode):
                 item.remove_self()
+                item.update()
             elif isinstance(item, NodeEdge):
                 item.remove_self()
+                item.update()
 
     def hideNodeListWidget(self):
         self._node_list_widget.setVisible(False)
@@ -192,13 +195,21 @@ class VisualGraphicsView(QGraphicsView):
     def pressMouseLeftButton(self, event: QMouseEvent):
         mouse_pos = event.pos()
         item = self.itemAt(mouse_pos)
+
+        # TODO(housian): 这里希望的作用是在用鼠标左键点击非右键菜单item时，右键自动隐藏
+        # 但是目前的方案似乎有些问题，就是当有多个QGraphicsProxyWidget，依然会有问题
+        # 未来是否可以用鼠标右键的点击位置进行判断，当鼠标不在NodeListWidget的范围内就进行隐藏
+        if not isinstance(item, QGraphicsProxyWidget):
+            self.hideNodeListWidget()
+
         if isinstance(item, NodePort):
             # 设置drag edge mode
             self._drag_edge_mode = True
             self.create_dragging_edge(item)
-        elif item is None:
-            self.hideNodeListWidget()
-            super().mousePressEvent(event)
+
+        # elif item is None:
+        #     self.hideNodeListWidget()
+        #     super().mousePressEvent(event)
         else:
             super().mousePressEvent(event)
 

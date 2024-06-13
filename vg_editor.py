@@ -4,14 +4,10 @@ from PySide6.QtGui import QMouseEvent
 from PySide6.QtWidgets import QWidget, QVBoxLayout
 
 from env import Env
-from nodes.basicmath import AddNode
 from vg_node import GraphNode
 from vg_node_port import ParamPort, OutputPort
 from vg_scene import VisualGraphScene
 from vg_view import VisualGraphicsView
-
-from nodes.control import BranchNode
-from widgets import NodeListWidget
 
 
 class VisualGraphEditor(QWidget):

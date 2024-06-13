@@ -1,12 +1,11 @@
-from PySide6.QtGui import Qt, QCursor
+from PySide6.QtGui import Qt
 from PySide6.QtWidgets import QTreeWidget, QTreeWidgetItem
-from PySide6.QtCore import QEvent, QPointF
+from PySide6.QtCore import QPointF
 
 
 class NodeListWidget(QTreeWidget):
     def __init__(self, data, scene, view, parent=None):
         super().__init__(parent)
-
         self._data = data
         self._view = view
         self._scene = scene
@@ -16,7 +15,7 @@ class NodeListWidget(QTreeWidget):
         self.resize(200, 300)
         self.setColumnCount(1)
         self.setHeaderHidden(True)
-        
+
         self.setupTree()
 
         self.itemDoubleClicked.connect(self.clickTreeItemTwice)

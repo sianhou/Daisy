@@ -9,3 +9,6 @@ class NodeList:
             NodeList._node_list.extend(node)
         else:
             NodeList._node_list.append(node)
+
+        # 去除重复节点
+        NodeList._node_list = list(set(NodeList._node_list))

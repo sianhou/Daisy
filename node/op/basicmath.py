@@ -83,7 +83,7 @@ class DivideNode(Node):
 
 
 class GreaterNode(Node):
-    package_name = 'Basic Operation'
+    package_name = 'Basic Dule'
     node_title = 'Greater'
     node_description = 'z = 1 if x > y else 0'
 
