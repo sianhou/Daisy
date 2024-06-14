@@ -3,7 +3,7 @@ from abc import abstractmethod
 
 from PySide6.QtCore import QRectF, QPointF, Qt
 from PySide6.QtGui import QPen, QColor, QBrush, QFont, QPainter, QPainterPath, QPolygonF
-from PySide6.QtWidgets import QGraphicsItem
+from PySide6.QtWidgets import QGraphicsItem, QGraphicsProxyWidget, QLineEdit, QCheckBox
 
 from core import dtype
 from vg_config import EditorConfig
@@ -16,7 +16,7 @@ class NodePort(QGraphicsItem):
     PORT_TYPE_OUTPUT = 1004
 
     def __init__(self, port_label='', port_class='str', port_color='#ffffff', port_type=PORT_TYPE_EXEC_IN,
-                 connected_ports=None, edges=None, parent=None):
+                 default_widget=None, connected_ports=None, edges=None, parent=None):
         super(NodePort, self).__init__(parent)
 
         self._port_label = port_label
@@ -37,6 +37,19 @@ class NodePort(QGraphicsItem):
         self._port_icon_size = 20
         self._port_label_size = len(self._port_label) * self._font_size
         self._port_width = self._port_icon_size + self._port_label_size
+
+        # widget
+        # 只有param port才有
+        # 只有default != None
+        # 传进来的default_widget参数是一个类，这里声明实例
+        self._default_widget = None
+        if default_widget is not None:
+            print(default_widget)
+            self._default_widget = default_widget()
+            if isinstance(self._default_widget, QLineEdit):
+                self._default_widget.setMaxLength(20)
+            # elif isinstance(self._default_widget, QCheckBox):
+            #     self._default_widget.setChecked(True)
 
     def add_edge(self, edge, port):
         self.conditioned_remove_edge()
@@ -170,8 +183,10 @@ class EXECOutPort(EXECPort):
 
 
 class ParamPort(NodePort):
-    def __init__(self, port_label='', port_class='str', port_color='#ffffff', parent=None):
-        super().__init__(port_label, port_class, port_color, NodePort.PORT_TYPE_PARAM, parent)
+    def __init__(self, port_label='', port_class='str', port_color='#ffffff', default_widget=None, parent=None):
+        super().__init__(port_label, port_class, port_color, NodePort.PORT_TYPE_PARAM,
+                         default_widget=default_widget, parent=parent)
+        self.setupWidget()
 
     def get_port_pos(self) -> QPointF:
         # 获得本身在scene的位置
@@ -207,6 +222,13 @@ class ParamPort(NodePort):
         painter.drawText(
             QRectF(self._port_icon_size, 0, self._port_label_size, self._port_icon_size),
             Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter, self._port_label)
+
+    def setupWidget(self):
+        # 画widget
+        if self._default_widget is not None:
+            proxy = QGraphicsProxyWidget(parent=self)
+            proxy.setWidget(self._default_widget)
+            proxy.setPos(self._port_icon_size + self._port_label_size, 0)
 
 
 class OutputPort(NodePort):
@@ -269,7 +291,9 @@ class Pin:
         # TODO(housian) 以后要创建一个字典
         self.value = None
 
-        self.init_port()
+        # 不能在这里进行初始化，这里的变量在register都会被调用，会出现在application之前初始化widget的错误
+        # 实际的初始化变量在双击鼠标时调用node（）进行初始化
+        # self.init_port()
 
     def getValue(self):
         return self.value
@@ -290,7 +314,8 @@ class Pin:
 class NodeInput(Pin):
     def init_port(self):
         if self._pin_type == 'data':
-            self.port = ParamPort(port_label=self._pin_name, port_class=self._pin_class, port_color=self._pin_color)
+            self.port = ParamPort(port_label=self._pin_name, port_class=self._pin_class, port_color=self._pin_color,
+                                  default_widget=self._pin_widget)
         elif self._pin_type == 'exec':
             self.port = EXECInPort(port_label=self._pin_name)
         else:

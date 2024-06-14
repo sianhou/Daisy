@@ -12,7 +12,7 @@ from vg_node import Node
 class Env:
     @staticmethod
     def registerNode():
-        NodeList.registerNode([AddNode, MinusNode, MultiplyNode, DivideNode, GreaterNode, BranchNode])
+        # NodeList.registerNode([AddNode, MinusNode, MultiplyNode, DivideNode, GreaterNode, BranchNode])
 
         node_list = []
         # key=lambda x: x[1] 是一个排序
