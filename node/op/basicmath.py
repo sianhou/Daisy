@@ -1,5 +1,6 @@
+from core import dtype
 from vg_node import Node
-from vg_node_port import NodeInput, NodeOutput
+from node.port import NodeInput, NodeOutput
 
 
 class AddNode(Node):
@@ -8,11 +9,11 @@ class AddNode(Node):
     node_description = 'z = x + y'
 
     input_pins = [
-        NodeInput(pin_name='x', pin_class='float', pin_type='data', pin_color='#99ff22'),
-        NodeInput(pin_name='y', pin_class='float', pin_type='data', pin_color='#99ff22'),
+        NodeInput(pin_name='x', pin_class=dtype.Float, pin_type='data'),
+        NodeInput(pin_name='y', pin_class=dtype.Float, pin_type='data'),
     ]
     output_pins = [
-        NodeOutput(pin_name='z', pin_class='float', pin_type='data', pin_color='#99ff22'),
+        NodeOutput(pin_name='z', pin_class=dtype.Float, pin_type='data'),
     ]
 
     def run(self):
@@ -28,11 +29,11 @@ class MinusNode(Node):
     node_description = 'z = x - y'
 
     input_pins = [
-        NodeInput(pin_name='x', pin_class='float', pin_type='data', pin_color='#99ff22'),
-        NodeInput(pin_name='y', pin_class='float', pin_type='data', pin_color='#99ff22'),
+        NodeInput(pin_name='x', pin_class=dtype.Float, pin_type='data'),
+        NodeInput(pin_name='y', pin_class=dtype.Float, pin_type='data'),
     ]
     output_pins = [
-        NodeOutput(pin_name='z', pin_class='float', pin_type='data', pin_color='#99ff22'),
+        NodeOutput(pin_name='z', pin_class=dtype.Float, pin_type='data'),
     ]
 
     def run(self):
@@ -48,11 +49,11 @@ class MultiplyNode(Node):
     node_description = 'z = x * y'
 
     input_pins = [
-        NodeInput(pin_name='x', pin_class='float', pin_type='data', pin_color='#99ff22'),
-        NodeInput(pin_name='y', pin_class='float', pin_type='data', pin_color='#99ff22'),
+        NodeInput(pin_name='x', pin_class=dtype.Float, pin_type='data'),
+        NodeInput(pin_name='y', pin_class=dtype.Float, pin_type='data'),
     ]
     output_pins = [
-        NodeOutput(pin_name='z', pin_class='float', pin_type='data', pin_color='#99ff22'),
+        NodeOutput(pin_name='z', pin_class=dtype.Float, pin_type='data'),
     ]
 
     def run(self):
@@ -68,11 +69,11 @@ class DivideNode(Node):
     node_description = 'z = x / y'
 
     input_pins = [
-        NodeInput(pin_name='x', pin_class='float', pin_type='data', pin_color='#99ff22'),
-        NodeInput(pin_name='y', pin_class='float', pin_type='data', pin_color='#99ff22'),
+        NodeInput(pin_name='x', pin_class=dtype.Float, pin_type='data'),
+        NodeInput(pin_name='y', pin_class=dtype.Float, pin_type='data'),
     ]
     output_pins = [
-        NodeOutput(pin_name='z', pin_class='float', pin_type='data', pin_color='#99ff22'),
+        NodeOutput(pin_name='z', pin_class=dtype.Float, pin_type='data'),
     ]
 
     def run(self):
@@ -88,11 +89,11 @@ class GreaterNode(Node):
     node_description = 'z = 1 if x > y else 0'
 
     input_pins = [
-        NodeInput(pin_name='x', pin_class='float', pin_type='data', pin_color='#99ff22'),
-        NodeInput(pin_name='y', pin_class='float', pin_type='data', pin_color='#99ff22'),
+        NodeInput(pin_name='x', pin_class=dtype.Float, pin_type='data'),
+        NodeInput(pin_name='y', pin_class=dtype.Float, pin_type='data'),
     ]
     output_pins = [
-        NodeOutput(pin_name='z', pin_class='bool', pin_type='data', pin_color='#ff3300'),
+        NodeOutput(pin_name='z', pin_class=dtype.Bool, pin_type='data'),
     ]
 
     def run(self):

@@ -3,7 +3,7 @@ from PySide6.QtCore import QPointF
 from PySide6.QtGui import QPen, QColor, QPainter, QPainterPath, Qt, QPolygonF
 from PySide6.QtWidgets import QGraphicsPathItem, QGraphicsDropShadowEffect, QGraphicsItem
 
-from vg_node_port import NodePort
+from node.port import NodePort
 
 
 class NodeEdge(QGraphicsPathItem):

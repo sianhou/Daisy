@@ -5,6 +5,7 @@ from PySide6.QtCore import QRectF, QPointF, Qt
 from PySide6.QtGui import QPen, QColor, QBrush, QFont, QPainter, QPainterPath, QPolygonF
 from PySide6.QtWidgets import QGraphicsItem
 
+from core import dtype
 from vg_config import EditorConfig
 
 
@@ -249,11 +250,17 @@ class OutputPort(NodePort):
 
 
 class Pin:
-    def __init__(self, pin_name='', pin_class='', pin_color='#ffffff', pin_type='data'):
+    def __init__(self, pin_name='', pin_class='', pin_type='data', use_default_widget=True, pin_widget=None):
         self._pin_name = pin_name
-        self._pin_class = pin_class
-        self._pin_color = pin_color
         self._pin_type = pin_type
+        self._pin_class = pin_class
+        if self._pin_type == 'data':
+            # 获取默认的color和widget
+            self._pin_color = dtype.color_map[self._pin_class]
+            if use_default_widget:
+                self._pin_widget = dtype.default_widget[self._pin_class]
+            else:
+                self._pin_widget = pin_widget
 
         self.current_session = -1
         self.has_set_value = False

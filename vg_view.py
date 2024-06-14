@@ -4,14 +4,14 @@ QGraphicsView class
 '''
 from PySide6.QtWidgets import QApplication, QGraphicsProxyWidget
 from PySide6 import QtGui
-from PySide6.QtCore import QEvent, QPointF
-from PySide6.QtGui import QPainter, QMouseEvent, QCursor, Qt, QPainterPath
+from PySide6.QtCore import QEvent
+from PySide6.QtGui import QPainter, QMouseEvent, Qt
 from PySide6.QtWidgets import QGraphicsView
 
 from env import Env
 from vg_edge import NodeEdge, DraggingEdge, CuttingLine
 from vg_node import GraphNode
-from vg_node_port import NodePort
+from node.port import NodePort
 from MouseBtnWidget import NodeListWidget
 
 

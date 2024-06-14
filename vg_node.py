@@ -6,7 +6,7 @@ from PySide6.QtGui import QPen, QColor, QBrush, QPainterPath, QFont
 from PySide6.QtWidgets import QGraphicsItem, QGraphicsTextItem, QGraphicsDropShadowEffect
 
 from vg_config import EditorConfig
-from vg_node_port import NodePort, EXECInPort, EXECOutPort
+from node.port import NodePort
 
 
 class GraphNode(QGraphicsItem):

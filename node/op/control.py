@@ -1,5 +1,6 @@
+from core import dtype
 from vg_node import Node
-from vg_node_port import NodeInput, NodeOutput
+from node.port import NodeInput, NodeOutput
 
 
 class BranchNode(Node):
@@ -9,7 +10,7 @@ class BranchNode(Node):
 
     input_pins = [
         NodeInput(pin_name='IF', pin_type='exec'),
-        NodeInput(pin_name='Condition', pin_class='bool', pin_color='#ff3300')
+        NodeInput(pin_name='Condition', pin_class=dtype.Bool)
     ]
 
     output_pins = [
@@ -23,7 +24,7 @@ class BranchNode(Node):
 
         self.input_pins = [
             NodeInput(pin_name='IF', pin_type='exec'),
-            NodeInput(pin_name='Condition', pin_class='bool', pin_color='#ff3300')
+            NodeInput(pin_name='Condition', pin_class=dtype.Bool)
         ]
 
         self.output_pins = [
@@ -45,15 +46,15 @@ class ForeachNode(Node):
 
     input_pins = [
         NodeInput(pin_type='exec'),
-        NodeInput(pin_name='start', pin_class='int', pin_color='#00ffee', pin_type='data'),
-        NodeInput(pin_name='end', pin_class='int', pin_color='#00ffee', pin_type='data'),
-        NodeInput(pin_name='arrays', pin_class='list', pin_color='#345678', pin_type='data')
+        NodeInput(pin_name='start', pin_class=dtype.Int, pin_type='data'),
+        NodeInput(pin_name='end', pin_class=dtype.Int, pin_type='data'),
+        NodeInput(pin_name='arrays', pin_class='list', pin_type='data', use_default_widget=False)
     ]
 
     output_pins = [
         NodeOutput(pin_name='Loop Body', pin_type='exec'),
-        NodeOutput(pin_name='index', pin_class='int', pin_color='#00ffee', pin_type='data'),
-        NodeOutput(pin_name='index', pin_class='int', pin_color='#00ffee', pin_type='data'),
+        NodeOutput(pin_name='index', pin_class=dtype.Int, pin_type='data'),
+        NodeOutput(pin_name='index', pin_class=dtype.Int, pin_type='data'),
         NodeOutput(pin_name='Completed', pin_type='exec')
     ]
 

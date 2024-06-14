@@ -5,7 +5,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout
 
 from env import Env
 from vg_node import GraphNode
-from vg_node_port import ParamPort, OutputPort
+from node.port import ParamPort, OutputPort
 from vg_scene import VisualGraphScene
 from vg_view import VisualGraphicsView
 
