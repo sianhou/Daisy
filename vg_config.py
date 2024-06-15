@@ -14,5 +14,15 @@ class EditorConfig:
     editor_node_pin_label_font = 'Consolas'
     editor_node_pin_label_font_size = 14
 
+
+class NodeConfig:
     # port
     port_icon_size = 20
+
+    node_title_back_color = {
+        'Basic Math': '#88df00',
+        'Branch': '#fa8b17',
+        'Control': '#ff5253',
+        'Loop': '#4e90fe',
+        'X2Y': '#00427f'
+    }

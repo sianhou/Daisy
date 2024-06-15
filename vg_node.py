@@ -6,7 +6,7 @@ from PySide6.QtGui import QPen, QColor, QBrush, QPainterPath, QFont
 from PySide6.QtWidgets import QGraphicsItem, QGraphicsTextItem, QGraphicsDropShadowEffect
 
 from node.port import NodePort
-from vg_config import EditorConfig
+from vg_config import NodeConfig, EditorConfig
 
 
 class GraphNode(QGraphicsItem):
@@ -20,33 +20,12 @@ class GraphNode(QGraphicsItem):
         self._connected_nodes = connected_nodes if connected_nodes is not None else []
         self._edges = edges if edges is not None else []
 
-        # 定义node大小
-        self._node_width = 100
-        self._node_height = 100
-        self._node_radius = 10
-        self._port_space = 60
-        self._node_width_min = 2 * self._node_radius
-        self._node_height_min = 40  # TODO(HOUSIAN): using self._title_height and self._node_radius to calculate a proper value
-
-        # 定义node边框
-        self._pen_default = QPen(QColor('#151515'))
-        self._pen_selected = QPen(QColor('#aaffee00'))
-        # node背景
-        self._brush_background = QBrush(QColor('#aa151515'))
-
         self.setFlags(
             QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemIsMovable | QGraphicsItem.ItemSendsGeometryChanges)
 
-        # 节点的title
-        self._title = title
-        # title的高度
-        self._title_height = 35
-        self._title_font_size = EditorConfig.editor_node_title_font_size
-        self._title_font = QFont(EditorConfig.editor_node_title_font, self._title_font_size)
-        self._title_color = Qt.white
-        self._title_padding = 5
-        self._brush_title_back = QBrush(QColor('#aa00002f'))
-        self.init_title()
+        self.setNode()
+        self.setupOutline()
+        self.setupTitle(title=title)
 
         # exec Port
         self._port_padding = 7
@@ -62,7 +41,7 @@ class GraphNode(QGraphicsItem):
         self._param_ports = param_ports
         self._output_ports = output_ports
 
-        self.init_node_height_and_width()
+        self.updateWidthHeight()
         self.init_ports()
 
         # if not is_pure:
@@ -72,9 +51,42 @@ class GraphNode(QGraphicsItem):
         self._shadow = QGraphicsDropShadowEffect()
         self._shadow.setOffset(0, 0)
         self._shadow.setBlurRadius(20)
-        self._shadow_color = QColor('#22eeee00')
+        self._shadow_color = QColor('#aaeeee00')
 
         # self.setZValue(0)
+
+    def setNode(self, width=100, height=35, min_height=40, min_width=8, port_space=60, radius=4,
+                background_color='#aa151515'):
+        self._node_width = width
+        self._node_height = height
+        self._node_radius = radius
+        self._node_port_space = port_space
+        self._node_width_min = min_width
+        self._node_height_min = min_height  # TODO(HOUSIAN): using self._title_height and self._node_radius to calculate a proper value
+        self._brush_background = QBrush(QColor(background_color))
+
+    def setupOutline(self, color='#4e90fe', color_selected='#aaffee00'):
+        self._pen_default = QPen(QColor(color))
+        self._pen_selected = QPen(QColor(color_selected))
+
+    def setupTitle(self, title="", height=35, font='Arial', font_size=16, color='#eeeeee', background_color='#aa4e90fe',
+                   padding=5):
+        self._title = title
+        self._title_height = height
+        self._title_font = QFont(font, font_size)
+        self._title_font_size = font_size
+        self._title_color = QColor(color)
+        self._title_padding = padding
+        self._title_background_brush = QBrush(QColor(background_color))
+
+        self._title_item = QGraphicsTextItem(self)
+        self._title_item.setPlainText(self._title)
+        self._title_item.setFont(self._title_font)
+        self._title_item.setDefaultTextColor(self._title_color)
+        self._title_item.setPos(self._title_padding, self._title_padding)
+        _width = self._title_font_size * len(self._title)
+        if self._node_width < _width:
+            self._node_width = _width
 
     def add_connected_node(self, node, edge):
         self._connected_nodes.append(node)
@@ -123,10 +135,10 @@ class GraphNode(QGraphicsItem):
     #     self.add_port(execin)
     #     self.add_port(execout)
 
-    def init_node_height_and_width(self):
+    def updateWidthHeight(self):
         # param_ports
         height = len(self._param_ports) * (
-                EditorConfig.port_icon_size + self._port_padding) + self._node_height_min
+                NodeConfig.port_icon_size + self._port_padding) + self._node_height_min
 
         if self._node_height < height:
             self._node_height = height
@@ -139,7 +151,7 @@ class GraphNode(QGraphicsItem):
 
         # output_ports
         height = len(self._output_ports) * (
-                EditorConfig.port_icon_size + self._port_padding) + self._node_height_min
+                NodeConfig.port_icon_size + self._port_padding) + self._node_height_min
 
         if self._node_height < height:
             self._node_height = height
@@ -150,8 +162,8 @@ class GraphNode(QGraphicsItem):
                 if self._max_output_port < port._port_width:
                     self._max_output_port = port._port_width
         # width
-        if self._node_width < self._max_param_port + self._max_output_port + self._port_space:
-            self._node_width = self._max_param_port + self._max_output_port + self._port_space
+        if self._node_width < self._max_param_port + self._max_output_port + self._node_port_space:
+            self._node_width = self._max_param_port + self._max_output_port + self._node_port_space
 
     def init_output_ports(self):
         if self._output_ports != None:
@@ -168,16 +180,6 @@ class GraphNode(QGraphicsItem):
         self.init_param_ports()
         # 输出
         self.init_output_ports()
-
-    def init_title(self):
-        self._title_item = QGraphicsTextItem(self)
-        self._title_item.setPlainText(self._title)
-        self._title_item.setFont(self._title_font)
-        self._title_item.setDefaultTextColor(self._title_color)
-        self._title_item.setPos(self._title_padding, self._title_padding)
-        width = self._title_font_size * len(self._title)
-        if self._node_width < width:
-            self._node_width = width
 
     def itemChange(self, change, value):
         if change == QGraphicsItem.ItemPositionChange:
@@ -213,7 +215,7 @@ class GraphNode(QGraphicsItem):
         title_outline.addRect(self._node_width - self._node_radius, self._title_height - self._node_radius,
                               self._node_radius, self._node_radius)
         painter.setPen(Qt.NoPen)
-        painter.setBrush(self._brush_title_back)
+        painter.setBrush(self._title_background_brush)
         painter.drawPath(title_outline.simplified())
 
         if not self.isSelected():
@@ -261,6 +263,15 @@ class Node(GraphNode):
         out_ports = [pin.init_port() for pin in self.output_pins]
         super().__init__(title=self.node_title, param_ports=in_ports, output_ports=out_ports, is_pure=True)
 
+        self.setNode()
+        color = NodeConfig.node_title_back_color.get(self.package_name, '#4e90fe')
+        self.setupOutline(color=color)
+
+        background_color = NodeConfig.node_title_back_color.get(self.package_name, '#4e90fe')
+        self.setupTitle(title=self.node_title, height=35, font=EditorConfig.editor_node_title_font,
+                        font_size=EditorConfig.editor_node_title_font_size, color='#eeeeee',
+                        background_color=background_color, padding=5)
+        self.updateWidthHeight()
         self._input_data_ready = False
         self._output_data_ready = False
 
