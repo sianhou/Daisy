@@ -2,7 +2,8 @@
 from abc import abstractmethod
 
 from PySide6.QtCore import QRectF, QPointF, Qt
-from PySide6.QtGui import QPen, QColor, QBrush, QFont, QPainter, QPainterPath, QPolygonF, QFontMetrics
+from PySide6.QtGui import QPen, QColor, QBrush, QFont, QPainter, QPainterPath, QPolygonF, QFontMetrics, QIntValidator, \
+    QDoubleValidator
 from PySide6.QtWidgets import QGraphicsItem, QGraphicsProxyWidget, QLineEdit, QCheckBox
 
 from core import dtype
@@ -233,6 +234,16 @@ class ParamPort(NodePort):
             Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter, self._port_label)
 
     def setupWidget(self):
+        # 设置输入数据类型
+        if self._port_class == dtype.Bool:
+            pass
+        elif self._port_class == dtype.Float:
+            self._default_widget.setValidator(QDoubleValidator())
+        elif self._port_class == dtype.Int:
+            self._default_widget.setValidator(QIntValidator())
+        elif self._port_class == dtype.String:
+            pass
+
         # 画widget
         if self._default_widget is not None:
             proxy = QGraphicsProxyWidget(parent=self)
