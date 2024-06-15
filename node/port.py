@@ -36,7 +36,7 @@ class NodePort(QGraphicsItem):
         self._port_font = QFont(EditorConfig.editor_node_pin_label_font, self._font_size)
         self._font_metrics = QFontMetrics(self._port_font)
 
-        self._port_icon_size = 20
+        self._port_icon_size = EditorConfig.port_icon_size
         # self._port_label_size = len(self._port_label) * self._font_size 这样计算是不准确的
         self._port_label_size = self._font_metrics.horizontalAdvance(self._port_label)
         self._port_width = self._port_icon_size + self._port_label_size

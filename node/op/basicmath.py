@@ -96,10 +96,14 @@ class GreaterNode(Node):
     ]
     output_pins = [
         NodeOutput(pin_name='isTrue', pin_class=dtype.Bool, pin_type='data'),
+        NodeOutput(pin_name='x', pin_class=dtype.Float, pin_type='data'),
+        NodeOutput(pin_name='y', pin_class=dtype.Float, pin_type='data'),
     ]
 
     def run(self):
         x = self.input_pins[0].getValue()
         y = self.input_pins[1].getValue()
-        z = 1 if x > y else 0
+        z = x > y
         self.output_pins[0].setValue(z)
+        self.output_pins[1].setValue(self.input_pins[0].getValue())
+        self.output_pins[2].setValue(self.input_pins[1].getValue())

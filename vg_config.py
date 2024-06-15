@@ -13,3 +13,6 @@ class EditorConfig:
     editor_node_title_font_size = 16
     editor_node_pin_label_font = 'Consolas'
     editor_node_pin_label_font_size = 14
+
+    # port
+    port_icon_size = 20

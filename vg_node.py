@@ -5,8 +5,8 @@ from PySide6.QtCore import QRectF, Qt
 from PySide6.QtGui import QPen, QColor, QBrush, QPainterPath, QFont
 from PySide6.QtWidgets import QGraphicsItem, QGraphicsTextItem, QGraphicsDropShadowEffect
 
-from vg_config import EditorConfig
 from node.port import NodePort
+from vg_config import EditorConfig
 
 
 class GraphNode(QGraphicsItem):
@@ -126,7 +126,7 @@ class GraphNode(QGraphicsItem):
     def init_node_height_and_width(self):
         # param_ports
         height = len(self._param_ports) * (
-                self._param_ports[0]._port_icon_size + self._port_padding) + self._node_height_min
+                EditorConfig.port_icon_size + self._port_padding) + self._node_height_min
 
         if self._node_height < height:
             self._node_height = height
@@ -139,7 +139,7 @@ class GraphNode(QGraphicsItem):
 
         # output_ports
         height = len(self._output_ports) * (
-                self._output_ports[0]._port_icon_size + self._port_padding) + self._node_height_min
+                EditorConfig.port_icon_size + self._port_padding) + self._node_height_min
 
         if self._node_height < height:
             self._node_height = height
@@ -276,7 +276,7 @@ class Node(GraphNode):
             print('Node title could note be Empty or None.')
             return False
 
-        if len(self.input_pins) == 0 or self.input_pins is None:
+        if self.input_pins is None:
             print('Node input pins could note be Empty or None.')
             return False
 
