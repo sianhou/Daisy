@@ -67,13 +67,17 @@ class NodeEdge(QGraphicsPathItem):
 
         path = QPainterPath(source_pos)
 
-        x_width = abs(target_pos.x() - source_pos.x()) + 1
+        x_width = source_pos.x() - target_pos.x()
+        x_width = x_width + 0.01 if x_width == 0 else x_width
         y_height = abs(target_pos.y() - source_pos.y())
 
-        tagnent = float(y_height) / float(x_width) * 0.5
-        tagnent = tagnent if tagnent < 1 else 1
-
+        tagnent = float(y_height) / x_width * 0.5
         tagnent *= x_width
+
+        if x_width > 0:
+            if x_width > 150:
+                x_width = 150
+            tagnent += x_width
 
         path.cubicTo(QPointF(source_pos.x() + tagnent, source_pos.y()),
                      QPointF(target_pos.x() - tagnent, target_pos.y()),
@@ -165,15 +169,18 @@ class DraggingEdge(QGraphicsPathItem):
 
         path = QPainterPath(source_pos)
 
-        x_width = abs(target_pos.x() - source_pos.x()) + 1
+        x_width = source_pos.x() - target_pos.x()
+        x_width = x_width + 0.01 if x_width == 0 else x_width
         y_height = abs(target_pos.y() - source_pos.y())
 
-        tagnent = float(y_height) / float(x_width) * 0.5
-        tagnent = tagnent if tagnent < 1 else 1
+        tagnent = float(y_height) / x_width * 0.5
 
         tagnent *= x_width
 
-        tagnent = tagnent if tagnent > 100 else 100
+        if x_width > 0:
+            if x_width > 150:
+                x_width = 150
+            tagnent += x_width
 
         path.cubicTo(QPointF(source_pos.x() + tagnent, source_pos.y()),
                      QPointF(target_pos.x() - tagnent, target_pos.y()),
