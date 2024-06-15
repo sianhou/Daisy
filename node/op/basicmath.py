@@ -1,11 +1,13 @@
 from core import dtype
-from vg_node import Node
 from node.port import NodeInput, NodeOutput
+from vg_node import Node
+
+pkg_name = 'Basic Math'
 
 
 class AddNode(Node):
-    package_name = 'Basic Operation'
-    node_title = 'Add'
+    package_name = pkg_name
+    node_title = 'add'
     node_description = 'z = x + y'
 
     input_pins = [
@@ -24,8 +26,8 @@ class AddNode(Node):
 
 
 class MinusNode(Node):
-    package_name = 'Basic Operation'
-    node_title = 'Minus'
+    package_name = pkg_name
+    node_title = 'minus'
     node_description = 'z = x - y'
 
     input_pins = [
@@ -44,8 +46,8 @@ class MinusNode(Node):
 
 
 class MultiplyNode(Node):
-    package_name = 'Basic Operation'
-    node_title = 'Multiply'
+    package_name = pkg_name
+    node_title = 'multiply'
     node_description = 'z = x * y'
 
     input_pins = [
@@ -64,8 +66,8 @@ class MultiplyNode(Node):
 
 
 class DivideNode(Node):
-    package_name = 'Basic Operation'
-    node_title = 'Divide'
+    package_name = pkg_name
+    node_title = 'divide'
     node_description = 'z = x / y'
 
     input_pins = [
@@ -84,8 +86,8 @@ class DivideNode(Node):
 
 
 class GreaterNode(Node):
-    package_name = 'Basic Dule'
-    node_title = 'Greater'
+    package_name = pkg_name
+    node_title = 'greater'
     node_description = 'x > y'
 
     input_pins = [

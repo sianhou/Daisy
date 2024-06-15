@@ -47,7 +47,6 @@ class NodePort(QGraphicsItem):
         # 传进来的default_widget参数是一个类，这里声明实例
         self._default_widget = None
         if default_widget is not None:
-            print(default_widget)
             self._default_widget = default_widget()
             if isinstance(self._default_widget, QLineEdit):
                 self._default_widget.setTextMargins(0, 0, 0, 0)
@@ -55,10 +54,10 @@ class NodePort(QGraphicsItem):
 
                 self._port_width += 25
             elif isinstance(self._default_widget, QCheckBox):
-                self._default_widget.setFixedSize(20, 20)
-                self._default_widget.setStyleSheet(
-                    'QCheckBox::indicator {border: 0px;width: 20px;height: 20px; background:none;}'
-                )
+                # self._default_widget.setFixedSize(20, 20)
+                # self._default_widget.setStyleSheet(
+                #     'QCheckBox {border: 0px;width: 10px;height: 10px; background:none;}'
+                # )
                 pass
 
     def add_edge(self, edge, port):
@@ -212,11 +211,18 @@ class ParamPort(NodePort):
             painter.setBrush(Qt.NoBrush)
             painter.drawEllipse(QPointF(0.25 * self._port_icon_size, 0.5 * self._port_icon_size),
                                 0.25 * self._port_icon_size, 0.25 * self._port_icon_size)
+
+            # 当节点没有连接时，显示default-widget
+            if self._default_widget is not None:
+                self._default_widget.setVisible(True)
         else:
             painter.setPen(Qt.NoPen)
             painter.setBrush(self._brush_default)
             painter.drawEllipse(QPointF(0.25 * self._port_icon_size, 0.5 * self._port_icon_size),
                                 0.25 * self._port_icon_size, 0.25 * self._port_icon_size)
+            # 当节点有连接时，显示default-widget
+            if self._default_widget is not None:
+                self._default_widget.setVisible(False)
 
         painter.setPen(Qt.NoPen)
         painter.setBrush(self._brush_default)
