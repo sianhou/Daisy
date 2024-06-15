@@ -24,7 +24,7 @@ class GraphNode(QGraphicsItem):
         self._node_width = 100
         self._node_height = 100
         self._node_radius = 10
-        self._port_space = 10
+        self._port_space = 60
         self._node_width_min = 2 * self._node_radius
         self._node_height_min = 40  # TODO(HOUSIAN): using self._title_height and self._node_radius to calculate a proper value
 

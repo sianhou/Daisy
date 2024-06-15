@@ -86,14 +86,14 @@ class DivideNode(Node):
 class GreaterNode(Node):
     package_name = 'Basic Dule'
     node_title = 'Greater'
-    node_description = 'z = 1 if x > y else 0'
+    node_description = 'x > y'
 
     input_pins = [
         NodeInput(pin_name='x', pin_class=dtype.Float, pin_type='data'),
         NodeInput(pin_name='y', pin_class=dtype.Float, pin_type='data'),
     ]
     output_pins = [
-        NodeOutput(pin_name='z', pin_class=dtype.Bool, pin_type='data'),
+        NodeOutput(pin_name='isTrue', pin_class=dtype.Bool, pin_type='data'),
     ]
 
     def run(self):

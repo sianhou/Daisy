@@ -2,7 +2,7 @@
 from abc import abstractmethod
 
 from PySide6.QtCore import QRectF, QPointF, Qt
-from PySide6.QtGui import QPen, QColor, QBrush, QFont, QPainter, QPainterPath, QPolygonF
+from PySide6.QtGui import QPen, QColor, QBrush, QFont, QPainter, QPainterPath, QPolygonF, QFontMetrics
 from PySide6.QtWidgets import QGraphicsItem, QGraphicsProxyWidget, QLineEdit, QCheckBox
 
 from core import dtype
@@ -33,9 +33,11 @@ class NodePort(QGraphicsItem):
         self._brush_default = QBrush(QColor(self._port_color))
         self._font_size = EditorConfig.editor_node_pin_label_font_size
         self._port_font = QFont(EditorConfig.editor_node_pin_label_font, self._font_size)
+        self._font_metrics = QFontMetrics(self._port_font)
 
         self._port_icon_size = 20
-        self._port_label_size = len(self._port_label) * self._font_size
+        # self._port_label_size = len(self._port_label) * self._font_size 这样计算是不准确的
+        self._port_label_size = self._font_metrics.horizontalAdvance(self._port_label)
         self._port_width = self._port_icon_size + self._port_label_size
 
         # widget
@@ -47,9 +49,16 @@ class NodePort(QGraphicsItem):
             print(default_widget)
             self._default_widget = default_widget()
             if isinstance(self._default_widget, QLineEdit):
-                self._default_widget.setMaxLength(20)
-            # elif isinstance(self._default_widget, QCheckBox):
-            #     self._default_widget.setChecked(True)
+                self._default_widget.setTextMargins(0, 0, 0, 0)
+                self._default_widget.setFixedWidth(30)
+
+                self._port_width += 25
+            elif isinstance(self._default_widget, QCheckBox):
+                self._default_widget.setFixedSize(20, 20)
+                self._default_widget.setStyleSheet(
+                    'QCheckBox::indicator {border: 0px;width: 20px;height: 20px; background:none;}'
+                )
+                pass
 
     def add_edge(self, edge, port):
         self.conditioned_remove_edge()
@@ -228,7 +237,7 @@ class ParamPort(NodePort):
         if self._default_widget is not None:
             proxy = QGraphicsProxyWidget(parent=self)
             proxy.setWidget(self._default_widget)
-            proxy.setPos(self._port_icon_size + self._port_label_size, 0)
+            proxy.setPos(self._port_icon_size + self._port_label_size + 10, 0)
 
 
 class OutputPort(NodePort):
