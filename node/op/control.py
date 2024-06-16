@@ -31,4 +31,7 @@ class PrintNode(Node):
 
     def run(self):
         # print('test value')
-        print(self.input_pins[1].getValue())
+        # print(self.input_pins[1].getValue())
+        print(self.input(1))
+        # self.output(1, self.input(1))
+        self.run_output(0)

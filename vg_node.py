@@ -5,6 +5,7 @@ from PySide6.QtCore import QRectF, Qt
 from PySide6.QtGui import QPen, QColor, QBrush, QPainterPath, QFont
 from PySide6.QtWidgets import QGraphicsItem, QGraphicsTextItem, QGraphicsDropShadowEffect
 
+from core import dtype
 from node.port import NodePort
 from vg_config import NodeConfig, EditorConfig
 
@@ -280,7 +281,35 @@ class Node(GraphNode):
 
     # 通过index获取一个pin的值如果pin的值为空，需要通过递归获取关联port的值
     def input(self, index):
-        pass
+        pin = self.input_pins[index]
+
+        if pin.has_set_value:
+            return pin.getValue()
+
+        # 判断当前pin是否是可以获取数据的
+        if not pin._pin_type == 'data':
+            # TODO(housian): logging
+            print('Node: ', self.node_title, ', index: ', index, ' is not data port.')
+            return
+        # 一种带有widget 且widget可见
+        pin_value = pin.getPort().getDefaultValue()
+        if pin_value is not None:
+            if pin._pin_class == dtype.Int:
+                pin.setValue(int(pin_value))
+            elif pin._pin_class == dtype.Float:
+                pin.setValue(float(pin_value))
+            elif pin._pin_class == dtype.Bool:
+                pin.setValue(bool(pin_value))
+            elif pin._pin_class == dtype.String:
+                pin.setValue(pin_value)
+            else:
+                # TODO(housian)
+                pass
+            pin._has_set_value = True
+        else:
+            # TODO(housian)
+            pass
+        # 一种不带有widget
 
     def is_validate(self):
         if self.node_title == '' or self.node_title is None:
@@ -297,8 +326,14 @@ class Node(GraphNode):
         return True
 
     # 通过index设置一个pin的输出值，到下一个相连节点的port
-    def output(self, index):
-        pass
+    def output(self, index, value):
+        pin = self.output_pins[index]
+        if not pin._pin_type == 'data':
+            # TODO(housian): logging
+            print('Node: ', self.node_title, ', index: ', index, ' is not data port.')
+            return None
+
+        pin.setValue(value)
 
     @abstractmethod
     def runSelf(self):
@@ -324,6 +359,7 @@ class Node(GraphNode):
         if not pin._pin_type == 'exec':
             # TODO(housian): logging
             print('Node: ', self.node_title, ', index: ', index, ' is not exec port.')
+            return
 
         # 如果当前pin是可以自行的，获得当前pin对应的node
         ports = pin.getPort().getConnectedPorts()

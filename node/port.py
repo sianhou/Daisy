@@ -62,6 +62,15 @@ class NodePort(QGraphicsItem):
 
         self._parent_node = None
 
+    def getDefaultValue(self):
+        if self._default_widget is None or not self._default_widget.isVisible():
+            return None
+        else:
+            if isinstance(self._default_widget, QLineEdit):
+                return self._default_widget.text()
+            elif isinstance(self._default_widget, QCheckBox):
+                return self._default_widget.isChecked()
+
     def getConnectedPorts(self):
         return self._connected_ports
 
