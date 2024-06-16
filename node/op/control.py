@@ -30,4 +30,5 @@ class PrintNode(Node):
                    NodeOutput(pin_name='str', pin_class=dtype.String)]
 
     def run(self):
-        print(self.input_pins[0].getValue())
+        # print('test value')
+        print(self.input_pins[1].getValue())

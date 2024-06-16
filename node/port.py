@@ -60,6 +60,8 @@ class NodePort(QGraphicsItem):
                 # )
                 pass
 
+        self._parent_node = None
+
     def getConnectedPorts(self):
         return self._connected_ports
 
@@ -75,6 +77,9 @@ class NodePort(QGraphicsItem):
         self.setParentItem(parent_node)
         self._parent_node = parent_node
         self._scene = scene
+
+    def getParentNode(self):
+        return self._parent_node
 
     def boundingRect(self) -> QRectF:
         return QRectF(0, 0, self._port_width, self._port_icon_size)

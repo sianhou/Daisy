@@ -328,4 +328,6 @@ class Node(GraphNode):
         # 如果当前pin是可以自行的，获得当前pin对应的node
         ports = pin.getPort().getConnectedPorts()
         print(ports)
-        pass
+        for port in ports:
+            parent_node = port.getParentNode()
+            parent_node.run()
