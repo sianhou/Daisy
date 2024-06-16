@@ -19,7 +19,7 @@ class NodeEdge(QGraphicsPathItem):
         self._pen_default = QPen(QColor(self._edge_color))
         self._pen_default.setWidthF(2)
 
-        self.setZValue(0.5)
+        self.setZValue(-1)
 
         # 选中投影
         self._shadow = QGraphicsDropShadowEffect()

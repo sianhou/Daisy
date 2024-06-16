@@ -60,6 +60,9 @@ class NodePort(QGraphicsItem):
                 # )
                 pass
 
+    def getConnectedPorts(self):
+        return self._connected_ports
+
     def add_edge(self, edge, port):
         self.conditioned_remove_edge()
         self._parent_node.add_connected_node(port._parent_node, edge)
@@ -313,6 +316,8 @@ class Pin:
         self.current_session = -1
         self.has_set_value = False
 
+        self.port: NodePort = None
+
         # init value, 初始化为None或相应class的默认值
         # TODO(housian) 以后要创建一个字典
         self.value = None
@@ -320,6 +325,9 @@ class Pin:
         # 不能在这里进行初始化，这里的变量在register都会被调用，会出现在application之前初始化widget的错误
         # 实际的初始化变量在双击鼠标时调用node（）进行初始化
         # self.init_port()
+
+    def getPort(self):
+        return self.port
 
     def getValue(self):
         return self.value

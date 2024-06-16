@@ -1,6 +1,6 @@
+from PySide6.QtCore import QPointF
 from PySide6.QtGui import Qt
 from PySide6.QtWidgets import QTreeWidget, QTreeWidgetItem
-from PySide6.QtCore import QPointF
 
 
 class NodeListWidget(QTreeWidget):
@@ -39,7 +39,7 @@ class NodeListWidget(QTreeWidget):
         if isinstance(item, QTreeWidgetItem):
             cls = item.data(column, Qt.UserRole)
             if cls is not None:
-                self._view.addGraphNode(cls, self._pos)
+                self._view.addNodeWithClass(cls, [self._pos.x(), self._pos.y()])
                 self.hide()
                 # print(item.data(0, Qt.UserRole))
 

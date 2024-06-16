@@ -4,8 +4,8 @@ from PySide6.QtGui import QMouseEvent
 from PySide6.QtWidgets import QWidget, QVBoxLayout
 
 from env import Env
-from vg_node import GraphNode
 from node.port import ParamPort, OutputPort
+from vg_node import GraphNode
 from vg_scene import VisualGraphScene
 from vg_view import VisualGraphicsView
 
@@ -20,10 +20,10 @@ class VisualGraphEditor(QWidget):
     def debug_add_custom_node(self, pos):
         # node = BranchNode()
         node = Env.getRegisteredNode()[0]()
-        self.view.add_graph_node(node, [pos[0], pos[1]])
+        self.view.addNode(node, [pos[0], pos[1]])
 
         node = Env.getRegisteredNode()[1]()
-        self.view.add_graph_node(node, [pos[0] + 100, pos[1] + 100])
+        self.view.addNode(node, [pos[0] + 100, pos[1] + 100])
 
     def debug_add_node(self, pos=[0, 0]):
 
@@ -39,7 +39,7 @@ class VisualGraphEditor(QWidget):
         # 创建一个port
         node2 = GraphNode(title="Area", param_ports=params, output_ports=outputs, is_pure=False)
 
-        self.view.add_graph_node(node2, [pos[0], pos[1]])
+        self.view.addNode(node2, [pos[0], pos[1]])
 
         # self.view.add_node_edge(outputs[0], params2[0])
 

@@ -301,9 +301,31 @@ class Node(GraphNode):
         pass
 
     @abstractmethod
+    def runSelf(self):
+        pass
+
+    def runNext(self):
+        for pin in self.output_pins:
+            if pin._pin_type == 'exec':
+                pass
+
+    @abstractmethod
     def run(self):
         pass
 
     @abstractmethod
     def setup(self):
+        pass
+
+    def run_output(self, index):
+        pin = self.output_pins[index]
+
+        # 判断当前pin是否是可以执行的
+        if not pin._pin_type == 'exec':
+            # TODO(housian): logging
+            print('Node: ', self.node_title, ', index: ', index, ' is not exec port.')
+
+        # 如果当前pin是可以自行的，获得当前pin对应的node
+        ports = pin.getPort().getConnectedPorts()
+        print(ports)
         pass

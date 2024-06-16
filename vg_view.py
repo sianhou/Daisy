@@ -2,17 +2,19 @@
 '''
 QGraphicsView class
 '''
-from PySide6.QtWidgets import QApplication, QGraphicsProxyWidget
+
 from PySide6 import QtGui
 from PySide6.QtCore import QEvent
 from PySide6.QtGui import QPainter, QMouseEvent, Qt
+from PySide6.QtWidgets import QApplication, QGraphicsProxyWidget
 from PySide6.QtWidgets import QGraphicsView
 
+from MouseBtnWidget import NodeListWidget
 from env import Env
+from node.op.control import BeginNode
+from node.port import NodePort
 from vg_edge import NodeEdge, DraggingEdge, CuttingLine
 from vg_node import GraphNode
-from node.port import NodePort
-from MouseBtnWidget import NodeListWidget
 
 
 class VisualGraphicsView(QGraphicsView):
@@ -20,6 +22,8 @@ class VisualGraphicsView(QGraphicsView):
         super(VisualGraphicsView, self).__init__(parent)
         self._nodes = []
         self._edges = []
+        self._begin_node = None
+        self._has_begin_node = False
 
         self._scene = scene
         self.setScene(self._scene)
@@ -54,18 +58,29 @@ class VisualGraphicsView(QGraphicsView):
         # Node List Widget
         self.setupNodeListWidget()
 
-    def add_graph_node(self, node: GraphNode, pos=[0, 0]):
+    def addNode(self, node: GraphNode, pos=[0, 0]):
+
+        if isinstance(node, BeginNode):
+            if self._has_begin_node:
+                # TODO(housian): using logging
+                print('View -- Add Graph Debug: BeginNode already exists.')
+                return
+            else:
+                self._begin_node = node
+                self._has_begin_node = True
+
         self._scene.addItem(node)
         node.set_scene(self._scene)
         node.setPos(pos[0], pos[1])
         self._nodes.append(node)
 
-    def addGraphNode(self, cls, pos):
+    def addNodeWithClass(self, cls, pos):
         node = cls()
-        self._scene.addItem(node)
-        node.set_scene(self._scene)
-        node.setPos(pos.x(), pos.y())
-        self._nodes.append(node)
+        self.addNode(node, pos)
+        # self._scene.addItem(node)
+        # node.set_scene(self._scene)
+        # node.setPos(pos.x(), pos.y())
+        # self._nodes.append(node)
 
     def add_node_edge(self, source_node, target_node):
         edge = NodeEdge(source_node, target_node, scene=self._scene)
@@ -90,6 +105,9 @@ class VisualGraphicsView(QGraphicsView):
         # TODO(housian), 如果不在remove_self()后面增加item.update()，会在显示上残留最后一个node
         for item in self._scene.selectedItems():
             if isinstance(item, GraphNode):
+                if isinstance(item, BeginNode):
+                    self._has_begin_node = False
+                    self._begin_node = None
                 item.remove_self()
                 item.update()
             elif isinstance(item, NodeEdge):
@@ -102,6 +120,9 @@ class VisualGraphicsView(QGraphicsView):
     def keyReleaseEvent(self, event: QtGui.QKeyEvent) -> None:
         if event.key() == Qt.Key_Delete or event.key() == Qt.Key_X:
             self.delete_selected_items()
+        elif event.key() == Qt.Key_R and event.modifiers() == Qt.ControlModifier:
+            self.runGraph()
+
         else:
             super().keyReleaseEvent(event)
 
@@ -266,10 +287,22 @@ class VisualGraphicsView(QGraphicsView):
                 zoom_factor = 1.0 / self._zoom_factor
 
             self._view_scale *= zoom_factor
-            print(self._view_scale)
             if self._view_scale < self._zoom_clamp[0] or self._view_scale > self._zoom_clamp[1]:
                 zoom_factor = 1.0
                 self._view_scale = self._last_scale
 
             self._last_scale = self._view_scale
             self.scale(self._view_scale, self._last_scale)
+
+    def runGraph(self):
+        # TODO(housian): using pythong.logging in the future
+        print("============== run graph  ==============")
+
+        # step1 在node里面找到beginnode
+        # 如果没有begin node，提示添加begin node
+        if not self._has_begin_node:
+            print('View -- Graph needs a begin nodes.')
+            return
+
+        # step2 找到begin node，并开始执行
+        self._begin_node.run()

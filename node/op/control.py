@@ -16,7 +16,7 @@ class BeginNode(Node):
     ]
 
     def run(self):
-        pass
+        self.run_output(0)
 
 
 class PrintNode(Node):
