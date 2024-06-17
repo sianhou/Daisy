@@ -19,10 +19,10 @@ class AddNode(Node):
     ]
 
     def run(self):
-        x = self.input_pins[0].getValue()
-        y = self.input_pins[1].getValue()
+        x = self.input(1)
+        y = self.input(2)
         z = x + y
-        self.output_pins[0].setValue(z)
+        self.output(1, z)
 
 
 class MinusNode(Node):
@@ -39,10 +39,10 @@ class MinusNode(Node):
     ]
 
     def run(self):
-        x = self.input_pins[0].getValue()
-        y = self.input_pins[1].getValue()
+        x = self.input(1)
+        y = self.input(2)
         z = x - y
-        self.output_pins[0].setValue(z)
+        self.output(1, z)
 
 
 class MultiplyNode(Node):
@@ -59,10 +59,10 @@ class MultiplyNode(Node):
     ]
 
     def run(self):
-        x = self.input_pins[0].getValue()
-        y = self.input_pins[1].getValue()
+        x = self.input(1)
+        y = self.input(2)
         z = x * y
-        self.output_pins[0].setValue(z)
+        self.output(1, z)
 
 
 class DivideNode(Node):
@@ -79,10 +79,10 @@ class DivideNode(Node):
     ]
 
     def run(self):
-        x = self.input_pins[0].getValue()
-        y = self.input_pins[1].getValue()
+        x = self.input(1)
+        y = self.input(2)
         z = x / y
-        self.output_pins[0].setValue(z)
+        self.output(1, z)
 
 
 class GreaterNode(Node):
@@ -101,9 +101,9 @@ class GreaterNode(Node):
     ]
 
     def run(self):
-        x = self.input_pins[0].getValue()
-        y = self.input_pins[1].getValue()
+        x = self.input(1)
+        y = self.input(2)
         z = x > y
-        self.output_pins[0].setValue(z)
-        self.output_pins[1].setValue(self.input_pins[0].getValue())
-        self.output_pins[2].setValue(self.input_pins[1].getValue())
+        self.output(1, z)
+        # self.output_pins[1].setValue(self.input_pins[0].getValue())
+        # self.output_pins[2].setValue(self.input_pins[1].getValue())
