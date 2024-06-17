@@ -62,14 +62,39 @@ class NodePort(QGraphicsItem):
 
         self._parent_node = None
 
+        self._value = None
+        self._have_value_set = False
+
+    def setValue(self, value):
+        self._value = value
+        self._have_value_set = True
+
+    def getValue(self):
+        return self._value
+
     def getDefaultValue(self):
         if self._default_widget is None or not self._default_widget.isVisible():
-            return None
+            self._value = None
+            self._have_value_set = False
         else:
             if isinstance(self._default_widget, QLineEdit):
-                return self._default_widget.text()
+                temp_value = self._default_widget.text()
             elif isinstance(self._default_widget, QCheckBox):
-                return self._default_widget.isChecked()
+                temp_value = self._default_widget.isChecked()
+
+            if self._port_class == dtype.Int:
+                self.setValue(int(temp_value))
+            elif self._port_class == dtype.Float:
+                self.setValue(float(temp_value))
+            elif self._port_class == dtype.Bool:
+                self.setValue(bool(temp_value))
+            elif self._port_class == dtype.String:
+                self.setValue(str(temp_value))
+            else:
+                # TODO(housian)
+                pass
+
+        return self._value
 
     def getConnectedPorts(self):
         return self._connected_ports
@@ -340,23 +365,23 @@ class Pin:
         # 实际的初始化变量在双击鼠标时调用node（）进行初始化
         # self.init_port()
 
-    def getPort(self):
-        return self.port
-
-    def getValue(self):
-        return self.value
+    # def getPort(self):
+    #     return self.port
+    #
+    # def getValue(self):
+    #     return self.value
 
     @abstractmethod
     def init_port(self):
         pass
 
-    def setSession(self, session):
-        self.current_session = session
-        self.has_set_value = False
-
-    def setValue(self, value):
-        self.value = value
-        self.has_set_value = True
+    # def setSession(self, session):
+    #     self.current_session = session
+    #     self.has_set_value = False
+    #
+    # def setValue(self, value):
+    #     self.value = value
+    #     self.has_set_value = True
 
 
 class NodeInput(Pin):
