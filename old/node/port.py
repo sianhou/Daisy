@@ -6,8 +6,8 @@ from PySide6.QtGui import QPen, QColor, QBrush, QFont, QPainter, QPainterPath, Q
     QDoubleValidator
 from PySide6.QtWidgets import QGraphicsItem, QGraphicsProxyWidget, QLineEdit, QCheckBox
 
-from core import dtype
-from vg_config import EditorConfig, NodeConfig
+from old.core import dtype
+from old.vg_config import EditorConfig, NodeConfig
 
 
 class NodePort(QGraphicsItem):
@@ -41,7 +41,7 @@ class NodePort(QGraphicsItem):
         self._port_label_size = self._font_metrics.horizontalAdvance(self._port_label)
         self._port_width = self._port_icon_size + self._port_label_size
 
-        # widget
+        # base
         # 只有param port才有
         # 只有default != None
         # 传进来的default_widget参数是一个类，这里声明实例
@@ -254,7 +254,7 @@ class ParamPort(NodePort):
             painter.drawEllipse(QPointF(0.25 * self._port_icon_size, 0.5 * self._port_icon_size),
                                 0.25 * self._port_icon_size, 0.25 * self._port_icon_size)
 
-            # 当节点没有连接时，显示default-widget
+            # 当节点没有连接时，显示default-base
             if self._default_widget is not None:
                 self._default_widget.setVisible(True)
         else:
@@ -262,7 +262,7 @@ class ParamPort(NodePort):
             painter.setBrush(self._brush_default)
             painter.drawEllipse(QPointF(0.25 * self._port_icon_size, 0.5 * self._port_icon_size),
                                 0.25 * self._port_icon_size, 0.25 * self._port_icon_size)
-            # 当节点有连接时，显示default-widget
+            # 当节点有连接时，显示default-base
             if self._default_widget is not None:
                 self._default_widget.setVisible(False)
 

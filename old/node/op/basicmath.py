@@ -1,6 +1,6 @@
-from core import dtype
-from node.port import NodeInput, NodeOutput
-from vg_node import Node
+from old.core import dtype
+from old.node.port import NodeInput, NodeOutput
+from old.vg_node import Node
 
 pkg_name = 'Basic Math'
 
