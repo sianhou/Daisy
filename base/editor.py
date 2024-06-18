@@ -1,6 +1,7 @@
 from PySide6 import QtWidgets
 from PySide6.QtWidgets import QVBoxLayout
 
+from base.node import DeepNetworkNode
 from base.scene import EditorScene
 from base.view import EditorView
 
@@ -24,3 +25,10 @@ class NodeEditor(QtWidgets.QWidget):
         self.layout.addWidget(self._view)
 
         self.show()
+
+        self.addDebugNode()
+
+    def addDebugNode(self):
+        node = DeepNetworkNode()
+        node.setTitle("Test title")
+        self._view.addNode(node)

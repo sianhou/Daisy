@@ -8,9 +8,16 @@ class EditorScene:
     grid_chunk = 10
     width = 32000
     height = 32000
-    
+
     # font
     editor_node_title_font = 'Arial'
     editor_node_title_font_size = 16
     editor_node_pin_label_font = 'Consolas'
     editor_node_pin_label_font_size = 14
+
+
+class NodeBase:
+    title_font = 'Arial'
+    title_font_size = 16
+    subtitle_font = 'Arial'
+    subtitle_font_size = 14
