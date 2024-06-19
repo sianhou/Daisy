@@ -1,9 +1,10 @@
 from PySide6 import QtWidgets
 from PySide6.QtWidgets import QVBoxLayout
 
-from base.node import DeepNetworkNode
+from base.port import InputPort, OutputPort
 from base.scene import EditorScene
 from base.view import EditorView
+from dlpkg.dlnode import DeepLearningNode
 
 
 class NodeEditor(QtWidgets.QWidget):
@@ -29,6 +30,33 @@ class NodeEditor(QtWidgets.QWidget):
         self.addDebugNode()
 
     def addDebugNode(self):
-        node = DeepNetworkNode()
-        node.setTitle("Test title")
-        self._view.addNode(node)
+        node0 = DeepLearningNode()
+        node0.setTitle("Test node0")
+
+        input0 = InputPort()
+        input1 = InputPort()
+        input2 = InputPort()
+        node0.addInputPortList([input0, input1, input2])
+
+        output0 = OutputPort()
+        output1 = OutputPort()
+        output2 = OutputPort()
+        output3 = OutputPort()
+        node0.addOutputPortList([output0, output1, output2, output3])
+
+        node1 = DeepLearningNode()
+        node1.setTitle("Test node1")
+
+        input0 = InputPort()
+        input1 = InputPort()
+        input2 = InputPort()
+        node1.addInputPortList([input0, input1, input2])
+
+        output0 = OutputPort()
+        output1 = OutputPort()
+        output2 = OutputPort()
+        output3 = OutputPort()
+        node1.addOutputPortList([output0, output1, output2, output3])
+
+        self._view.addNode(node0)
+        self._view.addNode(node1)
