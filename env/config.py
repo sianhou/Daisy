@@ -1,4 +1,4 @@
-class EditorScene:
+class EditorSceneConfig:
     background_color = '#212121'
     grid_normal_line_color = '#313131'
     grid_dark_line_color = '#151515'
