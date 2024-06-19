@@ -59,5 +59,5 @@ class NodeEditor(QtWidgets.QWidget):
         node1.addOutputPortList([output0, output1, output2, output3])
 
         self._view.addNode(node0)
-        self._view.addNode(node1)
+        self._view.addNode(node1, pos=[200, 200])
         self._view.addEdge(node0._output_ports[0], node1._input_ports[0])

@@ -51,9 +51,30 @@ class NodeBase(QGraphicsItem):
         y = round(y / EditorSceneConfig.grid_size) * EditorSceneConfig.grid_size
         return (x, y)
 
+    def updateInputEdge(self):
+        if len(self._input_ports) > 0:
+            for input_port in self._input_ports:
+                if len(input_port._edges) > 0:
+                    for edge in input_port._edges:
+                        edge.update()
+
+    def updateOutputEdge(self):
+        if len(self._output_ports) > 0:
+            for output_port in self._output_ports:
+                if len(output_port._edges) > 0:
+                    for edge in output_port._edges:
+                        edge.update()
+
     def itemChange(self, change, value):
         if change == QGraphicsItem.ItemPositionHasChanged:
             x, y = value.x(), value.y()
             (x, y) = self.snapToNearestGrid(pos=(value.x(), value.y()))
             self.setPos(x, y)
+
+            # update edge in inputports
+            self.updateInputEdge()
+
+            # update edge in outputports
+            self.updateOutputEdge()
+
         return super().itemChange(change, value)

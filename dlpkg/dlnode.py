@@ -18,11 +18,11 @@ class DeepLearningNode(NodeBase):
 
     def addInputPortList(self, port_list: [InputPort] = None):
         if len(port_list) != 0:
-            total_width = (len(port_list) - 1) * (self._port_space + 2 * port_list[0]._port_size)
-            x = self.getShape()[0] / 2 - total_width / 2
-            y = 0
+            total_width = (len(port_list) - 1) * (self._port_space + port_list[0]._port_size)
+            x = self.getShape()[0] / 2 - total_width / 2 - port_list[0]._port_radius
+            y = 0 - port_list[0]._port_radius
             for i, port in enumerate(port_list):
-                self.addInputPort(port=port, pos=[x + i * (self._port_space + 2 * port_list[0]._port_size), y])
+                self.addInputPort(port=port, pos=[x + i * (self._port_space + port_list[0]._port_size), y])
         else:
             # TODO(housian): debug
             pass
@@ -34,11 +34,11 @@ class DeepLearningNode(NodeBase):
 
     def addOutputPortList(self, port_list: [OutputPort] = None):
         if len(port_list) != 0:
-            total_width = (len(port_list) - 1) * (self._port_space + 2 * port_list[0]._port_size)
-            x = self.getShape()[0] / 2 - total_width / 2
-            y = self.getShape()[1]
+            total_width = (len(port_list) - 1) * (self._port_space + port_list[0]._port_size)
+            x = self.getShape()[0] / 2 - total_width / 2 - port_list[0]._port_radius
+            y = self.getShape()[1] - port_list[0]._port_radius
             for i, port in enumerate(port_list):
-                self.addOutputPort(port=port, pos=[x + i * (self._port_space + 2 * port_list[0]._port_size), y])
+                self.addOutputPort(port=port, pos=[x + i * (self._port_space + port_list[0]._port_size), y])
         else:
             # TODO(housian): debug
             pass
