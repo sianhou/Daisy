@@ -1,4 +1,4 @@
-class EditorScene:
+class EditorSceneConfig:
     background_color = '#212121'
     grid_normal_line_color = '#313131'
     grid_dark_line_color = '#151515'
@@ -16,7 +16,7 @@ class EditorScene:
     editor_node_pin_label_font_size = 14
 
 
-class NodeBase:
+class NodeBaseConfig:
     title_font = 'Arial'
     title_font_size = 16
     subtitle_font = 'Arial'

@@ -2,7 +2,7 @@ from PySide6.QtCore import QRectF, QPointF
 from PySide6.QtGui import QPainter, QPen, QColor, QBrush
 from PySide6.QtWidgets import QGraphicsItem
 
-from env.config import EditorScene
+from env.config import EditorSceneConfig
 
 
 class PortBase(QGraphicsItem):
@@ -12,7 +12,7 @@ class PortBase(QGraphicsItem):
         self._port_size = port_size
         self._default_pen = QPen(QColor(self._port_color))
         self._default_pen.setWidthF(2)
-        self._default_brush = QBrush(QColor(EditorScene.background_color))
+        self._default_brush = QBrush(QColor(EditorSceneConfig.background_color))
 
         self._edges = []
 
@@ -22,18 +22,18 @@ class PortBase(QGraphicsItem):
 
     # override QT function
     def boundingRect(self) -> QRectF:
-        return QRectF(0, 0, self._port_size, self._port_size)
+        return QRectF(0, 0, self._port_size * 2, self._port_size * 2)
 
     def paint(self, painter: QPainter, option, widget) -> None:
         if len(self._edges) == 0:
             painter.setPen(self._default_pen)
             painter.setBrush(self._default_brush)
-            painter.drawEllipse(QPointF(0, 0),
+            painter.drawEllipse(QPointF(self._port_size, self._port_size),
                                 self._port_size, self._port_size)
         else:
             painter.setPen(self._default_pen)
             painter.setBrush(QBrush(QColor(self._port_color)))
-            painter.drawEllipse(QPointF(0, 0),
+            painter.drawEllipse(QPointF(self._port_size, self._port_size),
                                 self._port_size, self._port_size)
 
     def addEdge(self, edge):

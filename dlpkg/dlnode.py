@@ -19,8 +19,8 @@ class DeepLearningNode(NodeBase):
     def addInputPortList(self, port_list: [InputPort] = None):
         if len(port_list) != 0:
             total_width = (len(port_list) - 1) * (self._port_space + 2 * port_list[0]._port_size)
-            x = self.getShape()[0] / 2 - total_width / 2
-            y = 0
+            x = self.getShape()[0] / 2 - total_width / 2 - port_list[0]._port_size
+            y = 0 - port_list[0]._port_size
             for i, port in enumerate(port_list):
                 self.addInputPort(port=port, pos=[x + i * (self._port_space + 2 * port_list[0]._port_size), y])
         else:
@@ -35,8 +35,8 @@ class DeepLearningNode(NodeBase):
     def addOutputPortList(self, port_list: [OutputPort] = None):
         if len(port_list) != 0:
             total_width = (len(port_list) - 1) * (self._port_space + 2 * port_list[0]._port_size)
-            x = self.getShape()[0] / 2 - total_width / 2
-            y = self.getShape()[1]
+            x = self.getShape()[0] / 2 - total_width / 2 - port_list[0]._port_size
+            y = self.getShape()[1] - port_list[0]._port_size
             for i, port in enumerate(port_list):
                 self.addOutputPort(port=port, pos=[x + i * (self._port_space + 2 * port_list[0]._port_size), y])
         else:
@@ -57,6 +57,7 @@ class DeepLearningNode(NodeBase):
 
     def setup(self, width=200, height=40, radius=4, background_color='#aa151515', outline_color='#a1a1a1',
               outline_selected_color='#aaffee00', icon_padding=5, icon_color='#88df00'):
+
         # body
         self._node_width = width
         self._node_height = height

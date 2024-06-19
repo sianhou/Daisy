@@ -1,8 +1,10 @@
 from abc import abstractmethod
 
+from PySide6.QtCore import QPointF
 from PySide6.QtWidgets import QGraphicsItem
 
 from base.port import InputPort, OutputPort
+from env.config import EditorSceneConfig
 
 
 class NodeBase(QGraphicsItem):
@@ -10,7 +12,7 @@ class NodeBase(QGraphicsItem):
         super(NodeBase, self).__init__(parent)
 
         self.setFlags(
-            QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemIsMovable | QGraphicsItem.ItemSendsGeometryChanges)
+            QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemIsMovable | QGraphicsItem.ItemSendsGeometryChanges | QGraphicsItem.ItemSendsGeometryChanges)
 
         self._port_space = 15
         self._scene = None
@@ -41,5 +43,16 @@ class NodeBase(QGraphicsItem):
     def getShape(self):
         pass
 
+    def snapToNearestGrid(self):
+        x, y = self.x(), self.y()
+        x = round(x / EditorSceneConfig.grid_size) * EditorSceneConfig.grid_size
+        y = round(y / EditorSceneConfig.grid_size) * EditorSceneConfig.grid_size
+        self.setPos(QPointF(x, y))
+
     def setScene(self, scene):
         self._scene = scene
+
+    def itemChange(self, change, value):
+        if change == QGraphicsItem.ItemPositionHasChanged:
+            self.snapToNearestGrid()
+        return super().itemChange(change, value)
