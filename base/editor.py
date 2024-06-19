@@ -10,9 +10,9 @@ class NodeEditor(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self.initEditor()
+        self.setup()
 
-    def initEditor(self):
+    def setup(self):
         self.setGeometry(100, 100, 1440, 720)
         self.setWindowTitle("Daisy - a simple node editor")
         self.layout = QVBoxLayout(self)

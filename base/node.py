@@ -21,7 +21,7 @@ class DeepNetworkNode(NodeBase):
         super(DeepNetworkNode, self).__init__(parent)
         self.setup()
 
-    def setup(self, width=200, height=40, radius=4, background_color='#aa151515', outline_color='#4e90fe',
+    def setup(self, width=200, height=40, radius=4, background_color='#aa151515', outline_color='#a1a1a1',
               outline_selected_color='#aaffee00', icon_padding=5, icon_color='#88df00'):
         # body
         self._node_width = width
@@ -29,6 +29,7 @@ class DeepNetworkNode(NodeBase):
         self._node_radius = radius
         self._background_brush = QBrush(QColor(background_color))
         self._default_pen = QPen(QColor(outline_color))
+        self._default_pen.setWidthF(2)
         self._selected_pen = QPen(QColor(outline_selected_color))
 
         # icon
