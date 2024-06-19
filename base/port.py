@@ -14,6 +14,8 @@ class PortBase(QGraphicsItem):
         self._default_pen.setWidthF(2)
         self._default_brush = QBrush(QColor(EditorScene.background_color))
 
+        self._edges = []
+
     def addToParentNode(self, node):
         self._parent_node = node
         self.setParentItem(node)
@@ -23,10 +25,23 @@ class PortBase(QGraphicsItem):
         return QRectF(0, 0, self._port_size, self._port_size)
 
     def paint(self, painter: QPainter, option, widget) -> None:
-        painter.setPen(self._default_pen)
-        painter.setBrush(self._default_brush)
-        painter.drawEllipse(QPointF(0, 0),
-                            self._port_size, self._port_size)
+        if len(self._edges) == 0:
+            painter.setPen(self._default_pen)
+            painter.setBrush(self._default_brush)
+            painter.drawEllipse(QPointF(0, 0),
+                                self._port_size, self._port_size)
+        else:
+            painter.setPen(self._default_pen)
+            painter.setBrush(QBrush(QColor(self._port_color)))
+            painter.drawEllipse(QPointF(0, 0),
+                                self._port_size, self._port_size)
+
+    def addEdge(self, edge):
+        self._edges.append(edge)
+
+    def getPos(self):
+        self._port_pos = (self.scenePos().x(), self.scenePos().y())
+        return self._port_pos
 
 
 class InputPort(PortBase):

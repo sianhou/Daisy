@@ -13,8 +13,8 @@ class DeepLearningNode(NodeBase):
 
     def addInputPort(self, port: InputPort, pos=[0, 0]):
         port.addToParentNode(self)
-        self._input_ports.append(port)
         port.setPos(pos[0], pos[1])
+        self._input_ports.append(port)
 
     def addInputPortList(self, port_list: [InputPort] = None):
         if len(port_list) != 0:
@@ -38,7 +38,7 @@ class DeepLearningNode(NodeBase):
             x = self.getShape()[0] / 2 - total_width / 2
             y = self.getShape()[1]
             for i, port in enumerate(port_list):
-                self.addInputPort(port=port, pos=[x + i * (self._port_space + 2 * port_list[0]._port_size), y])
+                self.addOutputPort(port=port, pos=[x + i * (self._port_space + 2 * port_list[0]._port_size), y])
         else:
             # TODO(housian): debug
             pass
@@ -48,6 +48,12 @@ class DeepLearningNode(NodeBase):
 
     def getPos(self):
         return (self.x, self.y)
+
+    def getInputPort(self):
+        return self._input_ports
+
+    def getOutputPort(self):
+        return self._output_ports
 
     def setup(self, width=200, height=40, radius=4, background_color='#aa151515', outline_color='#a1a1a1',
               outline_selected_color='#aaffee00', icon_padding=5, icon_color='#88df00'):
