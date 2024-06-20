@@ -23,21 +23,18 @@ class EditorView(QGraphicsView):
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
-    def addEdge(self, source_port: InputPort, target_port: OutputPort):
-        # edge = EdgeBase(source_pos=source_port.getCenterPos(), target_pos=target_port.getCenterPos(),
-        #                 color=source_port._port_color, scene=self._scene)
+    def addEdge(self, source_port: OutputPort, target_port: InputPort):
         edge = PortEdge(source_port=source_port, target_port=target_port, scene=self._scene)
-        # edge = EdgeBase(source_port, target_port, scene=self._scene)
         self._edges.append(edge)
-        pass
 
-    def addNode(self, node: NodeBase = None, pos=[0, 0]):
+    def addPortEdge(self, edge: PortEdge):
+        self._edges.append(edge)
+
+    def addNode(self, node: NodeBase = None, pos=(0, 0)):
         if node is not None:
             self._scene.addItem(node)
             node.setPos(pos[0], pos[1])
             node.setScene(self._scene)
-
-            # self._nodes.append(node)
 
     def setScene(self, scene):
         self._scene = scene
@@ -45,12 +42,11 @@ class EditorView(QGraphicsView):
         self.update()
 
     def createDragEdge(self, port: PortBase):
+        drag_from_outputport = True
         if isinstance(port, OutputPort):
             drag_from_outputport = True
         elif isinstance(port, InputPort):
             drag_from_outputport = False
-
-        print(f'drag_from_outputport = {drag_from_outputport}')
 
         if self._drag_edge is None:
             self._drag_edge = DragEdge(source_pos=port.getCenterPos(), color=port._port_color, scene=self._scene,
@@ -60,17 +56,33 @@ class EditorView(QGraphicsView):
             else:
                 self._drag_edge.setTargetPort(target_port=port)
 
-        print(self._drag_edge)
-
     def prsMouseLeftBtn(self, event):
         mouse_pos = event.pos()
         item = self.itemAt(mouse_pos)
         if isinstance(item, PortBase):
-            print(item)
             self._drag_edge_mode = True
             self.createDragEdge(item)
         else:
             super().mousePressEvent(event)
+
+    def rlsMouseLeftBtn(self, event):
+        if self._drag_edge_mode:
+            self._drag_edge_mode = False
+            item = self.itemAt(event.pos())
+            if isinstance(item, PortBase):
+                if self._drag_edge._drag_from_outputport:
+                    self._drag_edge.setTargetPort(item)
+                else:
+                    self._drag_edge.setSourcePort(item)
+                edge = self._drag_edge.convToPortEdge()
+                if edge is not None:
+                    self.addPortEdge(edge)
+            self._scene.removeItem(self._drag_edge)
+            self._drag_edge = None
+
+            print(" --- print all node & edge ---")
+        else:
+            super().mouseReleaseEvent(event)
 
     # override qt function
     def mousePressEvent(self, event):
@@ -79,9 +91,15 @@ class EditorView(QGraphicsView):
         else:
             super().mousePressEvent(event)
 
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.rlsMouseLeftBtn(event)
+        else:
+            super().mouseReleaseEvent(event)
+
     def mouseMoveEvent(self, event):
         if self._drag_edge_mode:
             pos = self.mapToScene(event.pos())
-            self._drag_edge.updatePos(pos=[pos.x(), pos.y()])
+            self._drag_edge.updatePos(pos=(pos.x(), pos.y()))
         else:
             super().mouseMoveEvent(event)

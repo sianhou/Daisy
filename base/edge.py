@@ -8,7 +8,8 @@ from base.port import InputPort, OutputPort
 
 
 class EdgeBase(QGraphicsPathItem):
-    def __init__(self, source_pos=[0, 0], target_pos=[0, 0], color='#a1a1a1', scene=None, parent=None):
+
+    def __init__(self, source_pos=(0, 0), target_pos=(0, 0), color='#a1a1a1', scene=None, parent=None):
         super(EdgeBase, self).__init__(parent=parent)
 
         self.setFlags(QGraphicsItem.ItemIsSelectable)
@@ -108,6 +109,12 @@ class PortEdge(EdgeBase):
         (x, y) = self._target_port.getCenterPos()
         return QPointF(x, y)
 
+    def __str__(self):
+        return (f'PortEdge._source_port: {self._source_port} \n'
+                f'PortEdge._target_port: {self._target_port} \n'
+                f'PortEdge._source_pos: {self._source_pos} \n'
+                f'PortEdge._target_pos: {self._target_pos}')
+
 
 class DragEdge(EdgeBase):
     def __init__(self, source_pos, color='#a1a1a1', scene=None, drag_from_outputport=True, parent=None):
@@ -121,16 +128,24 @@ class DragEdge(EdgeBase):
     def setTargetPort(self, target_port: InputPort = None):
         self._target_port = target_port
 
-    # def setEndpointPort(self, source_port: OutputPort = None, target_port: InputPort = None):
-    #     self._source_port = source_port
-    #     self._target_port = target_port
-
     def updatePos(self, pos=[0, 0]):
         if self._drag_from_outputport:
             self.setTargetPos(pos=pos)
         else:
             self.setSourcePos(pos=pos)
         self.update()
+
+    def convToPortEdge(self):
+        # 判断是否成对
+        if not (isinstance(self._source_port, OutputPort) and isinstance(self._target_port, InputPort)):
+            print("self._source_port & self._target_port dismatch")
+            return None
+        # 判断是否是同一节点
+        if self._source_port.getParentNode() == self._target_port.getParentNode():
+            print('self._source_port.getParentNode() == self._target_port.getParentNode()')
+            return None
+        edge = PortEdge(source_port=self._source_port, target_port=self._target_port, scene=self._scene)
+        return edge
 
     def paint(self, painter: QPainter, option, widget) -> None:
         self.updateVerticalEdgePath()

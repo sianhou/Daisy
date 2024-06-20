@@ -14,8 +14,11 @@ class PortBase(QGraphicsItem):
         self._default_pen = QPen(QColor(self._port_color))
         self._default_pen.setWidthF(2)
         self._default_brush = QBrush(QColor(EditorSceneConfig.background_color))
-
+        self._parent_node = None
         self._edges = []
+
+    def getParentNode(self):
+        return self._parent_node
 
     def addToParentNode(self, node):
         self._parent_node = node

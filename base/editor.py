@@ -60,4 +60,4 @@ class NodeEditor(QtWidgets.QWidget):
 
         self._view.addNode(node0)
         self._view.addNode(node1, pos=[200, 200])
-        self._view.addEdge(node0._output_ports[0], node1._input_ports[0])
+        # self._view.addEdge(node0._output_ports[0], node1._input_ports[0])
