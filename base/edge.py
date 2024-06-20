@@ -142,8 +142,12 @@ class DragEdge(EdgeBase):
         self.update()
 
     def convToPortEdge(self):
-        # 判断是否成对
+        # 判断是否成对 1
         if not (isinstance(self._source_port, OutputPort) and isinstance(self._target_port, InputPort)):
+            print("self._source_port & self._target_port dismatch")
+            return None
+        # 判断是否成对 2
+        if not (self._source_port._port_dtype == self._target_port._port_dtype):
             print("self._source_port & self._target_port dismatch")
             return None
         # 判断是否是同一节点
