@@ -1,7 +1,7 @@
 from PySide6.QtGui import Qt, QPainter
 from PySide6.QtWidgets import QGraphicsView
 
-from base.edge import PortEdge
+from base.edge import PortEdge, DragEdge
 # from base.edge import EdgeBase, DraggingEdge
 from base.node import NodeBase
 from base.port import PortBase, InputPort, OutputPort
@@ -12,8 +12,8 @@ class EditorView(QGraphicsView):
         super(EditorView, self).__init__(parent)
         self._scene = None
         self._edges = []
-        self._dragging_edge = None
-        self._dragging_edge_mode = False
+        self._drag_edge = None
+        self._drag_edge_mode = False
 
         # config display params
         self.setRenderHint(QPainter.Antialiasing | QPainter.TextAntialiasing | QPainter.SmoothPixmapTransform)
@@ -44,25 +44,31 @@ class EditorView(QGraphicsView):
         super().setScene(scene)
         self.update()
 
-    def createDraggingEdge(self, port: PortBase):
-        if isinstance(port, InputPort):
-            drag_from_source = True
-        elif isinstance(port, OutputPort):
-            drag_from_source = False
+    def createDragEdge(self, port: PortBase):
+        if isinstance(port, OutputPort):
+            drag_from_outputport = True
+        elif isinstance(port, InputPort):
+            drag_from_outputport = False
 
-        if self._dragging_edge is None:
-            pass
-            # self._dragging_edge = DraggingEdge(port)
+        print(f'drag_from_outputport = {drag_from_outputport}')
 
-        pass
+        if self._drag_edge is None:
+            self._drag_edge = DragEdge(source_pos=port.getCenterPos(), color=port._port_color, scene=self._scene,
+                                       drag_from_outputport=drag_from_outputport)
+            if drag_from_outputport:
+                self._drag_edge.setSourcePort(source_port=port)
+            else:
+                self._drag_edge.setTargetPort(target_port=port)
+
+        print(self._drag_edge)
 
     def prsMouseLeftBtn(self, event):
         mouse_pos = event.pos()
         item = self.itemAt(mouse_pos)
         if isinstance(item, PortBase):
             print(item)
-            self._dragging_edge_mode = True
-            self.createDraggingEdge(item)
+            self._drag_edge_mode = True
+            self.createDragEdge(item)
         else:
             super().mousePressEvent(event)
 
@@ -72,3 +78,10 @@ class EditorView(QGraphicsView):
             self.prsMouseLeftBtn(event)
         else:
             super().mousePressEvent(event)
+
+    def mouseMoveEvent(self, event):
+        if self._drag_edge_mode:
+            pos = self.mapToScene(event.pos())
+            self._drag_edge.updatePos(pos=[pos.x(), pos.y()])
+        else:
+            super().mouseMoveEvent(event)

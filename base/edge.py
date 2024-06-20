@@ -17,6 +17,8 @@ class EdgeBase(QGraphicsPathItem):
         self._scene = scene
         self._source_pos = source_pos
         self._target_pos = target_pos
+        self._source_port = None
+        self._target_port = None
 
         self._edge_color = QColor(color)
         self._default_pen = QPen(self._edge_color)
@@ -40,6 +42,12 @@ class EdgeBase(QGraphicsPathItem):
     @abstractmethod
     def getTargetPos(self):
         return QPointF(self._target_pos[0], self._target_pos[1])
+
+    def setSourcePos(self, pos):
+        self._source_pos = pos
+
+    def setTargetPos(self, pos):
+        self._target_pos = pos
 
     def updateVerticalEdgePath(self):
         source_pos = self.getSourcePos()
@@ -82,12 +90,12 @@ class EdgeBase(QGraphicsPathItem):
 
 
 class PortEdge(EdgeBase):
-    def __init__(self, source_port=InputPort, target_port=OutputPort, scene=None, parent=None):
+    def __init__(self, source_port: OutputPort, target_port: InputPort, scene=None, parent=None):
         super().__init__(source_pos=source_port.getCenterPos(), target_pos=target_port.getCenterPos(), scene=scene,
                          color=source_port._port_color, parent=parent)
 
-        self._source_port = source_port
-        self._target_port = target_port
+        self._source_port: OutputPort = source_port
+        self._target_port: InputPort = target_port
 
         self._source_port.addEdge(self)
         self._target_port.addEdge(self)
@@ -99,6 +107,46 @@ class PortEdge(EdgeBase):
     def getTargetPos(self):
         (x, y) = self._target_port.getCenterPos()
         return QPointF(x, y)
+
+
+class DragEdge(EdgeBase):
+    def __init__(self, source_pos, color='#a1a1a1', scene=None, drag_from_outputport=True, parent=None):
+        super().__init__(source_pos=source_pos, target_pos=source_pos, color=color, scene=scene, parent=parent)
+
+        self._drag_from_outputport = drag_from_outputport
+
+    def setSourcePort(self, source_port: OutputPort = None):
+        self._source_port = source_port
+
+    def setTargetPort(self, target_port: InputPort = None):
+        self._target_port = target_port
+
+    # def setEndpointPort(self, source_port: OutputPort = None, target_port: InputPort = None):
+    #     self._source_port = source_port
+    #     self._target_port = target_port
+
+    def updatePos(self, pos=[0, 0]):
+        if self._drag_from_outputport:
+            self.setTargetPos(pos=pos)
+        else:
+            self.setSourcePos(pos=pos)
+        self.update()
+
+    def paint(self, painter: QPainter, option, widget) -> None:
+        self.updateVerticalEdgePath()
+
+        painter.setPen(self._default_pen)
+        painter.setBrush(Qt.NoBrush)
+        painter.drawPath(self.path())
+
+        self._shadow.setColor(self._shadow_color)
+        self.setGraphicsEffect(self._shadow)
+
+    def __str__(self):
+        return (f'DragEdge._source_port: {self._source_port} \n'
+                f'DragEdge._target_port: {self._target_port} \n'
+                f'DragEdge._source_pos: {self._source_pos} \n'
+                f'DragEdge._target_pos: {self._target_pos}')
 
 # class EdgeBase(QGraphicsPathItem):
 #     def __init__(self, source_port=InputPort, target_port=OutputPort, scene=None, parent=None):
