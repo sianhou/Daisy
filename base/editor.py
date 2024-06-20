@@ -5,6 +5,7 @@ from base.port import InputPort, OutputPort
 from base.scene import EditorScene
 from base.view import EditorView
 from dlpkg.dlnode import DeepLearningNode
+from widget.mouse.rightbtn import NodeListWidget
 
 
 class NodeEditor(QtWidgets.QWidget):
@@ -25,9 +26,17 @@ class NodeEditor(QtWidgets.QWidget):
         self._scene.setView(self._view)
         self.layout.addWidget(self._view)
 
+        self.setupRightMouseBtnWidget()
+
         self.show()
 
         self.addDebugNode()
+
+    def setupRightMouseBtnWidget(self):
+        data = None
+        self._node_list_widget = NodeListWidget(data, self._scene, self)
+        self._scene.addWidget(self._node_list_widget)
+        self._node_list_widget.setGeometry(0, 0, 200, 300)
 
     def addDebugNode(self):
         node0 = DeepLearningNode()
