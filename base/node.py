@@ -7,6 +7,7 @@ from env.config import EditorSceneConfig
 
 
 class NodeBase(QGraphicsItem):
+
     def __init__(self, parent=None):
         super(NodeBase, self).__init__(parent)
 
@@ -78,3 +79,16 @@ class NodeBase(QGraphicsItem):
             self.updateOutputEdge()
 
         return super().itemChange(change, value)
+
+    def removeItself(self):
+        # 删除所有的边
+        for port in self._input_ports:
+            for edge in port._edges:
+                edge.removeItself()
+
+        for port in self._output_ports:
+            for edge in port._edges:
+                edge.removeItself()
+
+        self._scene._view._nodes.remove(self)
+        self._scene.removeItem(self)

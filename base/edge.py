@@ -109,6 +109,12 @@ class PortEdge(EdgeBase):
         (x, y) = self._target_port.getCenterPos()
         return QPointF(x, y)
 
+    def removeItself(self):
+        self._source_port._edges.remove(self)
+        self._target_port._edges.remove(self)
+        self._scene._view._edges.remove(self)
+        self._scene.removeItem(self)
+
     def __str__(self):
         return (f'PortEdge._source_port: {self._source_port} \n'
                 f'PortEdge._target_port: {self._target_port} \n'
@@ -144,6 +150,10 @@ class DragEdge(EdgeBase):
         if self._source_port.getParentNode() == self._target_port.getParentNode():
             print('self._source_port.getParentNode() == self._target_port.getParentNode()')
             return None
+        # 判断edge.target_port是否非空，如果非空，先删除
+        if len(self._target_port._edges) > 0:
+            for edge in self._target_port._edges.copy():
+                edge.removeItself()
         edge = PortEdge(source_port=self._source_port, target_port=self._target_port, scene=self._scene)
         return edge
 
