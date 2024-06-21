@@ -1,3 +1,5 @@
+from torch import nn
+
 from core.port import InputPort, OutputPort
 from dlpkg.dlnode import DeepLearningNode
 
@@ -13,3 +15,10 @@ class Linear(DeepLearningNode):
 
         self.addInputPortList([InputPort()])
         self.addOutputPortList([OutputPort()])
+
+        self.in_features: int = 0
+        self.out_features: int = 0
+        self.bias: bool = True
+
+    def forward(self, X):
+        self._linear = nn.Linear(X.shape[1], X.shape[1])
