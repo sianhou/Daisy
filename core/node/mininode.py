@@ -72,6 +72,7 @@ class MiniNode(NodeBase):
         self._icon_size = temp_size - 2 * self._icon_padding
         self._icon_radius = radius * self._icon_size / temp_size
         self._icon_background_brush = QBrush(QColor(icon_color))
+        self.update()
 
     def setTitle(self, title="", font='Arial', font_size=10, color='#eeeeee', background_color='#aa4e90fe',
                  padding=5):
@@ -88,6 +89,7 @@ class MiniNode(NodeBase):
         self._title_item.setDefaultTextColor(self._title_color)
         self._title_item.setPos(self._icon_size + self._icon_padding + self._title_padding,
                                 self._icon_padding)
+        self.update()
 
     # override QT function
     def paint(self, painter, option, widget):

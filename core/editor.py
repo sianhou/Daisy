@@ -1,10 +1,9 @@
 from PySide6 import QtWidgets
 from PySide6.QtWidgets import QVBoxLayout
 
-from core.node.mininode import MiniNode
-from core.port import InputPort, OutputPort
 from core.scene import EditorScene
 from core.view import EditorView
+from dlpkg.op import Linear
 from widget.mouse.rightbtn import NodeListWidget
 
 
@@ -39,34 +38,36 @@ class NodeEditor(QtWidgets.QWidget):
         self._node_list_widget.setGeometry(0, 0, 200, 300)
 
     def addDebugNode(self):
-        node0 = MiniNode()
-        node0.setTitle("Test node0")
-
-        input0 = InputPort()
-        input1 = InputPort()
-        input2 = InputPort()
-        node0.addInputPortList([input0, input1, input2])
-
-        output0 = OutputPort()
-        output1 = OutputPort()
-        output2 = OutputPort()
-        output3 = OutputPort()
-        node0.addOutputPortList([output0, output1, output2, output3])
-
-        node1 = MiniNode()
-        node1.setTitle("Test node1")
-
-        input0 = InputPort()
-        input1 = InputPort()
-        input2 = InputPort()
-        node1.addInputPortList([input0, input1, input2])
-
-        output0 = OutputPort()
-        output1 = OutputPort()
-        output2 = OutputPort()
-        output3 = OutputPort()
-        node1.addOutputPortList([output0, output1, output2, output3])
+        # node0 = MiniNode()
+        # node0.setTitle("Test node0")
+        #
+        # input0 = InputPort()
+        # input1 = InputPort()
+        # input2 = InputPort()
+        # node0.addInputPortList([input0, input1, input2])
+        #
+        # output0 = OutputPort()
+        # output1 = OutputPort()
+        # output2 = OutputPort()
+        # output3 = OutputPort()
+        # node0.addOutputPortList([output0, output1, output2, output3])
+        #
+        # node1 = MiniNode()
+        # node1.setTitle("Test node1")
+        #
+        # input0 = InputPort()
+        # input1 = InputPort()
+        # input2 = InputPort()
+        # node1.addInputPortList([input0, input1, input2])
+        #
+        # output0 = OutputPort()
+        # output1 = OutputPort()
+        # output2 = OutputPort()
+        # output3 = OutputPort()
+        # node1.addOutputPortList([output0, output1, output2, output3])
+        print('1')
+        node0 = Linear()
 
         self._view.addNode(node0)
-        self._view.addNode(node1, pos=[200, 200])
+        # self._view.addNode(node1, pos=[200, 200])
         # self._view.addEdge(node0._output_ports[0], node1._input_ports[0])
