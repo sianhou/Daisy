@@ -1,11 +1,11 @@
-from base.port import InputPort
-from dlpkg.dlnode import DeepLearningNode
-from env import dtype
+from core import dtype
+from core.node.mininode import MiniNode
+from core.port import InputPort
 
 pkg_name = 'basic mathematical operations'
 
 
-class AddNode(DeepLearningNode):
+class AddNode(MiniNode):
     def __init__(self, parent=None):
         super(AddNode, self).__init__(parent)
 

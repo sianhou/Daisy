@@ -2,7 +2,7 @@ import sys
 
 from PySide6.QtWidgets import QApplication
 
-from base.editor import NodeEditor
+from core.editor import NodeEditor
 
 if __name__ == '__main__':
     app = QApplication([])

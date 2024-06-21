@@ -1,10 +1,10 @@
 from PySide6.QtGui import Qt, QPainter
 from PySide6.QtWidgets import QGraphicsView
 
-from base.edge import PortEdge, DragEdge
+from core.edge import PortEdge, DragEdge
 # from base.edge import EdgeBase, DraggingEdge
-from base.node import NodeBase
-from base.port import PortBase, InputPort, OutputPort
+from core.node.node import NodeBase
+from core.port import PortBase, InputPort, OutputPort
 
 
 class EditorView(QGraphicsView):

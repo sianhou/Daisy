@@ -2,13 +2,13 @@ from PySide6.QtCore import QRectF
 from PySide6.QtGui import QBrush, QPen, QColor, QFont, QPainterPath, Qt
 from PySide6.QtWidgets import QGraphicsTextItem
 
-from base.node import NodeBase
-from base.port import OutputPort, InputPort
+from core.node.node import NodeBase
+from core.port import OutputPort, InputPort
 
 
-class DeepLearningNode(NodeBase):
+class MiniNode(NodeBase):
     def __init__(self, parent=None):
-        super(DeepLearningNode, self).__init__(parent)
+        super(MiniNode, self).__init__(parent)
         self.setup()
 
     def addInputPort(self, port: InputPort, pos=[0, 0]):

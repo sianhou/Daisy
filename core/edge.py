@@ -4,7 +4,7 @@ from PySide6.QtCore import QPointF
 from PySide6.QtGui import QColor, QPen, QPainter, Qt, QPainterPath
 from PySide6.QtWidgets import QGraphicsPathItem, QGraphicsDropShadowEffect, QGraphicsItem
 
-from base.port import InputPort, OutputPort
+from core.port import InputPort, OutputPort
 
 
 class EdgeBase(QGraphicsPathItem):

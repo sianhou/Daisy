@@ -2,7 +2,7 @@ from abc import abstractmethod
 
 from PySide6.QtWidgets import QGraphicsItem
 
-from base.port import InputPort, OutputPort
+from core.port import InputPort, OutputPort
 from env.config import EditorSceneConfig
 
 

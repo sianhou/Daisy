@@ -1,10 +1,10 @@
 from PySide6 import QtWidgets
 from PySide6.QtWidgets import QVBoxLayout
 
-from base.port import InputPort, OutputPort
-from base.scene import EditorScene
-from base.view import EditorView
-from dlpkg.dlnode import DeepLearningNode
+from core.node.mininode import MiniNode
+from core.port import InputPort, OutputPort
+from core.scene import EditorScene
+from core.view import EditorView
 from widget.mouse.rightbtn import NodeListWidget
 
 
@@ -39,7 +39,7 @@ class NodeEditor(QtWidgets.QWidget):
         self._node_list_widget.setGeometry(0, 0, 200, 300)
 
     def addDebugNode(self):
-        node0 = DeepLearningNode()
+        node0 = MiniNode()
         node0.setTitle("Test node0")
 
         input0 = InputPort()
@@ -53,7 +53,7 @@ class NodeEditor(QtWidgets.QWidget):
         output3 = OutputPort()
         node0.addOutputPortList([output0, output1, output2, output3])
 
-        node1 = DeepLearningNode()
+        node1 = MiniNode()
         node1.setTitle("Test node1")
 
         input0 = InputPort()

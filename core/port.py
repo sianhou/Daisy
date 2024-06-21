@@ -2,7 +2,7 @@ from PySide6.QtCore import QRectF, QPointF
 from PySide6.QtGui import QPainter, QPen, QColor, QBrush
 from PySide6.QtWidgets import QGraphicsItem
 
-from env import dtype
+from core import dtype
 from env.config import EditorSceneConfig
 
 
@@ -55,10 +55,10 @@ class PortBase(QGraphicsItem):
 
 
 class InputPort(PortBase):
-    def __init__(self, port_dtype: dtype.DtypeBase, parent=None):
-        super(InputPort, self).__init__(port_color=port_dtype._dtype_color, port_dtype=port_dtype, parent=parent)
+    def __init__(self, port_dtype: dtype.DtypeBase = dtype.Float, parent=None):
+        super(InputPort, self).__init__(port_color=port_dtype.dtype_color, port_dtype=port_dtype, parent=parent)
 
 
 class OutputPort(PortBase):
-    def __init__(self, port_dtype, parent=None):
-        super(OutputPort, self).__init__(port_color=port_dtype._dtype_color, port_dtype=port_dtype, parent=parent)
+    def __init__(self, port_dtype: dtype.DtypeBase = dtype.Float, parent=None):
+        super(OutputPort, self).__init__(port_color=port_dtype.dtype_color, port_dtype=port_dtype, parent=parent)
