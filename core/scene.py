@@ -2,7 +2,7 @@ import math
 
 from PySide6.QtCore import QLine
 from PySide6.QtGui import QBrush, QColor, QPen, QPainter
-from PySide6.QtWidgets import QGraphicsScene
+from PySide6.QtWidgets import QGraphicsScene, QWidget
 
 from env import config
 
@@ -10,6 +10,8 @@ from env import config
 class EditorScene(QGraphicsScene):
     def __init__(self, parent=None):
         super().__init__(parent)
+
+        self.widgets: [str, QWidget] = {}
 
         self.initScene()
 

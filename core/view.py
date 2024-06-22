@@ -2,6 +2,7 @@ from PySide6.QtGui import Qt, QPainter
 from PySide6.QtWidgets import QGraphicsView
 
 from core.edge import PortEdge, DragEdge
+from core.node.mininode import MiniNode
 # from base.edge import EdgeBase, DraggingEdge
 from core.node.node import NodeBase
 from core.port import PortBase, InputPort, OutputPort
@@ -68,6 +69,11 @@ class EditorView(QGraphicsView):
     def prsMouseLeftBtn(self, event):
         mouse_pos = event.pos()
         item = self.itemAt(mouse_pos)
+        if item is None:
+            if len(self._nodes) > 0:
+                for node in self._nodes:
+                    node._params_editor_plane.hide()
+
         if isinstance(item, PortBase):
             self._drag_edge_mode = True
             self.createDragEdge(item)
@@ -126,3 +132,17 @@ class EditorView(QGraphicsView):
             elif isinstance(item, NodeBase):
                 item.removeItself()
                 item.update()
+
+    def mouseDoubleClickEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.prsMouseLeftBtnTwice(event)
+        else:
+            return super().mouseDoubleClickEvent(event)
+
+    def prsMouseLeftBtnTwice(self, event):
+        mouse_pos = event.pos()
+        item = self.itemAt(mouse_pos)
+        if isinstance(item, MiniNode):
+            item._params_editor_plane.show()
+        else:
+            super().mousePressEvent(event)

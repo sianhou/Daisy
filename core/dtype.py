@@ -2,7 +2,7 @@ class DtypeBase:
     dtype_color = '#a1a1a1'
 
     def __init__(self):
-        pass
+        self.value = None
 
 
 class Bool(DtypeBase):

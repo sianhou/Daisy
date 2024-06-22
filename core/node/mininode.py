@@ -3,6 +3,7 @@ from PySide6.QtGui import QBrush, QPen, QColor, QFont, QPainterPath, Qt
 from PySide6.QtWidgets import QGraphicsTextItem
 
 from core.node.node import NodeBase
+from core.params_editor_plane import ParamsEditorPanel
 from core.port import OutputPort, InputPort
 
 
@@ -47,7 +48,7 @@ class MiniNode(NodeBase):
         return (self._node_width, self._node_height)
 
     def getPos(self):
-        return (self.x, self.y)
+        return (self.x(), self.y())
 
     def getInputPort(self):
         return self._input_ports
@@ -72,6 +73,13 @@ class MiniNode(NodeBase):
         self._icon_size = temp_size - 2 * self._icon_padding
         self._icon_radius = radius * self._icon_size / temp_size
         self._icon_background_brush = QBrush(QColor(icon_color))
+
+        # params editor
+        self._params_editor_plane = ParamsEditorPanel()
+        self._params_editor_plane.addToParaentNode(self)
+        self._params_editor_plane.setPos(0, self._node_height + 10)
+        self._params_editor_plane.hide()
+
         self.update()
 
     def setTitle(self, title="", font='Arial', font_size=10, color='#eeeeee', background_color='#aa4e90fe',
