@@ -5,7 +5,6 @@ from PySide6.QtGui import QColor, QBrush, QPainter, QPainterPath, QPen
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QApplication, QGraphicsScene, QGraphicsView, QGraphicsItem
 
 from core.node.node import NodeBase
-from dlpkg.op import Linear
 
 
 class PEConfig:
@@ -36,11 +35,11 @@ class PEView(QGraphicsView):
         super().__init__(parent)
         self._scene = None
 
+        self._func_blocks = []
+
         # config display params
         self.setRenderHint(QPainter.Antialiasing | QPainter.TextAntialiasing | QPainter.SmoothPixmapTransform)
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
-
-        print(self.rect())
 
     def setScene(self, scene):
         self._scene = scene
@@ -52,9 +51,24 @@ class PEView(QGraphicsView):
         new_rect = self.rect()
         print(self.mapToGlobal(new_rect.topLeft()))
         print(f"QGraphicsView rect changed: {new_rect}")
+        if len(self._func_blocks) > 0:
+            for block in self._func_blocks:
+                print(new_rect.topLeft())
+                block.setPos(new_rect.topLeft())
+
+    def addDebugBlock(self):
+        op = PEBlock()
+        self._scene.addItem(op)
+        self._func_blocks.append(op)
+
+        # get the pos and size of current view
+        cv_rect = self.rect()
+        x, y = cv_rect.left(), cv_rect.top()
+        print(x, y)
+        op.setPos(self.mapToScene(x, y))
 
 
-class PEItem(QGraphicsItem):
+class PEBlock(QGraphicsItem):
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -62,7 +76,7 @@ class PEItem(QGraphicsItem):
         self._height = 300
 
         background_color = '#00151515'
-        outline_color = '#ffffff'
+        outline_color = '#111111'
         outline_selected_color = '#aaffee00'
         self._radius = 5
 
@@ -104,14 +118,9 @@ class ParamsEditor(QWidget):
         self.layout.addWidget(self._view)
         self.layout.setContentsMargins(0, 0, 0, 0)
 
-        test_node = Linear()
-        op = PEItem()
-        op.setupParam(test_node)
-
-        self._scene.addItem(op)
-        op.setPos(0, 0)
-
         self.show()
+
+        self._view.addDebugBlock()
 
     def resizeEvent(self, event):
         super(ParamsEditor, self).resizeEvent(event)
