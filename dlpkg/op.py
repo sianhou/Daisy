@@ -1,30 +1,21 @@
-from copy import copy
-
 from torch import nn
 
-from core.node.mininode import MiniNode
-from core.port import InputPort, OutputPort
+from core.node.dlnode import DLNode
+from core.parampin import ParamPin, ParamPinList
 
 
-class ParamPin():
-    def __init__(self, name='', type=int):
-        self.name = name
-        self.type = type
-        self.value = type()
+# class ParamPinList():
+#     def __init__(self):
+#         self._param_pins: [ParamPin] = []
+#
+#     def __getitem__(self, item):
+#         for pin in self._param_pins:
+#             if pin.name == item:
+#                 return pin.value
+#         return None
 
 
-class ParamPinList():
-    def __init__(self):
-        self._param_pins: [ParamPin] = []
-
-    def __getitem__(self, item):
-        for pin in self._param_pins:
-            if pin.name == item:
-                return pin.value
-        return None
-
-
-class Linear(MiniNode):
+class Linear(DLNode):
     model_name = 'Linear layer'
     model_params = [
         ParamPin(name='in_features', type=int),
@@ -33,20 +24,6 @@ class Linear(MiniNode):
     ]
     num_input_ports = 2
     num_output_ports = 1
-
-    def __init__(self):
-        super().__init__()
-
-        self.setup(width=120)
-        self.setTitle(title=self.model_name)
-
-        # setup variables
-        self.addInputPortList([InputPort() for _ in range(self.num_input_ports)])
-        self.addOutputPortList([OutputPort() for _ in range(self.num_output_ports)])
-        self.params = [copy(pin) for pin in self.model_params]
-
-        self._model = None
-        self._value = None
 
     def setup_model(self):
         self._model = nn.Linear(in_features=self._model['in_features'], out_features=self._model['out_features'],
@@ -57,7 +34,20 @@ class Linear(MiniNode):
 
 
 if __name__ == '__main__':
-    print(Linear.model_params)
+    param_list = ParamPinList()
+    param_list.append(ParamPin(name='in_features', type=int))
+    param_list.append(ParamPin(name='out_features', type=int))
+    param_list.append(ParamPin(name='bias', type=bool))
+
+    param_list['in_features'] = 1
+    param_list['out_features'] = 2
+    param_list['bias'] = 0
+
+    print(param_list['in_features'])
+    print(param_list['out_features'])
+    print(param_list['bias'])
+
+    # print(Linear.model_params)
     # print(type(Linear.model_params['in_features']))
     # print(type(Linear.model_params['out_features']))
     # print(type(Linear.model_params['bias']))

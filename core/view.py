@@ -2,7 +2,7 @@ from PySide6.QtGui import Qt, QPainter
 from PySide6.QtWidgets import QGraphicsView
 
 from core.edge import PortEdge, DragEdge
-from core.node.mininode import MiniNode
+from core.node.dlnode import DLNode
 # from base.edge import EdgeBase, DraggingEdge
 from core.node.node import NodeBase
 from core.port import PortBase, InputPort, OutputPort
@@ -142,7 +142,7 @@ class EditorView(QGraphicsView):
     def prsMouseLeftBtnTwice(self, event):
         mouse_pos = event.pos()
         item = self.itemAt(mouse_pos)
-        if isinstance(item, MiniNode):
+        if isinstance(item, DLNode):
             item._params_editor_plane.show()
         else:
             super().mousePressEvent(event)

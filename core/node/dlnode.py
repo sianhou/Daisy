@@ -1,16 +1,30 @@
+from copy import copy
+
 from PySide6.QtCore import QRectF
 from PySide6.QtGui import QBrush, QPen, QColor, QFont, QPainterPath, Qt
 from PySide6.QtWidgets import QGraphicsTextItem
 
 from core.node.node import NodeBase
+from core.parampin import ParamPin, ParamPinList
 from core.params_editor_plane import ParamsEditorPanel
 from core.port import OutputPort, InputPort
 
 
-class MiniNode(NodeBase):
+class DLNode(NodeBase):
+    model_name = ''
+    model_params: [ParamPin] = []
+    num_input_ports: int = 1
+    num_output_ports: int = 1
+
     def __init__(self, parent=None):
-        super(MiniNode, self).__init__(parent)
-        self.setup()
+        super(DLNode, self).__init__(parent)
+        self.setup(width=160)
+        self.setTitle(title=self.model_name)
+        self.setupParams()
+        self.setupParamsEditorPlane()
+
+        self._model = None
+        self._value = None
 
     def addInputPort(self, port: InputPort, pos=[0, 0]):
         port.addToParentNode(self)
@@ -21,8 +35,12 @@ class MiniNode(NodeBase):
         if len(port_list) != 0:
             total_width = (len(port_list) - 1) * (self._port_space + port_list[0]._port_size)
             x = self.getShape()[0] / 2 - total_width / 2 - port_list[0]._port_radius
+            print(self.getShape()[0] / 2)
+            print(total_width / 2)
+            print(port_list[0]._port_radius)
             y = 0 - port_list[0]._port_radius
             for i, port in enumerate(port_list):
+                print(x + i * (self._port_space + port_list[0]._port_size))
                 self.addInputPort(port=port, pos=[x + i * (self._port_space + port_list[0]._port_size), y])
         else:
             # TODO(housian): debug
@@ -58,6 +76,7 @@ class MiniNode(NodeBase):
 
     def setup(self, width=200, height=40, radius=4, background_color='#aa151515', outline_color='#a1a1a1',
               outline_selected_color='#aaffee00', icon_padding=5, icon_color='#88df00'):
+
         # body
         self._node_width = width
         self._node_height = height
@@ -74,7 +93,17 @@ class MiniNode(NodeBase):
         self._icon_radius = radius * self._icon_size / temp_size
         self._icon_background_brush = QBrush(QColor(icon_color))
 
-        # params editor
+        self.update()
+
+    def setupParams(self):
+        # setup variables
+        self.addInputPortList([InputPort() for _ in range(self.num_input_ports)])
+        self.addOutputPortList([OutputPort() for _ in range(self.num_output_ports)])
+        self.params = ParamPinList([copy(pin) for pin in self.model_params])
+
+        self.update()
+
+    def setupParamsEditorPlane(self):
         self._params_editor_plane = ParamsEditorPanel()
         self._params_editor_plane.addToParaentNode(self)
         self._params_editor_plane.setPos(0, self._node_height + 10)
@@ -82,7 +111,9 @@ class MiniNode(NodeBase):
 
         self.update()
 
-    def setTitle(self, title="", font='Arial', font_size=10, color='#eeeeee', background_color='#aa4e90fe',
+        # for pin in self.
+
+    def setTitle(self, title="", font='Arial', font_size=16, color='#eeeeee', background_color='#aa4e90fe',
                  padding=5):
         self._title = title
         self._title_font = QFont(font, font_size)

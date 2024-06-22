@@ -74,7 +74,6 @@ class NodeEditor(QtWidgets.QWidget):
         # output2 = OutputPort()
         # output3 = OutputPort()
         # node1.addOutputPortList([output0, output1, output2, output3])
-        print('1')
         node0 = Linear()
         node1 = Linear()
         self._view.addNode(node0)
