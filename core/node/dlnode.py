@@ -1,4 +1,4 @@
-from copy import copy
+from abc import abstractmethod
 
 from PySide6.QtCore import QRectF
 from PySide6.QtGui import QBrush, QPen, QColor, QFont, QPainterPath, Qt
@@ -18,13 +18,23 @@ class DLNode(NodeBase):
 
     def __init__(self, parent=None):
         super(DLNode, self).__init__(parent)
+
+        self._input_ports: [InputPort] = []
+        self._output_ports: [OutputPort] = []
+        self._params: ParamPinList = ParamPinList()
+
         self.setup(width=160)
         self.setTitle(title=self.model_name)
+        self.setupIOPorts()
         self.setupParams()
         self.setupParamsEditorPlane()
 
         self._model = None
         self._value = None
+
+    @abstractmethod
+    def setupParams(self):
+        pass
 
     def addInputPort(self, port: InputPort, pos=[0, 0]):
         port.addToParentNode(self)
@@ -35,12 +45,8 @@ class DLNode(NodeBase):
         if len(port_list) != 0:
             total_width = (len(port_list) - 1) * (self._port_space + port_list[0]._port_size)
             x = self.getShape()[0] / 2 - total_width / 2 - port_list[0]._port_radius
-            print(self.getShape()[0] / 2)
-            print(total_width / 2)
-            print(port_list[0]._port_radius)
             y = 0 - port_list[0]._port_radius
             for i, port in enumerate(port_list):
-                print(x + i * (self._port_space + port_list[0]._port_size))
                 self.addInputPort(port=port, pos=[x + i * (self._port_space + port_list[0]._port_size), y])
         else:
             # TODO(housian): debug
@@ -95,18 +101,17 @@ class DLNode(NodeBase):
 
         self.update()
 
-    def setupParams(self):
+    def setupIOPorts(self):
         # setup variables
         self.addInputPortList([InputPort() for _ in range(self.num_input_ports)])
         self.addOutputPortList([OutputPort() for _ in range(self.num_output_ports)])
-        self.params = ParamPinList([copy(pin) for pin in self.model_params])
-
         self.update()
 
     def setupParamsEditorPlane(self):
         self._params_editor_plane = ParamsEditorPanel()
         self._params_editor_plane.addToParaentNode(self)
         self._params_editor_plane.setPos(0, self._node_height + 10)
+        self._params_editor_plane.setupParamsPlane(self._params)
         self._params_editor_plane.hide()
 
         self.update()

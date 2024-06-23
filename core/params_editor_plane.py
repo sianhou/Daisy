@@ -1,6 +1,8 @@
 from PySide6.QtCore import QRectF
 from PySide6.QtGui import QBrush, QColor, QPen, QPainterPath
-from PySide6.QtWidgets import QGraphicsItem
+from PySide6.QtWidgets import QGraphicsItem, QGraphicsProxyWidget
+
+from core.parampin import ParamPinList
 
 
 class ParamsEditorPanel(QGraphicsItem):
@@ -30,3 +32,13 @@ class ParamsEditorPanel(QGraphicsItem):
     def addToParaentNode(self, node):
         self._parent_node = node
         self.setParentItem(node)
+
+    def setupParamsPlane(self, params_list: ParamPinList):
+        print(1)
+        if len(params_list) > 0:
+            for i, param in enumerate(params_list):
+                param._proxy = QGraphicsProxyWidget(parent=self)
+                param._proxy.setWidget(param._default_widget)
+                param._proxy.setPos(10, 10 + i * 100)
+
+        pass

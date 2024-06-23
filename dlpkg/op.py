@@ -17,13 +17,16 @@ from core.parampin import ParamPin, ParamPinList
 
 class Linear(DLNode):
     model_name = 'Linear layer'
-    model_params = [
-        ParamPin(name='in_features', type=int),
-        ParamPin(name='out_features', type=int),
-        ParamPin(name='bias', type=bool),
-    ]
+
     num_input_ports = 2
     num_output_ports = 1
+
+    def setupParams(self):
+        self._params = [
+            ParamPin(name='in_features', type=int),
+            ParamPin(name='out_features', type=int),
+            ParamPin(name='bias', type=bool),
+        ]
 
     def setup_model(self):
         self._model = nn.Linear(in_features=self._model['in_features'], out_features=self._model['out_features'],
