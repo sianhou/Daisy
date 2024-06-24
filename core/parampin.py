@@ -3,6 +3,7 @@ from PySide6.QtWidgets import QCheckBox, QLineEdit
 
 
 class ParamPin():
+
     def __init__(self, name='', type=int):
         self.name = name
         self.type = type
@@ -21,7 +22,14 @@ class ParamPin():
         elif self.type == str:
             self._default_widget = QLineEdit()
 
+        if isinstance(self._default_widget, QLineEdit):
+            self._default_widget.setTextMargins(0, 0, 0, 0)
+            self._default_widget.setFixedWidth(100)
+
         self._proxy = None
+        self._pin_name_item = None
+
+        # setup _pin_name_item
 
 
 class ParamPinList(list):

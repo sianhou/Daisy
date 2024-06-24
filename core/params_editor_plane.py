@@ -1,8 +1,9 @@
 from PySide6.QtCore import QRectF
-from PySide6.QtGui import QBrush, QColor, QPen, QPainterPath
-from PySide6.QtWidgets import QGraphicsItem, QGraphicsProxyWidget
+from PySide6.QtGui import QBrush, QColor, QPen, QPainterPath, QFont
+from PySide6.QtWidgets import QGraphicsItem, QGraphicsProxyWidget, QGraphicsTextItem
 
 from core.parampin import ParamPinList
+from env.config import EditorSceneConfig
 
 
 class ParamsEditorPanel(QGraphicsItem):
@@ -17,6 +18,11 @@ class ParamsEditorPanel(QGraphicsItem):
         self._default_pen = QPen(QColor('#a1a1a1'))
 
         self.setZValue(10)
+
+        self._pin_name_font = QFont(EditorSceneConfig.editor_node_pin_label_font,
+                                    EditorSceneConfig.editor_node_pin_label_font_size)
+        self._pin_name_font_size = EditorSceneConfig.editor_node_pin_label_font_size
+        self._pin_name_color = QColor('#eeeeee')
 
     def paint(self, painter, option, widget):
         # 画背景颜色
@@ -37,8 +43,15 @@ class ParamsEditorPanel(QGraphicsItem):
         print(1)
         if len(params_list) > 0:
             for i, param in enumerate(params_list):
+                param._pin_name_item = QGraphicsTextItem(self)
+                param._pin_name_item.setPlainText(param.name)
+                param._pin_name_item.setFont(self._pin_name_font)
+                param._pin_name_item.setDefaultTextColor(self._pin_name_color)
+
+                param._pin_name_item.setPos(10, 10 + i * 40)
+
                 param._proxy = QGraphicsProxyWidget(parent=self)
                 param._proxy.setWidget(param._default_widget)
-                param._proxy.setPos(10, 10 + i * 100)
+                param._proxy.setPos(200, 10 + i * 40)
 
         pass
