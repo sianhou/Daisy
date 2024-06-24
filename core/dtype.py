@@ -1,30 +1,25 @@
-# coding:utf-8
-from PySide6.QtWidgets import QCheckBox, QLineEdit
+class DtypeBase:
+    dtype_color = '#a1a1a1'
 
-Bool = 'bool'
-Float = 'float'
-Int = 'int'
-String = 'str'
-List = 'list'
-Tuple = 'tuple'
-Dict = 'dict'
-Class = 'class'
-Vector = 'vector'
+    def __init__(self):
+        self.value = None
 
-color_map = {
-    'bool': '#cc0606',
-    'float': '#2fFF09',
-    'int': '#22EE90',
-    'str': '#be0ba0',
-    'list': '#d4aa24',
-    'dict': '#ed6c03',
-    'class': '#0747bb',
-    'vector': '#055c54'
-}
 
-default_widget = {
-    'bool': QCheckBox,
-    'float': QLineEdit,
-    'int': QLineEdit,
-    'str': QLineEdit,
-}
+class Bool(DtypeBase):
+    def __init__(self):
+        super().__init__()
+
+
+class Float(DtypeBase):
+    def __init__(self):
+        super().__init__()
+
+
+class Int(DtypeBase):
+    def __init__(self):
+        super().__init__()
+
+
+class Str(DtypeBase):
+    def __init__(self):
+        super().__init__()
