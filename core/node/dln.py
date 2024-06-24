@@ -96,10 +96,10 @@ class DLN(NodeBase):
         self.update()
 
     def setupParamCard(self):
-        self._params_editor_plane = ParamCard(self._params)
-        self._params_editor_plane.addToParaentNode(self)
-        self._params_editor_plane.setPos(0, self._node_height + 10)
-        self._params_editor_plane.hide()
+        self._paramcard = ParamCard(self._params)
+        self._paramcard.addToParaentNode(self)
+        self._paramcard.setPos(0, self._node_height + 10)
+        self._paramcard.hide()
 
         self.update()
 

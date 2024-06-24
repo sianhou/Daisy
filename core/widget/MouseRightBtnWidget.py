@@ -1,3 +1,4 @@
+from PySide6.QtCore import QPointF
 from PySide6.QtGui import Qt
 from PySide6.QtWidgets import QTreeWidget, QTreeWidgetItem
 
@@ -9,7 +10,7 @@ class MouseRightBtnWidget(QTreeWidget):
         self._view = view
         self._scene = scene
 
-        self._pos = (0, 0)
+        self._pos = QPointF(0, 0)
 
         self.resize(200, 300)
         self.setColumnCount(1)
@@ -17,15 +18,15 @@ class MouseRightBtnWidget(QTreeWidget):
 
         self.setup()
 
+        self.itemDoubleClicked.connect(self.clickTreeItemTwice)
+
     def setup(self):
         self.clear()
         items = []
         for pkg_name in self._data.keys():
-            print(pkg_name)
             item = QTreeWidgetItem([pkg_name])
             for node_name in self._data[pkg_name].keys():
                 node_item = QTreeWidgetItem([node_name])
-                # print(self._data[pkg_name][node_name])
                 node_item.setData(0, Qt.UserRole, self._data[pkg_name][node_name])
                 item.addChild(node_item)
             items.append(item)
@@ -37,3 +38,10 @@ class MouseRightBtnWidget(QTreeWidget):
 
     def show(self):
         self.setVisible(True)
+
+    def clickTreeItemTwice(self, item, column):
+        if isinstance(item, QTreeWidgetItem):
+            cls = item.data(column, Qt.UserRole)
+            if cls is not None:
+                self._view.addNodeWithClass(cls, [self._pos.x(), self._pos.y()])
+                self.hide()

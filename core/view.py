@@ -27,6 +27,10 @@ class EditorView(QGraphicsView):
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
+    def addNodeWithClass(self, cls, pos):
+        node = cls()
+        self.addNode(node, pos)
+
     def removeEdge(self, edge: PortEdge):
         if edge in self._edges:
             self._edges.remove(edge)
@@ -81,7 +85,7 @@ class EditorView(QGraphicsView):
         if item is None:
             if len(self._nodes) > 0:
                 for node in self._nodes:
-                    node._params_editor_plane.hide()
+                    node._paramcard.hide()
         if isinstance(item, PortBase):
             self._drag_edge_mode = True
             self.createDragEdge(item)
@@ -163,7 +167,7 @@ class EditorView(QGraphicsView):
         mouse_pos = event.pos()
         item = self.itemAt(mouse_pos)
         if isinstance(item, DLN):
-            item._params_editor_plane.show()
+            item._paramcard.show()
         else:
             super().mousePressEvent(event)
 
