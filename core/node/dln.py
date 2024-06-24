@@ -10,14 +10,14 @@ from core.port import OutputPort, InputPort
 from env.config import EditorConfig
 
 
-class DLNode(NodeBase):
+class DLN(NodeBase):
     model_name = ''
     model_params: [ParamItem] = []
     num_input_ports: int = 1
     num_output_ports: int = 1
 
     def __init__(self, parent=None):
-        super(DLNode, self).__init__(parent)
+        super(DLN, self).__init__(parent)
 
         self._input_ports: [InputPort] = []
         self._output_ports: [OutputPort] = []

@@ -1,10 +1,10 @@
 from torch import nn
 
-from core.node.dlnode import DLNode
+from core.node.dln import DLN
 from core.paramcard import ParamItem, ParamItemList
 
 
-class Linear(DLNode):
+class Linear(DLN):
     model_name = 'Linear layer'
 
     num_input_ports = 2
@@ -17,7 +17,7 @@ class Linear(DLNode):
             ParamItem(title='bias', type=bool),
         ]
 
-    def setup_model(self):
+    def setupModel(self):
         self._model = nn.Linear(in_features=self._model['in_features'], out_features=self._model['out_features'],
                                 bias=self._model['bias'])
 

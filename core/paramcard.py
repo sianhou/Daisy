@@ -52,7 +52,8 @@ class ParamItem(QGraphicsItem):
 
         self._widget_proxy = QGraphicsProxyWidget(parent=self)
         self._widget_proxy.setWidget(self._input_widget)
-        self._widget_proxy.setPos(self._param_fm.horizontalAdvance(self._title) + self._param_padding, 0)
+        self._widget_proxy.setPos(self._param_fm.horizontalAdvance(self._title) + self._param_padding,
+                                  int(self._param_fm.height() / 4.0))
         self._widget_proxy.setParentItem(self)
 
         self.updateSize()
@@ -129,7 +130,7 @@ class ParamCard(QGraphicsItem):
                 param.setParentItem(self)
                 param.setPos(param._param_padding, self._height)
                 self._height += param._height + param._param_padding
-
+        self._height += ParamItem._param_padding
         self.setZValue(10)
 
     def paint(self, painter, option, widget):
