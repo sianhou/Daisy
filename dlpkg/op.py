@@ -1,7 +1,7 @@
 from torch import nn
 
 from core.node.dlnode import DLNode
-from core.parampin import ParamPin, ParamPinList
+from core.paramitem import ParamItem, ParamItemList
 
 
 # class ParamPinList():
@@ -23,9 +23,9 @@ class Linear(DLNode):
 
     def setupParams(self):
         self._params = [
-            ParamPin(name='in_features', type=int),
-            ParamPin(name='out_features', type=int),
-            ParamPin(name='bias', type=bool),
+            ParamItem(title='in_features', type=int),
+            ParamItem(title='out_features', type=int),
+            ParamItem(title='bias', type=bool),
         ]
 
     def setup_model(self):
@@ -37,10 +37,10 @@ class Linear(DLNode):
 
 
 if __name__ == '__main__':
-    param_list = ParamPinList()
-    param_list.append(ParamPin(name='in_features', type=int))
-    param_list.append(ParamPin(name='out_features', type=int))
-    param_list.append(ParamPin(name='bias', type=bool))
+    param_list = ParamItemList()
+    param_list.append(ParamItem(title='in_features', type=int))
+    param_list.append(ParamItem(title='out_features', type=int))
+    param_list.append(ParamItem(title='bias', type=bool))
 
     param_list['in_features'] = 1
     param_list['out_features'] = 2

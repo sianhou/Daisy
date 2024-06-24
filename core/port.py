@@ -3,7 +3,7 @@ from PySide6.QtGui import QPainter, QPen, QColor, QBrush
 from PySide6.QtWidgets import QGraphicsItem
 
 from core import dtype
-from env.config import EditorSceneConfig
+from env.config import EditorConfig
 
 
 class PortBase(QGraphicsItem):
@@ -15,7 +15,7 @@ class PortBase(QGraphicsItem):
         self._port_size = 2 * port_radius
         self._default_pen = QPen(QColor(self._port_color))
         self._default_pen.setWidthF(2)
-        self._default_brush = QBrush(QColor(EditorSceneConfig.background_color))
+        self._default_brush = QBrush(QColor(EditorConfig.background_color))
         self._parent_node = None
         self._edges = []
 

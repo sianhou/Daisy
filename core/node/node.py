@@ -3,7 +3,7 @@ from abc import abstractmethod
 from PySide6.QtWidgets import QGraphicsItem
 
 from core.port import InputPort, OutputPort
-from env.config import EditorSceneConfig
+from env.config import EditorConfig
 
 
 class NodeBase(QGraphicsItem):
@@ -48,8 +48,8 @@ class NodeBase(QGraphicsItem):
 
     def snapToNearestGrid(self, pos=(0, 0)):
         (x, y) = pos
-        x = round(x / EditorSceneConfig.grid_size) * EditorSceneConfig.grid_size
-        y = round(y / EditorSceneConfig.grid_size) * EditorSceneConfig.grid_size
+        x = round(x / EditorConfig.grid_size) * EditorConfig.grid_size
+        y = round(y / EditorConfig.grid_size) * EditorConfig.grid_size
         return (x, y)
 
     def updateInputEdge(self):

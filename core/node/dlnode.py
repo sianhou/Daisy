@@ -5,14 +5,14 @@ from PySide6.QtGui import QBrush, QPen, QColor, QFont, QPainterPath, Qt
 from PySide6.QtWidgets import QGraphicsTextItem
 
 from core.node.node import NodeBase
-from core.parampin import ParamPin, ParamPinList
-from core.params_editor_plane import ParamsEditorPanel
+from core.paramcard import ParamCard
+from core.paramitem import ParamItem, ParamItemList
 from core.port import OutputPort, InputPort
 
 
 class DLNode(NodeBase):
     model_name = ''
-    model_params: [ParamPin] = []
+    model_params: [ParamItem] = []
     num_input_ports: int = 1
     num_output_ports: int = 1
 
@@ -21,7 +21,7 @@ class DLNode(NodeBase):
 
         self._input_ports: [InputPort] = []
         self._output_ports: [OutputPort] = []
-        self._params: ParamPinList = ParamPinList()
+        self._params: ParamItemList = ParamItemList()
 
         self.setup(width=160)
         self.setTitle(title=self.model_name)
@@ -108,10 +108,9 @@ class DLNode(NodeBase):
         self.update()
 
     def setupParamsEditorPlane(self):
-        self._params_editor_plane = ParamsEditorPanel()
+        self._params_editor_plane = ParamCard(self._params)
         self._params_editor_plane.addToParaentNode(self)
         self._params_editor_plane.setPos(0, self._node_height + 10)
-        self._params_editor_plane.setupParamsPlane(self._params)
         self._params_editor_plane.hide()
 
         self.update()
