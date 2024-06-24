@@ -1,15 +1,40 @@
+from abc import abstractmethod
+
 from PySide6.QtCore import QRectF
 from PySide6.QtGui import QBrush, QPen, QColor, QFont, QPainterPath, Qt
 from PySide6.QtWidgets import QGraphicsTextItem
 
-from base.node import NodeBase
-from base.port import OutputPort, InputPort
+from core.node.node import NodeBase
+from core.parampin import ParamPin, ParamPinList
+from core.params_editor_plane import ParamsEditorPanel
+from core.port import OutputPort, InputPort
 
 
-class DeepLearningNode(NodeBase):
+class DLNode(NodeBase):
+    model_name = ''
+    model_params: [ParamPin] = []
+    num_input_ports: int = 1
+    num_output_ports: int = 1
+
     def __init__(self, parent=None):
-        super(DeepLearningNode, self).__init__(parent)
-        self.setup()
+        super(DLNode, self).__init__(parent)
+
+        self._input_ports: [InputPort] = []
+        self._output_ports: [OutputPort] = []
+        self._params: ParamPinList = ParamPinList()
+
+        self.setup(width=160)
+        self.setTitle(title=self.model_name)
+        self.setupIOPorts()
+        self.setupParams()
+        self.setupParamsEditorPlane()
+
+        self._model = None
+        self._value = None
+
+    @abstractmethod
+    def setupParams(self):
+        pass
 
     def addInputPort(self, port: InputPort, pos=[0, 0]):
         port.addToParentNode(self)
@@ -18,11 +43,11 @@ class DeepLearningNode(NodeBase):
 
     def addInputPortList(self, port_list: [InputPort] = None):
         if len(port_list) != 0:
-            total_width = (len(port_list) - 1) * (self._port_space + 2 * port_list[0]._port_size)
-            x = self.getShape()[0] / 2 - total_width / 2 - port_list[0]._port_size
-            y = 0 - port_list[0]._port_size
+            total_width = (len(port_list) - 1) * (self._port_space + port_list[0]._port_size)
+            x = self.getShape()[0] / 2 - total_width / 2 - port_list[0]._port_radius
+            y = 0 - port_list[0]._port_radius
             for i, port in enumerate(port_list):
-                self.addInputPort(port=port, pos=[x + i * (self._port_space + 2 * port_list[0]._port_size), y])
+                self.addInputPort(port=port, pos=[x + i * (self._port_space + port_list[0]._port_size), y])
         else:
             # TODO(housian): debug
             pass
@@ -34,11 +59,11 @@ class DeepLearningNode(NodeBase):
 
     def addOutputPortList(self, port_list: [OutputPort] = None):
         if len(port_list) != 0:
-            total_width = (len(port_list) - 1) * (self._port_space + 2 * port_list[0]._port_size)
-            x = self.getShape()[0] / 2 - total_width / 2 - port_list[0]._port_size
-            y = self.getShape()[1] - port_list[0]._port_size
+            total_width = (len(port_list) - 1) * (self._port_space + port_list[0]._port_size)
+            x = self.getShape()[0] / 2 - total_width / 2 - port_list[0]._port_radius
+            y = self.getShape()[1] - port_list[0]._port_radius
             for i, port in enumerate(port_list):
-                self.addOutputPort(port=port, pos=[x + i * (self._port_space + 2 * port_list[0]._port_size), y])
+                self.addOutputPort(port=port, pos=[x + i * (self._port_space + port_list[0]._port_size), y])
         else:
             # TODO(housian): debug
             pass
@@ -47,7 +72,7 @@ class DeepLearningNode(NodeBase):
         return (self._node_width, self._node_height)
 
     def getPos(self):
-        return (self.x, self.y)
+        return (self.x(), self.y())
 
     def getInputPort(self):
         return self._input_ports
@@ -74,7 +99,26 @@ class DeepLearningNode(NodeBase):
         self._icon_radius = radius * self._icon_size / temp_size
         self._icon_background_brush = QBrush(QColor(icon_color))
 
-    def setTitle(self, title="", font='Arial', font_size=10, color='#eeeeee', background_color='#aa4e90fe',
+        self.update()
+
+    def setupIOPorts(self):
+        # setup variables
+        self.addInputPortList([InputPort() for _ in range(self.num_input_ports)])
+        self.addOutputPortList([OutputPort() for _ in range(self.num_output_ports)])
+        self.update()
+
+    def setupParamsEditorPlane(self):
+        self._params_editor_plane = ParamsEditorPanel()
+        self._params_editor_plane.addToParaentNode(self)
+        self._params_editor_plane.setPos(0, self._node_height + 10)
+        self._params_editor_plane.setupParamsPlane(self._params)
+        self._params_editor_plane.hide()
+
+        self.update()
+
+        # for pin in self.
+
+    def setTitle(self, title="", font='Arial', font_size=16, color='#eeeeee', background_color='#aa4e90fe',
                  padding=5):
         self._title = title
         self._title_font = QFont(font, font_size)
@@ -89,6 +133,7 @@ class DeepLearningNode(NodeBase):
         self._title_item.setDefaultTextColor(self._title_color)
         self._title_item.setPos(self._icon_size + self._icon_padding + self._title_padding,
                                 self._icon_padding)
+        self.update()
 
     # override QT function
     def paint(self, painter, option, widget):
