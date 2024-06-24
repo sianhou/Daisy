@@ -30,7 +30,6 @@ class MouseRightBtnWidget(QTreeWidget):
                 node_item.setData(0, Qt.UserRole, self._data[pkg_name][node_name])
                 item.addChild(node_item)
             items.append(item)
-
         self.insertTopLevelItems(0, items)
 
     def hide(self):
