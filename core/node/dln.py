@@ -4,14 +4,14 @@ from PySide6.QtCore import QRectF
 from PySide6.QtGui import QBrush, QPen, QColor, QFont, QPainterPath, Qt
 from PySide6.QtWidgets import QGraphicsTextItem
 
+from core import ParamItem, ParamItemList, ParamCard
 from core.node.node import NodeBase
-from core.paramcard import ParamCard, ParamItem, ParamItemList
-from core.port import OutputPort, InputPort
+from core.port.port import OutputPort, InputPort
 from env.config import EditorConfig
 
 
 class DLN(NodeBase):
-    model_name = ''
+    model_name = 'DeepLearningNode'
     model_params: [ParamItem] = []
     num_input_ports: int = 1
     num_output_ports: int = 1

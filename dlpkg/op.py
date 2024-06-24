@@ -5,6 +5,7 @@ from core.paramcard import ParamItem, ParamItemList
 
 
 class Linear(DLN):
+    pkg_name = 'Basic Layer'
     model_name = 'Linear layer'
 
     num_input_ports = 2

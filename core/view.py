@@ -5,7 +5,9 @@ from core.edge import PortEdge, DragEdge
 from core.node.dln import DLN
 # from base.edge import EdgeBase, DraggingEdge
 from core.node.node import NodeBase
-from core.port import PortBase, InputPort, OutputPort
+from core.port.port import PortBase, InputPort, OutputPort
+from core.widget import MouseRightBtnWidget
+from dlpkg.opscan import OpListHandle
 
 
 class EditorView(QGraphicsView):
@@ -66,21 +68,37 @@ class EditorView(QGraphicsView):
             else:
                 self._drag_edge.setTargetPort(target_port=port)
 
-    def prsMouseLeftBtn(self, event):
+    def pressMouseLeftBtn(self, event):
         mouse_pos = event.pos()
         item = self.itemAt(mouse_pos)
+
+        # TODO(housian): 这里希望的作用是在用鼠标左键点击非右键菜单item时，右键自动隐藏
+        # 但是目前的方案似乎有些问题，就是当有多个QGraphicsProxyWidget，依然会有问题
+        # 未来是否可以用鼠标右键的点击位置进行判断，当鼠标不在NodeListWidget的范围内就进行隐藏
+        if not isinstance(item, QGraphicsProxyWidget):
+            self._mouse_right_btn_widget.hide()
+
         if item is None:
             if len(self._nodes) > 0:
                 for node in self._nodes:
                     node._params_editor_plane.hide()
-
         if isinstance(item, PortBase):
             self._drag_edge_mode = True
             self.createDragEdge(item)
         else:
             super().mousePressEvent(event)
 
-    def rlsMouseLeftBtn(self, event):
+    def pressMouseRightBtn(self, event):
+        item = self.itemAt(event.pos())
+        # 当前位置item为空
+        if item is None:
+            pos = self.mapToScene(event.pos())
+            w, h = self._mouse_right_btn_widget.rect().width(), self._mouse_right_btn_widget.rect().height()
+            self._mouse_right_btn_widget.setGeometry(pos.x(), pos.y(), w, h)
+            self._mouse_right_btn_widget.show()
+        super().mousePressEvent(event)
+
+    def releaseMouseLeftBtn(self, event):
         if self._drag_edge_mode:
             self._drag_edge_mode = False
             item = self.itemAt(event.pos())
@@ -100,13 +118,15 @@ class EditorView(QGraphicsView):
     # override qt function
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
-            self.prsMouseLeftBtn(event)
+            self.pressMouseLeftBtn(event)
+        elif event.button() == Qt.RightButton:
+            self.pressMouseRightBtn(event)
         else:
             super().mousePressEvent(event)
 
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.LeftButton:
-            self.rlsMouseLeftBtn(event)
+            self.releaseMouseLeftBtn(event)
         else:
             super().mouseReleaseEvent(event)
 
@@ -135,17 +155,24 @@ class EditorView(QGraphicsView):
 
     def mouseDoubleClickEvent(self, event):
         if event.button() == Qt.LeftButton:
-            self.prsMouseLeftBtnTwice(event)
+            self.pressMouseLeftBtnTwice(event)
         else:
             return super().mouseDoubleClickEvent(event)
 
-    def prsMouseLeftBtnTwice(self, event):
+    def pressMouseLeftBtnTwice(self, event):
         mouse_pos = event.pos()
         item = self.itemAt(mouse_pos)
         if isinstance(item, DLN):
             item._params_editor_plane.show()
         else:
             super().mousePressEvent(event)
+
+    def setupMouseRightBtnWidget(self):
+        data = OpListHandle.getRegisteredOpsJson()
+        self._mouse_right_btn_widget = MouseRightBtnWidget(data=data, scene=self._scene, view=self)
+        self._scene.addWidget(self._mouse_right_btn_widget)
+        self._mouse_right_btn_widget.setGeometry(0, 0, 200, 300)
+        self._mouse_right_btn_widget.hide()
 
     def addDebugBtn(self):
         self._debug_btn = QPushButton('Debug')

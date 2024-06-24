@@ -4,17 +4,17 @@ from PySide6.QtWidgets import QVBoxLayout
 from core.scene import EditorScene
 from core.view import EditorView
 from dlpkg.op import Linear
+from dlpkg.opscan import OpListHandle
 
 
 class NodeEditor(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
-
-        self._node_list_widget = None
+        OpListHandle.scan()
         self.setup()
 
     def setup(self):
-        self.setGeometry(100, 100, 1440, 720)
+        self.setGeometry(100, 100, 2000, 1200)
         self.setWindowTitle("Daisy - a simple node editor")
         self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(0, 0, 0, 0)
@@ -23,21 +23,13 @@ class NodeEditor(QtWidgets.QWidget):
         self._scene = EditorScene()
         self._view.setScene(self._scene)
         self._scene.setView(self._view)
+        self._view.setupMouseRightBtnWidget()
         self._view.addDebugBtn()
         self.layout.addWidget(self._view)
 
-        self.setupRightMouseBtnWidget()
-
         self.show()
 
-        self.addDebugNode()
-
-    def setupRightMouseBtnWidget(self):
-        # data = None
-        # self._node_list_widget = NodeListWidget(data, self._scene, self)
-        # self._scene.addWidget(self._node_list_widget)
-        # self._node_list_widget.setGeometry(0, 0, 200, 300)
-        pass
+        # self.addDebugNode()
 
     def addDebugNode(self):
         # node0 = MiniNode()
