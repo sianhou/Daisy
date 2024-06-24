@@ -10,10 +10,10 @@ class EditorConfig:
     height = 32000
 
     # font
-    editor_node_title_font = 'Arial'
-    editor_node_title_font_size = 16
-    param_item_title_font = 'Arial'
-    param_item_title_font_size = 14
+    node_title_font = 'Arial'
+    node_title_font_size = 14
+    param_title_font = 'Arial'
+    param_title_font_size = 14
 
 
 class NodeBaseConfig:

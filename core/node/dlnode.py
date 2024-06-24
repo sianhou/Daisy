@@ -5,9 +5,9 @@ from PySide6.QtGui import QBrush, QPen, QColor, QFont, QPainterPath, Qt
 from PySide6.QtWidgets import QGraphicsTextItem
 
 from core.node.node import NodeBase
-from core.paramcard import ParamCard
-from core.paramitem import ParamItem, ParamItemList
+from core.paramcard import ParamCard, ParamItem, ParamItemList
 from core.port import OutputPort, InputPort
+from env.config import EditorConfig
 
 
 class DLNode(NodeBase):
@@ -24,7 +24,7 @@ class DLNode(NodeBase):
         self._params: ParamItemList = ParamItemList()
 
         self.setup(width=160)
-        self.setTitle(title=self.model_name)
+        self.setTitle(title=self.model_name, font_size=EditorConfig.node_title_font_size)
         self.setupIOPorts()
         self.setupParams()
         self.setupParamsEditorPlane()

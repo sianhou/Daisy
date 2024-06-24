@@ -4,7 +4,6 @@ from PySide6.QtWidgets import QVBoxLayout
 from core.scene import EditorScene
 from core.view import EditorView
 from dlpkg.op import Linear
-from widget.ParamsEditorWidget import ParamsEditorWidget
 
 
 class NodeEditor(QtWidgets.QWidget):
@@ -27,7 +26,6 @@ class NodeEditor(QtWidgets.QWidget):
         self.layout.addWidget(self._view)
 
         self.setupRightMouseBtnWidget()
-        self.setupLeftMouseBtnWidget()
 
         self.show()
 
@@ -39,12 +37,6 @@ class NodeEditor(QtWidgets.QWidget):
         # self._scene.addWidget(self._node_list_widget)
         # self._node_list_widget.setGeometry(0, 0, 200, 300)
         pass
-
-    def setupLeftMouseBtnWidget(self):
-        self._params_editor_widget = ParamsEditorWidget()
-        self._scene.addWidget(self._params_editor_widget)
-        self._scene.widgets['params_editor_widget'] = self._params_editor_widget
-        self._params_editor_widget.hide()
 
     def addDebugNode(self):
         # node0 = MiniNode()

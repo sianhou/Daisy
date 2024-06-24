@@ -1,18 +1,7 @@
 from torch import nn
 
 from core.node.dlnode import DLNode
-from core.paramitem import ParamItem, ParamItemList
-
-
-# class ParamPinList():
-#     def __init__(self):
-#         self._param_pins: [ParamPin] = []
-#
-#     def __getitem__(self, item):
-#         for pin in self._param_pins:
-#             if pin.name == item:
-#                 return pin.value
-#         return None
+from core.paramcard import ParamItem, ParamItemList
 
 
 class Linear(DLNode):
