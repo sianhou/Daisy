@@ -27,7 +27,7 @@ class DLNode(NodeBase):
         self.setTitle(title=self.model_name, font_size=EditorConfig.node_title_font_size)
         self.setupIOPorts()
         self.setupParams()
-        self.setupParamsEditorPlane()
+        self.setupParamCard()
 
         self._model = None
         self._value = None
@@ -95,7 +95,7 @@ class DLNode(NodeBase):
         self.addOutputPortList([OutputPort() for _ in range(self.num_output_ports)])
         self.update()
 
-    def setupParamsEditorPlane(self):
+    def setupParamCard(self):
         self._params_editor_plane = ParamCard(self._params)
         self._params_editor_plane.addToParaentNode(self)
         self._params_editor_plane.setPos(0, self._node_height + 10)
@@ -140,3 +140,9 @@ class DLNode(NodeBase):
 
     def boundingRect(self) -> QRectF:
         return QRectF(0, 0, self._node_width, self._node_height)
+
+    def updateParams(self):
+        for param in self._params:
+            param.getValueFromInputWidget()
+            if param._title == '!!! overwrite_weight':
+                param._input_widget.setCheckState(Qt.Unchecked)

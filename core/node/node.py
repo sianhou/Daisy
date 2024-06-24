@@ -1,3 +1,4 @@
+import uuid
 from abc import abstractmethod
 
 from PySide6.QtWidgets import QGraphicsItem
@@ -22,6 +23,8 @@ class NodeBase(QGraphicsItem):
         self._node_width = 100
         self._node_height = 40
         self._node_radius = 7
+
+        self._unique_id = uuid.uuid4()
 
     @abstractmethod
     def addInputPort(self, port: InputPort, pos=[0, 0]):

@@ -1,6 +1,6 @@
 from PySide6.QtCore import QRectF
-from PySide6.QtGui import QBrush, QColor, QPen, QPainterPath, QFont, QFontMetrics, QDoubleValidator, QIntValidator, Qt
-from PySide6.QtWidgets import QGraphicsItem, QGraphicsTextItem, QCheckBox, QLineEdit, QGraphicsProxyWidget, QPushButton
+from PySide6.QtGui import QBrush, QColor, QPen, QPainterPath, QFont, QFontMetrics, QDoubleValidator, QIntValidator
+from PySide6.QtWidgets import QGraphicsItem, QGraphicsTextItem, QCheckBox, QLineEdit, QGraphicsProxyWidget
 
 from env.config import EditorConfig
 
@@ -132,8 +132,6 @@ class ParamCard(QGraphicsItem):
 
         self.setZValue(10)
 
-        self.addDebugBtn()
-
     def paint(self, painter, option, widget):
         # 画背景颜色
         node_line = QPainterPath()
@@ -148,26 +146,3 @@ class ParamCard(QGraphicsItem):
     def addToParaentNode(self, node):
         self._parent_node = node
         self.setParentItem(node)
-
-    def updateParams(self):
-        for param in self._params_list:
-            param.getValueFromInputWidget()
-            if param._title == '!!! overwrite_weight':
-                param._input_widget.setCheckState(Qt.Unchecked)
-
-    def addDebugBtn(self):
-        self._debug_btn = QPushButton('Debug')
-        self._debug_btn_proxy = QGraphicsProxyWidget(parent=self)
-        self._debug_btn_proxy.setWidget(self._debug_btn)
-        self._debug_btn_proxy.setParentItem(self)
-        self._debug_btn_proxy.setPos(0, 200)
-
-        self._debug_btn.clicked.connect(self.debugFunc)
-
-    def debugFunc(self):
-        self.updateParams()
-
-        print(' -------------- debug -------------- ')
-
-        for param in self._params_list:
-            print(param._title, ' = ', param._value)

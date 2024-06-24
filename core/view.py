@@ -1,5 +1,5 @@
 from PySide6.QtGui import Qt, QPainter
-from PySide6.QtWidgets import QGraphicsView
+from PySide6.QtWidgets import QGraphicsView, QPushButton, QGraphicsProxyWidget
 
 from core.edge import PortEdge, DragEdge
 from core.node.dlnode import DLNode
@@ -146,3 +146,21 @@ class EditorView(QGraphicsView):
             item._params_editor_plane.show()
         else:
             super().mousePressEvent(event)
+
+    def addDebugBtn(self):
+        self._debug_btn = QPushButton('Debug')
+        self._debug_btn_proxy = QGraphicsProxyWidget()
+        self._debug_btn_proxy.setWidget(self._debug_btn)
+        self._scene.addItem(self._debug_btn_proxy)
+        self._debug_btn_proxy.setPos(300, 300)
+
+        self._debug_btn.clicked.connect(self.debugFunc)
+
+    def debugFunc(self):
+        for node in self._nodes:
+            node.updateParams()
+
+            print(f'debug: {node._unique_id}')
+
+            for param in node._params:
+                print(param._title, ' = ', param._value)
