@@ -68,18 +68,6 @@ class DLNode(NodeBase):
             # TODO(housian): debug
             pass
 
-    def getShape(self):
-        return (self._node_width, self._node_height)
-
-    def getPos(self):
-        return (self.x(), self.y())
-
-    def getInputPort(self):
-        return self._input_ports
-
-    def getOutputPort(self):
-        return self._output_ports
-
     def setup(self, width=200, height=40, radius=4, background_color='#aa151515', outline_color='#a1a1a1',
               outline_selected_color='#aaffee00', icon_padding=5, icon_color='#88df00'):
 
@@ -114,8 +102,6 @@ class DLNode(NodeBase):
         self._params_editor_plane.hide()
 
         self.update()
-
-        # for pin in self.
 
     def setTitle(self, title="", font='Arial', font_size=16, color='#eeeeee', background_color='#aa4e90fe',
                  padding=5):

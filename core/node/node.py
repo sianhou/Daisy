@@ -19,6 +19,10 @@ class NodeBase(QGraphicsItem):
         self._input_ports: [InputPort] = []
         self._output_ports: [OutputPort] = []
 
+        self._node_width = 100
+        self._node_height = 40
+        self._node_radius = 7
+
     @abstractmethod
     def addInputPort(self, port: InputPort, pos=[0, 0]):
         pass
@@ -37,11 +41,17 @@ class NodeBase(QGraphicsItem):
 
     @abstractmethod
     def getPos(self):
-        pass
+        return (self.x(), self.y())
 
     @abstractmethod
     def getShape(self):
-        pass
+        return (self._node_width, self._node_height)
+
+    def getInputPort(self):
+        return self._input_ports
+
+    def getOutputPort(self):
+        return self._output_ports
 
     def setScene(self, scene):
         self._scene = scene
