@@ -112,7 +112,7 @@ class PortEdge(EdgeBase):
     def removeItself(self):
         self._source_port._edges.remove(self)
         self._target_port._edges.remove(self)
-        self._scene._view._edges.remove(self)
+        self._scene._edges.remove(self)
         self._scene.removeItem(self)
 
     def __str__(self):

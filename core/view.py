@@ -70,7 +70,7 @@ class EditorView(QGraphicsView):
                 item.update()
 
     def getEdgesFromScene(self):
-        return self._scene.edges
+        return self._scene._edges
 
     def getNodesFromScene(self):
         return self._scene._nodes

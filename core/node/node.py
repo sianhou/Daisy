@@ -103,5 +103,5 @@ class NodeBase(QGraphicsItem):
             for edge in port._edges:
                 edge.removeItself()
 
-        self._scene._view._nodes.remove(self)
+        self._scene._nodes.remove(self)
         self._scene.removeItem(self)
