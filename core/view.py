@@ -27,22 +27,8 @@ class EditorView(QGraphicsView):
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
-    def addNodeWithClass(self, cls, pos):
-        node = cls()
-        self.addNode(node, pos)
-
-    def removeEdge(self, edge: PortEdge):
-        if edge in self._edges:
-            self._edges.remove(edge)
-            edge._source_port._edges.remove(edge)
-            edge._target_port._edges.remove(edge)
-
     def addEdge(self, source_port: OutputPort, target_port: InputPort):
         edge = PortEdge(source_port=source_port, target_port=target_port, scene=self._scene)
-        self._edges.append(edge)
-
-    def addPortEdge(self, edge: PortEdge):
-
         self._edges.append(edge)
 
     def addNode(self, node: NodeBase = None, pos=(0, 0)):
@@ -52,10 +38,12 @@ class EditorView(QGraphicsView):
             node.setPos(pos[0], pos[1])
             node.setScene(self._scene)
 
-    def setScene(self, scene):
-        self._scene = scene
-        super().setScene(scene)
-        self.update()
+    def addNodeWithClass(self, cls, pos):
+        node = cls()
+        self.addNode(node, pos)
+
+    def addPortEdge(self, edge: PortEdge):
+        self._edges.append(edge)
 
     def createDragEdge(self, port: PortBase):
         drag_from_outputport = True
@@ -71,6 +59,16 @@ class EditorView(QGraphicsView):
                 self._drag_edge.setSourcePort(source_port=port)
             else:
                 self._drag_edge.setTargetPort(target_port=port)
+
+    def deleteSelectedItems(self):
+        # TODO(housian), 如果不在remove_self()后面增加item.update()，会在显示上残留最后一个node
+        for item in self._scene.selectedItems():
+            if isinstance(item, PortEdge):
+                item.removeItself()
+                item.update()
+            elif isinstance(item, NodeBase):
+                item.removeItself()
+                item.update()
 
     def pressMouseLeftBtn(self, event):
         mouse_pos = event.pos()
@@ -91,6 +89,14 @@ class EditorView(QGraphicsView):
             self.createDragEdge(item)
         else:
             super().mousePressEvent(event)
+
+    def pressMouseLeftBtnTwice(self, event):
+        mouse_pos = event.pos()
+        item = self.itemAt(mouse_pos)
+        if isinstance(item, DLN):
+            item._paramcard.show()
+        else:
+            super().mouseDoubleClickEvent(event)
 
     def pressMouseRightBtn(self, event):
         item = self.itemAt(event.pos())
@@ -120,7 +126,44 @@ class EditorView(QGraphicsView):
         else:
             super().mouseReleaseEvent(event)
 
+    def removeEdge(self, edge: PortEdge):
+        if edge in self._edges:
+            self._edges.remove(edge)
+            edge._source_port._edges.remove(edge)
+            edge._target_port._edges.remove(edge)
+
+    def setScene(self, scene):
+        self._scene = scene
+        super().setScene(scene)
+        self.update()
+
+    def setupMouseRightBtnWidget(self):
+        data = OpListHandle.getRegisteredOpsJson()
+        self._mouse_right_btn_widget = MouseRightBtnWidget(data=data, scene=self._scene, view=self)
+        self._scene.addWidget(self._mouse_right_btn_widget)
+        self._mouse_right_btn_widget.setGeometry(0, 0, 200, 300)
+        self._mouse_right_btn_widget.hide()
+
     # override qt function
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Delete or event.key() == Qt.Key_X:
+            self.deleteSelectedItems()
+        else:
+            super().keyReleaseEvent(event)
+
+    def mouseDoubleClickEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.pressMouseLeftBtnTwice(event)
+        else:
+            return super().mouseDoubleClickEvent(event)
+
+    def mouseMoveEvent(self, event):
+        if self._drag_edge_mode:
+            pos = self.mapToScene(event.pos())
+            self._drag_edge.updatePos(pos=(pos.x(), pos.y()))
+        else:
+            super().mouseMoveEvent(event)
+
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
             self.pressMouseLeftBtn(event)
@@ -135,50 +178,7 @@ class EditorView(QGraphicsView):
         else:
             super().mouseReleaseEvent(event)
 
-    def mouseMoveEvent(self, event):
-        if self._drag_edge_mode:
-            pos = self.mapToScene(event.pos())
-            self._drag_edge.updatePos(pos=(pos.x(), pos.y()))
-        else:
-            super().mouseMoveEvent(event)
-
-    def keyPressEvent(self, event):
-        if event.key() == Qt.Key_Delete or event.key() == Qt.Key_X:
-            self.deleteSelectedItems()
-        else:
-            super().keyReleaseEvent(event)
-
-    def deleteSelectedItems(self):
-        # TODO(housian), 如果不在remove_self()后面增加item.update()，会在显示上残留最后一个node
-        for item in self._scene.selectedItems():
-            if isinstance(item, PortEdge):
-                item.removeItself()
-                item.update()
-            elif isinstance(item, NodeBase):
-                item.removeItself()
-                item.update()
-
-    def mouseDoubleClickEvent(self, event):
-        if event.button() == Qt.LeftButton:
-            self.pressMouseLeftBtnTwice(event)
-        else:
-            return super().mouseDoubleClickEvent(event)
-
-    def pressMouseLeftBtnTwice(self, event):
-        mouse_pos = event.pos()
-        item = self.itemAt(mouse_pos)
-        if isinstance(item, DLN):
-            item._paramcard.show()
-        else:
-            super().mouseDoubleClickEvent(event)
-
-    def setupMouseRightBtnWidget(self):
-        data = OpListHandle.getRegisteredOpsJson()
-        self._mouse_right_btn_widget = MouseRightBtnWidget(data=data, scene=self._scene, view=self)
-        self._scene.addWidget(self._mouse_right_btn_widget)
-        self._mouse_right_btn_widget.setGeometry(0, 0, 200, 300)
-        self._mouse_right_btn_widget.hide()
-
+    # debug
     def addDebugBtn(self):
         self._debug_btn = QPushButton('Debug')
         self._debug_btn_proxy = QGraphicsProxyWidget()
