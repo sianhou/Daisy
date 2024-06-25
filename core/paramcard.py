@@ -33,6 +33,7 @@ class ParamItem(QGraphicsItem):
         self._input_widget = None
         if self._type == bool:
             self._input_widget = QCheckBox()
+
         elif self._type == float:
             self._input_widget = QLineEdit()
             self._input_widget.setValidator(QDoubleValidator())
@@ -47,6 +48,12 @@ class ParamItem(QGraphicsItem):
             self._input_widget.setFixedWidth(100)
             self._input_widget.setFixedHeight(self._param_fm.height())
         elif isinstance(self._input_widget, QCheckBox):
+            self._input_widget.setStyleSheet(f'QCheckBox::indicator {{ '
+                                             f'width: {self._param_fm.height()}px;'
+                                             f'height: {self._param_fm.height()}px;'
+                                             f'vertical-align: middle;'
+                                             f'horizontal-align: middle;'
+                                             f'}}')
             self._input_widget.setFixedWidth(self._param_fm.height())
             self._input_widget.setFixedHeight(self._param_fm.height())
 
