@@ -52,7 +52,6 @@ class ParamItem(QGraphicsItem):
                                              f'width: {self._param_fm.height()}px;'
                                              f'height: {self._param_fm.height()}px;'
                                              f'vertical-align: middle;'
-                                             f'horizontal-align: middle;'
                                              f'}}')
             self._input_widget.setFixedWidth(self._param_fm.height())
             self._input_widget.setFixedHeight(self._param_fm.height())

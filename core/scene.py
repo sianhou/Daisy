@@ -16,7 +16,7 @@ class EditorScene(QGraphicsScene):
         self._nodes = []
         self._edges = []
 
-        self.widgets: [str, QWidget] = {}
+        self.widgets = {}
         # 初始化view
 
         # initialize size

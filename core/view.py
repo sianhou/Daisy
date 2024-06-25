@@ -26,6 +26,9 @@ class EditorView(QGraphicsView):
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
+        #  设置框体选择
+        self.setDragMode(QGraphicsView.RubberBandDrag)
+
     def addEdge(self, source_port: OutputPort, target_port: InputPort):
         edge = PortEdge(source_port=source_port, target_port=target_port, scene=self._scene)
         self.getEdgesFromScene().append(edge)

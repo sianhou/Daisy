@@ -2,7 +2,7 @@ from abc import abstractmethod
 
 from PySide6.QtCore import QRectF
 from PySide6.QtGui import QBrush, QPen, QColor, QFont, QPainterPath, Qt
-from PySide6.QtWidgets import QGraphicsTextItem
+from PySide6.QtWidgets import QGraphicsTextItem, QGraphicsDropShadowEffect
 
 from core import ParamItem, ParamItemList, ParamCard
 from core.node.node import NodeBase
@@ -31,6 +31,12 @@ class DLN(NodeBase):
 
         self._model = None
         self._value = None
+
+        # 选中投影
+        self._shadow = QGraphicsDropShadowEffect()
+        self._shadow.setOffset(0, 0)
+        self._shadow.setBlurRadius(20)
+        self._shadow_color = QColor('#aaeeee00')
 
     @abstractmethod
     def setupParams(self):
@@ -122,6 +128,15 @@ class DLN(NodeBase):
 
     # override QT function
     def paint(self, painter, option, widget):
+        # 选中投影设置， 最先画是为了放在最底层
+        if not self.isSelected():
+            self._shadow.setColor('#00000000')
+            self.setGraphicsEffect(self._shadow)
+        else:
+            # 选中投影设置
+            self._shadow.setColor(self._shadow_color)
+            self.setGraphicsEffect(self._shadow)
+
         # 画背景颜色
         node_line = QPainterPath()
         node_line.addRoundedRect(0, 0, self._node_width, self._node_height, self._node_radius, self._node_radius)
