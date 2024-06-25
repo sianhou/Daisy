@@ -27,7 +27,7 @@ class NodeBase(QGraphicsItem):
         self._unique_id = uuid.uuid4()
 
     @abstractmethod
-    def addInputPort(self, port: InputPort, pos=[0, 0]):
+    def addInputPort(self, port: InputPort, pos=None):
         pass
 
     @abstractmethod
@@ -35,7 +35,7 @@ class NodeBase(QGraphicsItem):
         pass
 
     @abstractmethod
-    def addOutputPort(self, port: OutputPort, pos=[0, 0]):
+    def addOutputPort(self, port: OutputPort, pos=None):
         pass
 
     @abstractmethod
@@ -44,11 +44,11 @@ class NodeBase(QGraphicsItem):
 
     @abstractmethod
     def getPos(self):
-        return (self.x(), self.y())
+        return self.x(), self.y()
 
     @abstractmethod
     def getShape(self):
-        return (self._node_width, self._node_height)
+        return self._node_width, self._node_height
 
     def getInputPort(self):
         return self._input_ports
@@ -63,7 +63,7 @@ class NodeBase(QGraphicsItem):
         (x, y) = pos
         x = round(x / EditorConfig.grid_size) * EditorConfig.grid_size
         y = round(y / EditorConfig.grid_size) * EditorConfig.grid_size
-        return (x, y)
+        return x, y
 
     def updateInputEdge(self):
         if len(self._input_ports) > 0:

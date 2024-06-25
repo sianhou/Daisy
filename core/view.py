@@ -14,8 +14,7 @@ class EditorView(QGraphicsView):
     def __init__(self, parent=None):
         super(EditorView, self).__init__(parent)
         self._scene = None
-        self._nodes = []
-        self._edges = []
+
         self._drag_edge = None
         self._drag_edge_mode = False
 
@@ -29,12 +28,12 @@ class EditorView(QGraphicsView):
 
     def addEdge(self, source_port: OutputPort, target_port: InputPort):
         edge = PortEdge(source_port=source_port, target_port=target_port, scene=self._scene)
-        self._edges.append(edge)
+        self.getEdgesFromScene().append(edge)
 
     def addNode(self, node: NodeBase = None, pos=(0, 0)):
         if node is not None:
             self._scene.addItem(node)
-            self._nodes.append(node)
+            self.getNodesFromScene().append(node)
             node.setPos(pos[0], pos[1])
             node.setScene(self._scene)
 
@@ -43,7 +42,7 @@ class EditorView(QGraphicsView):
         self.addNode(node, pos)
 
     def addPortEdge(self, edge: PortEdge):
-        self._edges.append(edge)
+        self.getEdgesFromScene().append(edge)
 
     def createDragEdge(self, port: PortBase):
         drag_from_outputport = True
@@ -70,6 +69,12 @@ class EditorView(QGraphicsView):
                 item.removeItself()
                 item.update()
 
+    def getEdgesFromScene(self):
+        return self._scene.edges
+
+    def getNodesFromScene(self):
+        return self._scene._nodes
+
     def pressMouseLeftBtn(self, event):
         mouse_pos = event.pos()
         item = self.itemAt(mouse_pos)
@@ -81,8 +86,8 @@ class EditorView(QGraphicsView):
             self._mouse_right_btn_widget.hide()
 
         if item is None:
-            if len(self._nodes) > 0:
-                for node in self._nodes:
+            if len(self.getNodesFromScene()) > 0:
+                for node in self.getNodesFromScene():
                     node._paramcard.hide()
         if isinstance(item, PortBase):
             self._drag_edge_mode = True
@@ -104,7 +109,7 @@ class EditorView(QGraphicsView):
         if item is None:
             pos = self.mapToScene(event.pos())
             w, h = self._mouse_right_btn_widget.rect().width(), self._mouse_right_btn_widget.rect().height()
-            self._mouse_right_btn_widget.setGeometry(pos.x(), pos.y(), w, h)
+            self._mouse_right_btn_widget.setGeometry(int(pos.x()), int(pos.y()), w, h)
             self._mouse_right_btn_widget._pos = pos
             self._mouse_right_btn_widget.show()
         super().mousePressEvent(event)
@@ -127,8 +132,8 @@ class EditorView(QGraphicsView):
             super().mouseReleaseEvent(event)
 
     def removeEdge(self, edge: PortEdge):
-        if edge in self._edges:
-            self._edges.remove(edge)
+        if edge in self.getEdgesFromScene():
+            self.getEdgesFromScene().remove(edge)
             edge._source_port._edges.remove(edge)
             edge._target_port._edges.remove(edge)
 
@@ -189,7 +194,7 @@ class EditorView(QGraphicsView):
         self._debug_btn.clicked.connect(self.debugFunc)
 
     def debugFunc(self):
-        for node in self._nodes:
+        for node in self.getNodesFromScene():
             node.updateParams()
 
             print(f'debug: {node._unique_id}')

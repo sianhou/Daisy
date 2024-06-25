@@ -11,8 +11,10 @@ class EditorScene(QGraphicsScene):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        # 初始化view
-        self._view = None
+        # initialize variables
+        self._views = []
+        self._nodes = []
+        self._edges = []
 
         self.widgets: [str, QWidget] = {}
         # 初始化view
@@ -62,8 +64,8 @@ class EditorScene(QGraphicsScene):
 
         return lines, dark_lines
 
-    def setView(self, view):
-        self._view = view
+    def addView(self, view):
+        self._views.append(view)
 
     # override QT function
     def drawBackground(self, painter: QPainter, rect) -> None:

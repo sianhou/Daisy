@@ -19,10 +19,11 @@ class NodeEditor(QtWidgets.QWidget):
         self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(0, 0, 0, 0)
 
-        self._view = EditorView()
         self._scene = EditorScene()
+        self._view = EditorView()
         self._view.setScene(self._scene)
-        self._scene.setView(self._view)
+        self._scene.addView(self._view)
+
         self._view.setupMouseRightBtnWidget()
         self._view.addDebugBtn()
         self.layout.addWidget(self._view)
