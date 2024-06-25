@@ -99,6 +99,7 @@ class EditorView(QGraphicsView):
             pos = self.mapToScene(event.pos())
             w, h = self._mouse_right_btn_widget.rect().width(), self._mouse_right_btn_widget.rect().height()
             self._mouse_right_btn_widget.setGeometry(pos.x(), pos.y(), w, h)
+            self._mouse_right_btn_widget._pos = pos
             self._mouse_right_btn_widget.show()
         super().mousePressEvent(event)
 
@@ -169,7 +170,7 @@ class EditorView(QGraphicsView):
         if isinstance(item, DLN):
             item._paramcard.show()
         else:
-            super().mousePressEvent(event)
+            super().mouseDoubleClickEvent(event)
 
     def setupMouseRightBtnWidget(self):
         data = OpListHandle.getRegisteredOpsJson()
