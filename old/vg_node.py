@@ -1,5 +1,6 @@
 # coding: utf-8
 from abc import abstractmethod
+from typing import List
 
 from PySide6.QtCore import QRectF, Qt
 from PySide6.QtGui import QPen, QColor, QBrush, QPainterPath, QFont
@@ -259,8 +260,8 @@ class Node(GraphNode):
 
         self.is_validate()
 
-        self.in_ports: [NodePort] = [pin.init_port() for pin in self.input_pins]
-        self.out_ports: [NodePort] = [pin.init_port() for pin in self.output_pins]
+        self.in_ports: List[NodePort] = [pin.init_port() for pin in self.input_pins]
+        self.out_ports: List[NodePort] = [pin.init_port() for pin in self.output_pins]
         super().__init__(title=self.node_title, param_ports=self.in_ports, output_ports=self.out_ports, is_pure=True)
 
         self.setNode()

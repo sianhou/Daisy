@@ -12,15 +12,15 @@ from env.config import EditorConfig
 
 class DLN(NodeBase):
     model_name = 'DeepLearningNode'
-    model_params: [ParamItem] = []
+    model_params: list[ParamItem] = []
     num_input_ports: int = 1
     num_output_ports: int = 1
 
     def __init__(self, parent=None):
         super(DLN, self).__init__(parent)
 
-        self._input_ports: [InputPort] = []
-        self._output_ports: [OutputPort] = []
+        self._input_ports: list[InputPort] = []
+        self._output_ports: list[OutputPort] = []
         self._params: ParamItemList = ParamItemList()
 
         self.setup(width=160)
