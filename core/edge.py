@@ -110,11 +110,14 @@ class PortEdge(EdgeBase):
         return QPointF(x, y)
 
     def removeItself(self):
-        self._source_port._edges.remove(self)
-        self._target_port._edges.remove(self)
+        if self in self._source_port._edges:
+            self._source_port._edges.remove(self)
+        if self in self._target_port._edges:
+            self._target_port._edges.remove(self)
         self._source_port.update()
         self._target_port.update()
-        self._scene._edges.remove(self)
+        if self in self._scene._edges:
+            self._scene._edges.remove(self)
         self._scene.removeItem(self)
 
     def __str__(self):
