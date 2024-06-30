@@ -64,33 +64,33 @@ class EditorView(QGraphicsView):
 
     def deleteSelectedItems(self):
 
-        # selected_items = self._scene.selectedItems()
-        #
-        # # 选出所有的edge
-        # selected_edges = [item for item in selected_items if isinstance(item, PortEdge)]
-        #
-        # # 在所有选项里面首先删除edge
-        # # 如果没有边就删除node
-        # # 这个功能的目的是通过两次按x删除所有选项
-        # if len(selected_edges) > 0:
-        #     for edge in selected_edges.copy():
-        #         edge.removeItself()
-        #         # TODO(housian), 如果不在remove_self()后面增加item.update()，会在显示上残留最后一个node
-        #         edge.update()
-        # else:
-        #     for node in selected_items.copy():
-        #         node.removeItself()
-        #         # TODO(housian), 如果不在remove_self()后面增加item.update()，会在显示上残留最后一个node
-        #         node.update()
-        select_items = self._scene.selectedItems()
+        selected_items = self._scene.selectedItems()
 
-        for i, item in enumerate(select_items):
-            if isinstance(item, PortEdge):
-                item.removeItself()
-                item.update()
-            elif isinstance(item, NodeBase):
-                item.removeItself()
-                item.update()
+        # 选出所有的edge
+        selected_edges = [item for item in selected_items if isinstance(item, PortEdge)]
+
+        # 在所有选项里面首先删除edge
+        # 如果没有边就删除node
+        # 这个功能的目的是通过两次按x删除所有选项
+        if len(selected_edges) > 0:
+            for edge in selected_edges:
+                edge.removeItself()
+                # TODO(housian), 如果不在remove_self()后面增加item.update()，会在显示上残留最后一个node
+                edge.update()
+        else:
+            for node in selected_items:
+                node.removeItself()
+                # TODO(housian), 如果不在remove_self()后面增加item.update()，会在显示上残留最后一个node
+                node.update()
+        # select_items = self._scene.selectedItems()
+        #
+        # for i, item in enumerate(select_items):
+        #     if isinstance(item, PortEdge):
+        #         item.removeItself()
+        #         item.update()
+        #     elif isinstance(item, NodeBase):
+        #         item.removeItself()
+        #         item.update()
 
     def getEdgesFromScene(self):
         return self._scene._edges
