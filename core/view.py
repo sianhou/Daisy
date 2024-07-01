@@ -1,4 +1,4 @@
-from PySide6.QtGui import Qt, QPainter
+from PySide6.QtGui import Qt, QPainter, QCursor
 from PySide6.QtWidgets import QGraphicsView, QPushButton, QGraphicsProxyWidget
 
 from core.edge import PortEdge, DragEdge
@@ -179,6 +179,9 @@ class EditorView(QGraphicsView):
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Delete or event.key() == Qt.Key_X:
             self.deleteSelectedItems()
+        if event.key() == Qt.Key_A:
+            cursorPos = QCursor.pos()
+            print(cursorPos)
         else:
             super().keyReleaseEvent(event)
 

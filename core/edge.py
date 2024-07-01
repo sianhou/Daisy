@@ -121,12 +121,6 @@ class PortEdge(EdgeBase):
         if self.scene() == self._scene:
             self._scene.removeItem(self)
 
-    def __str__(self):
-        return (f'PortEdge._source_port: {self._source_port} \n'
-                f'PortEdge._target_port: {self._target_port} \n'
-                f'PortEdge._source_pos: {self._source_pos} \n'
-                f'PortEdge._target_pos: {self._target_pos}')
-
 
 class DragEdge(EdgeBase):
     def __init__(self, source_pos, color='#a1a1a1', scene=None, drag_from_outputport=True, parent=None):

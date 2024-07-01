@@ -39,7 +39,9 @@ class MouseRightBtnWidget(QTreeWidget):
         self.setVisible(True)
 
     def clickTreeItemTwice(self, item, column):
+        print("clickTreeItemTwice")
         if isinstance(item, QTreeWidgetItem):
+            print("QTreeWidgetItem")
             cls = item.data(column, Qt.UserRole)
             if cls is not None:
                 self._view.addNodeWithClass(cls, [self._pos.x(), self._pos.y()])
