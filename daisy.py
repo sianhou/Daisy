@@ -1,10 +1,16 @@
+import profile
 import sys
 
 from PySide6.QtWidgets import QApplication
 
 from core.editor import NodeEditor
 
-if __name__ == '__main__':
-    app = QApplication([])
-    editor = NodeEditor()
+
+def run():
+    app = QApplication(sys.argv)
+    window = NodeEditor()
     sys.exit(app.exec())
+
+
+if __name__ == '__main__':
+    profile.run('run()')
