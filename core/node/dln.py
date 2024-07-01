@@ -1,4 +1,6 @@
+import sys
 from abc import abstractmethod
+from typing import List
 
 from PySide6.QtCore import QRectF
 from PySide6.QtGui import QBrush, QPen, QColor, QFont, QPainterPath, Qt
@@ -9,18 +11,27 @@ from core.node.node import NodeBase
 from core.port.port import OutputPort, InputPort
 from env.config import EditorConfig
 
+Python_version = sys.version_info
+
 
 class DLN(NodeBase):
     model_name = 'DeepLearningNode'
-    model_params: list[ParamItem] = []
+    if Python_version < (3, 9):
+        model_params: List[ParamItem] = []
+    else:
+        model_params: list[ParamItem] = []
     num_input_ports: int = 1
     num_output_ports: int = 1
 
     def __init__(self, parent=None):
         super(DLN, self).__init__(parent)
 
-        self._input_ports: list[InputPort] = []
-        self._output_ports: list[OutputPort] = []
+        if Python_version < (3, 9):
+            self._input_ports: List[InputPort] = []
+            self._output_ports: List[OutputPort] = []
+        else:
+            self._input_ports: list[InputPort] = []
+            self._output_ports: list[OutputPort] = []
         self._params: ParamItemList = ParamItemList()
 
         self.setup(width=160)

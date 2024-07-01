@@ -28,7 +28,7 @@ class OpListHandle:
         # inspect只能查看Live Modules, 也就是必须是import过的
         # 如果想自动扫描路径下的所有node，自动注册，只用inspect是不行的
         sub_modules = []
-        path_folder = os.path.dirname(__file__) + './'
+        path_folder = os.path.dirname(__file__) + '/'
         for module in os.listdir(path_folder):
             if not module.endswith('.py') or module == '__init__.py' or module == 'optable.py':
                 continue
