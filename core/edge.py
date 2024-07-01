@@ -118,7 +118,8 @@ class PortEdge(EdgeBase):
         self._target_port.update()
         if self in self._scene._edges:
             self._scene._edges.remove(self)
-        self._scene.removeItem(self)
+        if self.scene() == self._scene:
+            self._scene.removeItem(self)
 
     def __str__(self):
         return (f'PortEdge._source_port: {self._source_port} \n'

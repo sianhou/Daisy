@@ -149,9 +149,10 @@ class EditorView(QGraphicsView):
                 edge = self._drag_edge.convToPortEdge()
                 if edge is not None:
                     self.addPortEdge(edge)
-                edge._source_port.update()
-                edge._target_port.update()
-            self._scene.removeItem(self._drag_edge)
+                    edge._source_port.update()
+                    edge._target_port.update()
+            if self._drag_edge.scene() == self._scene:
+                self._scene.removeItem(self._drag_edge)
             self._drag_edge = None
         else:
             super().mouseReleaseEvent(event)
