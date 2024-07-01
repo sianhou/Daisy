@@ -1,4 +1,3 @@
-import profile
 import sys
 
 from PySide6.QtWidgets import QApplication
@@ -13,4 +12,5 @@ def run():
 
 
 if __name__ == '__main__':
-    profile.run('run()')
+    run()
+    # profile.run('run()')
