@@ -1,7 +1,7 @@
 import uuid
 from abc import abstractmethod
 
-from PySide6.QtWidgets import QGraphicsItem
+from PySide6.QtWidgets import QGraphicsItem, QGraphicsSceneMouseEvent
 
 from core.port import InputPort, OutputPort
 from env.config import EditorConfig
@@ -107,3 +107,11 @@ class NodeBase(QGraphicsItem):
             self._scene._nodes.remove(self)
         if self.scene() == self._scene:
             self._scene.removeItem(self)
+
+    # override qt function
+    def mouseReleaseEvent(self, event: QGraphicsSceneMouseEvent):
+        # Check Item Scene Association: Before ungrabbing the mouse,
+        # ensure the item is still part of a scene.
+        if self.scene() is not None:
+            self.ungrabMouse()
+        super().mouseReleaseEvent(event)

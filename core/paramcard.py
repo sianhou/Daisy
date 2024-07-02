@@ -1,6 +1,7 @@
 from PySide6.QtCore import QRectF
 from PySide6.QtGui import QBrush, QColor, QPen, QPainterPath, QFont, QFontMetrics, QDoubleValidator, QIntValidator
-from PySide6.QtWidgets import QGraphicsItem, QGraphicsTextItem, QCheckBox, QLineEdit, QGraphicsProxyWidget
+from PySide6.QtWidgets import QGraphicsItem, QGraphicsTextItem, QCheckBox, QLineEdit, QGraphicsProxyWidget, \
+    QGraphicsSceneMouseEvent
 
 from env.config import EditorConfig
 
@@ -96,6 +97,14 @@ class ParamItem(QGraphicsItem):
 
     def setValue(self, value):
         self._value = value
+
+    # override qt function
+    def mouseReleaseEvent(self, event: QGraphicsSceneMouseEvent):
+        # Check Item Scene Association: Before ungrabbing the mouse,
+        # ensure the item is still part of a scene.
+        if self.scene() is not None:
+            self.ungrabMouse()
+        super().mouseReleaseEvent(event)
 
 
 class ParamItemList(list):

@@ -2,7 +2,7 @@ from abc import abstractmethod
 
 from PySide6.QtCore import QPointF
 from PySide6.QtGui import QColor, QPen, QPainter, Qt, QPainterPath
-from PySide6.QtWidgets import QGraphicsPathItem, QGraphicsDropShadowEffect, QGraphicsItem
+from PySide6.QtWidgets import QGraphicsPathItem, QGraphicsDropShadowEffect, QGraphicsItem, QGraphicsSceneMouseEvent
 
 from core.port.port import InputPort, OutputPort
 
@@ -88,6 +88,14 @@ class EdgeBase(QGraphicsPathItem):
         else:
             self._shadow.setColor('#00000000')
             self.setGraphicsEffect(self._shadow)
+
+    # override qt function
+    def mouseReleaseEvent(self, event: QGraphicsSceneMouseEvent):
+        # Check Item Scene Association: Before ungrabbing the mouse,
+        # ensure the item is still part of a scene.
+        if self.scene() is not None:
+            self.ungrabMouse()
+        super().mouseReleaseEvent(event)
 
 
 class PortEdge(EdgeBase):

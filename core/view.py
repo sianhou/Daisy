@@ -1,4 +1,5 @@
-from PySide6.QtGui import Qt, QPainter, QCursor
+from PySide6.QtCore import QTimer
+from PySide6.QtGui import Qt, QPainter
 from PySide6.QtWidgets import QGraphicsView, QPushButton, QGraphicsProxyWidget
 
 from core.edge import PortEdge, DragEdge
@@ -64,33 +65,43 @@ class EditorView(QGraphicsView):
 
     def deleteSelectedItems(self):
 
+        # When deleting many items in PySide6 and encountering the error
+        # "QGraphicsItem::ungrabMouse: cannot ungrab mouse without scene,"
+        # it's crucial to ensure that the items are properly managed during deletion.
+
         selected_items = self._scene.selectedItems()
 
         # 选出所有的edge
         selected_edges = [item for item in selected_items if isinstance(item, PortEdge)]
 
-        # 在所有选项里面首先删除edge
-        # 如果没有边就删除node
-        # 这个功能的目的是通过两次按x删除所有选项
-        if len(selected_edges) > 0:
-            for edge in selected_edges:
-                edge.removeItself()
-                # TODO(housian), 如果不在remove_self()后面增加item.update()，会在显示上残留最后一个node
-                edge.update()
-        else:
-            for node in selected_items:
-                node.removeItself()
-                # TODO(housian), 如果不在remove_self()后面增加item.update()，会在显示上残留最后一个node
-                node.update()
-        # select_items = self._scene.selectedItems()
-        #
-        # for i, item in enumerate(select_items):
-        #     if isinstance(item, PortEdge):
-        #         item.removeItself()
-        #         item.update()
-        #     elif isinstance(item, NodeBase):
-        #         item.removeItself()
-        #         item.update()
+        def remove_items():
+            # Block signals to prevent updates during deletion
+            self._scene.blockSignals(True)
+
+            # 在所有选项里面首先删除edge
+            # 如果没有边就删除node
+            # 这个功能的目的是通过两次按x删除所有选项
+            if len(selected_edges) > 0:
+                for edge in selected_edges:
+                    edge.removeItself()
+                    # TODO(housian), 如果不在remove_self()后面增加item.update()，会在显示上残留最后一个node
+                    edge.update()
+                    # Explicitly delete the item
+                    del edge
+
+            else:
+                for node in selected_items:
+                    node.removeItself()
+                    # TODO(housian), 如果不在remove_self()后面增加item.update()，会在显示上残留最后一个node
+                    node.update()
+                    # Explicitly delete the item
+                    del node
+
+            # Unblock signals after deletion
+            self._scene.blockSignals(False)
+
+        # Schedule the deletion for the next event loop cycle
+        QTimer.singleShot(0, remove_items)
 
     def getEdgesFromScene(self):
         return self._scene._edges
@@ -179,9 +190,6 @@ class EditorView(QGraphicsView):
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Delete or event.key() == Qt.Key_X:
             self.deleteSelectedItems()
-        if event.key() == Qt.Key_A:
-            cursorPos = QCursor.pos()
-            print(cursorPos)
         else:
             super().keyReleaseEvent(event)
 
