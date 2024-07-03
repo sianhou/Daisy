@@ -3,7 +3,7 @@ from abc import abstractmethod
 from typing import List
 
 from PySide6.QtCore import QRectF
-from PySide6.QtGui import QBrush, QPen, QColor, QFont, QPainterPath, Qt
+from PySide6.QtGui import QBrush, QPen, QColor, QFont, QPainterPath, Qt, QPixmap, QPainter
 from PySide6.QtWidgets import QGraphicsTextItem, QGraphicsDropShadowEffect
 
 from core import ParamItem, ParamItemList, ParamCard
@@ -48,6 +48,10 @@ class DLN(NodeBase):
         self._shadow.setOffset(0, 0)
         self._shadow.setBlurRadius(20)
         self._shadow_color = QColor('#aaeeee00')
+        self._shadow.setColor(self._shadow_color)
+
+        self._painter_cache = None
+        self._selected_painter_cache = None
 
     @abstractmethod
     def setupParams(self):
@@ -86,16 +90,19 @@ class DLN(NodeBase):
             pass
 
     def setup(self, width=200, height=40, radius=4, background_color='#aa151515', outline_color='#a1a1a1',
-              outline_selected_color='#aaffee00', icon_padding=5, icon_color='#88df00'):
+              selected_background_color='#22eeee00', icon_padding=5, icon_color='#88df00'):
 
         # body
         self._node_width = width
         self._node_height = height
         self._node_radius = radius
         self._background_brush = QBrush(QColor(background_color))
+        self._selected_background_brush = QBrush(QColor(selected_background_color))
         self._default_pen = QPen(QColor(outline_color))
         self._default_pen.setWidthF(2)
-        self._selected_pen = QPen(QColor(outline_selected_color))
+
+        # self._selected_pen = QPen(QColor(outline_selected_color))
+        # self._selected_pen.setWidthF(3)
 
         # icon
         self._icon_padding = icon_padding
@@ -137,22 +144,24 @@ class DLN(NodeBase):
                                 self._icon_padding)
         self.update()
 
-    # override QT function
-    def paint(self, painter, option, widget):
-        # 选中投影设置， 最先画是为了放在最底层
-        if not self.isSelected():
-            self._shadow.setColor('#00000000')
-            self.setGraphicsEffect(self._shadow)
-        else:
-            # 选中投影设置
-            self._shadow.setColor(self._shadow_color)
-            self.setGraphicsEffect(self._shadow)
+    def _repaint(self, painter):
+        # # 选中投影设置， 最先画是为了放在最底层
+        # if not self.isSelected():
+        #     self._shadow.setColor('#00000000')
+        #     self.setGraphicsEffect(self._shadow)
+        # else:
+        #     # 选中投影设置
+        #     self._shadow.setColor(self._shadow_color)
+        #     self.setGraphicsEffect(self._shadow)
 
         # 画背景颜色
         node_line = QPainterPath()
         node_line.addRoundedRect(0, 0, self._node_width, self._node_height, self._node_radius, self._node_radius)
         painter.setPen(self._default_pen)
-        painter.setBrush(self._background_brush)
+        if self.isSelected():
+            painter.setBrush(self._selected_background_brush)
+        else:
+            painter.setBrush(self._background_brush)
         painter.drawPath(node_line.simplified())
 
         # plot icon
@@ -164,6 +173,36 @@ class DLN(NodeBase):
         painter.setBrush(self._icon_background_brush)
         painter.drawPath(icon_line.simplified())
 
+    # override QT function
+    def paint(self, painter, option, widget):
+        # 选中投影设置， 最先画是为了放在最底层
+        # if not self.isSelected():
+        #     self.setGraphicsEffect()
+        #     # self._shadow.setColor('#00000000')
+        #     # self.setGraphicsEffect(self._shadow)
+        # else:
+        #     # 选中投影设置
+        #     self._shadow.setColor(self._shadow_color)
+        #     self.setGraphicsEffect(self._shadow)
+
+        if self.isSelected():
+            if self._selected_painter_cache is None:
+                self._selected_painter_cache = QPixmap(self.boundingRect().size().toSize())
+                self._selected_painter_cache.fill(Qt.transparent)
+                temp_painter = QPainter(self._selected_painter_cache)
+                self._repaint(temp_painter)
+                temp_painter.end()
+            painter.drawPixmap(0, 0, self._selected_painter_cache)
+        else:
+            if self._painter_cache is None:
+                self._painter_cache = QPixmap(self.boundingRect().size().toSize())
+                self._painter_cache.fill(Qt.transparent)
+                temp_painter = QPainter(self._painter_cache)
+                self._repaint(temp_painter)
+                temp_painter.end()
+
+            painter.drawPixmap(0, 0, self._painter_cache)
+
     def boundingRect(self) -> QRectF:
         return QRectF(0, 0, self._node_width, self._node_height)
 
@@ -172,3 +211,13 @@ class DLN(NodeBase):
             param.getValueFromInputWidget()
             if param._title == '!!! overwrite_weight':
                 param._input_widget.setCheckState(Qt.Unchecked)
+
+    def itemChange(self, change, value):
+        # if change == QGraphicsItem.ItemSelectedChange:
+        #     if value:  # Item is being selected
+        #         self._shadow.setColor(self._shadow_color)
+        #         self.setGraphicsEffect(self._shadow)
+        #     else:  # Item is being deselected
+        #         self._shadow.setColor('#00000000')
+        #         self.setGraphicsEffect(self._shadow)
+        return super().itemChange(change, value)

@@ -7,6 +7,7 @@ from core.node.dln import DLN
 from core.node.node import NodeBase
 from core.port.port import PortBase, InputPort, OutputPort
 from core.widget import MouseRightBtnWidget
+from dlpkg.op import Linear
 from dlpkg.opscan import OpListHandle
 
 
@@ -21,6 +22,9 @@ class EditorView(QGraphicsView):
         # config display params
         self.setRenderHint(QPainter.Antialiasing | QPainter.TextAntialiasing | QPainter.SmoothPixmapTransform)
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
+
+        # self.setBackgroundBrush(QImage(":/images/backgroundtile.png"));
+        self.setCacheMode(QGraphicsView.CacheBackground)
 
         # 不显示垂直和横向滚轮
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -223,10 +227,14 @@ class EditorView(QGraphicsView):
         self._debug_btn.clicked.connect(self.debugFunc)
 
     def debugFunc(self):
-        for node in self.getNodesFromScene():
-            node.updateParams()
-
-            print(f'debug: {node._unique_id}')
-
-            for param in node._params:
-                print(param._title, ' = ', param._value)
+        for i in range(5):
+            for j in range(8):
+                cls = Linear()
+                self.addNode(node=cls, pos=(-800 + i * 200, -500 + j * 80))
+        # for node in self.getNodesFromScene():
+        #     node.updateParams()
+        #
+        #     print(f'debug: {node._unique_id}')
+        #
+        #     for param in node._params:
+        #         print(param._title, ' = ', param._value)
