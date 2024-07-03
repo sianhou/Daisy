@@ -89,7 +89,7 @@ class DLN(NodeBase):
             # TODO(housian): debug
             pass
 
-    def setup(self, width=200, height=40, radius=4, background_color='#aa151515', outline_color='#a1a1a1',
+    def setup(self, width=200, height=40, radius=6, background_color='#aa151515', outline_color='#a1a1a1',
               selected_background_color='#22eeee00', icon_padding=5, icon_color='#88df00'):
 
         # body
@@ -99,7 +99,7 @@ class DLN(NodeBase):
         self._background_brush = QBrush(QColor(background_color))
         self._selected_background_brush = QBrush(QColor(selected_background_color))
         self._default_pen = QPen(QColor(outline_color))
-        self._default_pen.setWidthF(2)
+        self._default_pen.setWidthF(3)
 
         # self._selected_pen = QPen(QColor(outline_selected_color))
         # self._selected_pen.setWidthF(3)
@@ -190,6 +190,7 @@ class DLN(NodeBase):
                 self._selected_painter_cache = QPixmap(self.boundingRect().size().toSize())
                 self._selected_painter_cache.fill(Qt.transparent)
                 temp_painter = QPainter(self._selected_painter_cache)
+                temp_painter.setRenderHint(QPainter.Antialiasing)
                 self._repaint(temp_painter)
                 temp_painter.end()
             painter.drawPixmap(0, 0, self._selected_painter_cache)
@@ -198,6 +199,7 @@ class DLN(NodeBase):
                 self._painter_cache = QPixmap(self.boundingRect().size().toSize())
                 self._painter_cache.fill(Qt.transparent)
                 temp_painter = QPainter(self._painter_cache)
+                temp_painter.setRenderHint(QPainter.Antialiasing)
                 self._repaint(temp_painter)
                 temp_painter.end()
 
