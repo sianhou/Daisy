@@ -1,6 +1,6 @@
 from PySide6.QtCore import QRectF, QPointF
 from PySide6.QtGui import QPainter, QPen, QColor, QBrush
-from PySide6.QtWidgets import QGraphicsItem
+from PySide6.QtWidgets import QGraphicsItem, QGraphicsSceneMouseEvent
 
 from core import dtype
 from env.config import EditorConfig
@@ -52,6 +52,14 @@ class PortBase(QGraphicsItem):
     def getCenterPos(self):
         self._port_pos = (self.scenePos().x() + self._port_radius, self.scenePos().y() + self._port_radius)
         return self._port_pos
+
+    # override qt function
+    def mouseReleaseEvent(self, event: QGraphicsSceneMouseEvent):
+        # Check Item Scene Association: Before ungrabbing the mouse,
+        # ensure the item is still part of a scene.
+        if self.scene() is not None:
+            self.ungrabMouse()
+        super().mouseReleaseEvent(event)
 
 
 class InputPort(PortBase):

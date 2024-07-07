@@ -1,26 +1,37 @@
+import sys
 from abc import abstractmethod
+from typing import List
 
 from PySide6.QtCore import QRectF
 from PySide6.QtGui import QBrush, QPen, QColor, QFont, QPainterPath, Qt
 from PySide6.QtWidgets import QGraphicsTextItem
 
+from core import ParamItem, ParamItemList, ParamCard
 from core.node.node import NodeBase
-from core.paramcard import ParamCard, ParamItem, ParamItemList
-from core.port import OutputPort, InputPort
-from env.config import EditorConfig
+from core.port.port import OutputPort, InputPort
+from env.config import EditorConfig, NodeConfig
+
+Python_version = sys.version_info
 
 
 class DLN(NodeBase):
-    model_name = ''
-    model_params: [ParamItem] = []
+    model_name = 'DeepLearningNode'
+    if Python_version < (3, 9):
+        model_params: List[ParamItem] = []
+    else:
+        model_params: list[ParamItem] = []
     num_input_ports: int = 1
     num_output_ports: int = 1
 
     def __init__(self, parent=None):
         super(DLN, self).__init__(parent)
 
-        self._input_ports: [InputPort] = []
-        self._output_ports: [OutputPort] = []
+        if Python_version < (3, 9):
+            self._input_ports: List[InputPort] = []
+            self._output_ports: List[OutputPort] = []
+        else:
+            self._input_ports: list[InputPort] = []
+            self._output_ports: list[OutputPort] = []
         self._params: ParamItemList = ParamItemList()
 
         self.setup(width=160)
@@ -78,7 +89,8 @@ class DLN(NodeBase):
         self._background_brush = QBrush(QColor(background_color))
         self._default_pen = QPen(QColor(outline_color))
         self._default_pen.setWidthF(2)
-        self._selected_pen = QPen(QColor(outline_selected_color))
+        self._selected_pen = QPen(QColor(NodeConfig.selected_color).lighter(150))
+        self._selected_pen.setWidthF(3)
 
         # icon
         self._icon_padding = icon_padding
@@ -96,10 +108,10 @@ class DLN(NodeBase):
         self.update()
 
     def setupParamCard(self):
-        self._params_editor_plane = ParamCard(self._params)
-        self._params_editor_plane.addToParaentNode(self)
-        self._params_editor_plane.setPos(0, self._node_height + 10)
-        self._params_editor_plane.hide()
+        self._paramcard = ParamCard(self._params)
+        self._paramcard.addToParaentNode(self)
+        self._paramcard.setPos(0, self._node_height + 10)
+        self._paramcard.hide()
 
         self.update()
 
@@ -122,10 +134,14 @@ class DLN(NodeBase):
 
     # override QT function
     def paint(self, painter, option, widget):
+
         # 画背景颜色
         node_line = QPainterPath()
         node_line.addRoundedRect(0, 0, self._node_width, self._node_height, self._node_radius, self._node_radius)
-        painter.setPen(self._default_pen)
+        if not self.isSelected():
+            painter.setPen(self._default_pen)
+        else:
+            painter.setPen(self._selected_pen)
         painter.setBrush(self._background_brush)
         painter.drawPath(node_line.simplified())
 

@@ -16,8 +16,15 @@ class EditorConfig:
     param_title_font_size = 14
 
 
-class NodeBaseConfig:
+class NodeConfig:
     title_font = 'Arial'
     title_font_size = 16
     subtitle_font = 'Arial'
     subtitle_font_size = 14
+
+    # color
+    selected_color = '#aaeeee00'
+
+
+class EdgeConfig:
+    selected_color = '#aaeeee00'

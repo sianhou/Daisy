@@ -11,9 +11,31 @@ class EditorScene(QGraphicsScene):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self.widgets: [str, QWidget] = {}
+        # initialize variables
+        self._views = []
+        self._nodes = []
+        self._edges = []
 
-        self.initScene()
+        self.widgets = {}
+        # 初始化view
+
+        # initialize size
+        self._width = config.EditorConfig.width
+        self._height = config.EditorConfig.height
+        self.setSceneRect(-self._width / 2, -self._height / 2, self._width, self._height)
+
+        # initialize background brush
+        self.setBackgroundBrush(QBrush(QColor(config.EditorConfig.background_color)))
+
+        # initialize grid
+        self._grid_size = config.EditorConfig.grid_size
+        self._chunk_size = config.EditorConfig.grid_chunk
+
+        self._normal_line_pen = QPen(QColor(config.EditorConfig.grid_normal_line_color))
+        self._normal_line_pen.setWidthF(config.EditorConfig.grid_normal_line_width)
+
+        self._dark_line_pen = QPen(QColor(config.EditorConfig.grid_dark_line_color))
+        self._dark_line_pen.setWidthF(config.EditorConfig.grid_dark_line_width)
 
     def calGridLines(self, rect):
         lines = []
@@ -42,6 +64,9 @@ class EditorScene(QGraphicsScene):
 
         return lines, dark_lines
 
+    def addView(self, view):
+        self._views.append(view)
+
     # override QT function
     def drawBackground(self, painter: QPainter, rect) -> None:
 
@@ -56,28 +81,3 @@ class EditorScene(QGraphicsScene):
         # 画粗线
         painter.setPen(self._dark_line_pen)
         painter.drawLines(dark_lines)
-
-    def initScene(self):
-        # 初始化view
-        self._view = None
-
-        # initialize size
-        self._width = config.EditorConfig.width
-        self._height = config.EditorConfig.height
-        self.setSceneRect(-self._width / 2, -self._height / 2, self._width, self._height)
-
-        # initialize background brush
-        self.setBackgroundBrush(QBrush(QColor(config.EditorConfig.background_color)))
-
-        # initialize grid
-        self._grid_size = config.EditorConfig.grid_size
-        self._chunk_size = config.EditorConfig.grid_chunk
-
-        self._normal_line_pen = QPen(QColor(config.EditorConfig.grid_normal_line_color))
-        self._normal_line_pen.setWidthF(config.EditorConfig.grid_normal_line_width)
-
-        self._dark_line_pen = QPen(QColor(config.EditorConfig.grid_dark_line_color))
-        self._dark_line_pen.setWidthF(config.EditorConfig.grid_dark_line_width)
-
-    def setView(self, view):
-        self._view = view
