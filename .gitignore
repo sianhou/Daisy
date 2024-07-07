@@ -1,2 +1,7 @@
 __pycache__/
 .idea/
+
+./qtdemos/elev.txt
+./qtdemos/elev_shift.txt
+./qtdemos/elev_smooth.txt
+./qtdemos/elev_smooth2.txt

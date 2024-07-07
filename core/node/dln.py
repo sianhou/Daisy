@@ -4,12 +4,12 @@ from typing import List
 
 from PySide6.QtCore import QRectF
 from PySide6.QtGui import QBrush, QPen, QColor, QFont, QPainterPath, Qt
-from PySide6.QtWidgets import QGraphicsTextItem, QGraphicsDropShadowEffect
+from PySide6.QtWidgets import QGraphicsTextItem
 
 from core import ParamItem, ParamItemList, ParamCard
 from core.node.node import NodeBase
 from core.port.port import OutputPort, InputPort
-from env.config import EditorConfig
+from env.config import EditorConfig, NodeConfig
 
 Python_version = sys.version_info
 
@@ -42,12 +42,6 @@ class DLN(NodeBase):
 
         self._model = None
         self._value = None
-
-        # 选中投影
-        self._shadow = QGraphicsDropShadowEffect()
-        self._shadow.setOffset(0, 0)
-        self._shadow.setBlurRadius(20)
-        self._shadow_color = QColor('#aaeeee00')
 
     @abstractmethod
     def setupParams(self):
@@ -95,7 +89,8 @@ class DLN(NodeBase):
         self._background_brush = QBrush(QColor(background_color))
         self._default_pen = QPen(QColor(outline_color))
         self._default_pen.setWidthF(2)
-        self._selected_pen = QPen(QColor(outline_selected_color))
+        self._selected_pen = QPen(QColor(NodeConfig.selected_color).lighter(150))
+        self._selected_pen.setWidthF(3)
 
         # icon
         self._icon_padding = icon_padding
@@ -139,19 +134,14 @@ class DLN(NodeBase):
 
     # override QT function
     def paint(self, painter, option, widget):
-        # 选中投影设置， 最先画是为了放在最底层
-        if not self.isSelected():
-            self._shadow.setColor('#00000000')
-            self.setGraphicsEffect(self._shadow)
-        else:
-            # 选中投影设置
-            self._shadow.setColor(self._shadow_color)
-            self.setGraphicsEffect(self._shadow)
 
         # 画背景颜色
         node_line = QPainterPath()
         node_line.addRoundedRect(0, 0, self._node_width, self._node_height, self._node_radius, self._node_radius)
-        painter.setPen(self._default_pen)
+        if not self.isSelected():
+            painter.setPen(self._default_pen)
+        else:
+            painter.setPen(self._selected_pen)
         painter.setBrush(self._background_brush)
         painter.drawPath(node_line.simplified())
 

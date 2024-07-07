@@ -2,9 +2,10 @@ from abc import abstractmethod
 
 from PySide6.QtCore import QPointF
 from PySide6.QtGui import QColor, QPen, QPainter, Qt, QPainterPath
-from PySide6.QtWidgets import QGraphicsPathItem, QGraphicsDropShadowEffect, QGraphicsItem, QGraphicsSceneMouseEvent
+from PySide6.QtWidgets import QGraphicsPathItem, QGraphicsItem, QGraphicsSceneMouseEvent
 
 from core.port.port import InputPort, OutputPort
+from env.config import EdgeConfig
 
 
 class EdgeBase(QGraphicsPathItem):
@@ -24,12 +25,8 @@ class EdgeBase(QGraphicsPathItem):
         self._edge_color = QColor(color)
         self._default_pen = QPen(self._edge_color)
         self._default_pen.setWidthF(2)
-
-        # 选中投影
-        self._shadow = QGraphicsDropShadowEffect()
-        self._shadow.setOffset(0, 0)
-        self._shadow.setBlurRadius(20)
-        self._shadow_color = Qt.yellow
+        self._selected_pen = QPen(QColor(EdgeConfig.selected_color))
+        self._selected_pen.setWidthF(3)
 
         self.addToScene()
 
@@ -78,16 +75,12 @@ class EdgeBase(QGraphicsPathItem):
     def paint(self, painter: QPainter, option, widget) -> None:
         self.updateVerticalEdgePath()
 
-        painter.setPen(self._default_pen)
+        if not self.isSelected():
+            painter.setPen(self._default_pen)
+        else:
+            painter.setPen(self._selected_pen)
         painter.setBrush(Qt.NoBrush)
         painter.drawPath(self.path())
-
-        if self.isSelected():
-            self._shadow.setColor(self._shadow_color)
-            self.setGraphicsEffect(self._shadow)
-        else:
-            self._shadow.setColor('#00000000')
-            self.setGraphicsEffect(self._shadow)
 
     # override qt function
     def mouseReleaseEvent(self, event: QGraphicsSceneMouseEvent):
@@ -175,9 +168,6 @@ class DragEdge(EdgeBase):
         painter.setPen(self._default_pen)
         painter.setBrush(Qt.NoBrush)
         painter.drawPath(self.path())
-
-        self._shadow.setColor(self._shadow_color)
-        self.setGraphicsEffect(self._shadow)
 
     def __str__(self):
         return (f'DragEdge._source_port: {self._source_port} \n'
