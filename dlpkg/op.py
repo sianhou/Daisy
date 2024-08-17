@@ -26,6 +26,44 @@ class Linear(DLN):
         self._value = self._model(x)
 
 
+class Int(DLN):
+    pkg_name = 'Scalar'
+    model_name = 'Int'
+
+    num_input_ports = 0
+    num_output_ports = 1
+
+    def setupParams(self):
+        self._params = [
+            ParamItem(title='value', type=int),
+        ]
+
+    def run(self):
+        self.updateParams()
+        print(f"value = {self._params[0].getValue()}")
+
+    def forward(self, x):
+        print(f"value = {x}")
+
+
+class Add(DLN):
+    pkg_name = 'Math'
+    model_name = 'Add'
+
+    num_input_ports = 2
+    num_output_ports = 1
+
+    def setupParams(self):
+        self._params = [
+            ParamItem(title='x', type=int),
+            ParamItem(title='y', type=int),
+            ParamItem(title='z', type=int),
+        ]
+
+    def run(self):
+        pass
+
+
 if __name__ == '__main__':
     param_list = ParamItemList()
     param_list.append(ParamItem(title='in_features', type=int))

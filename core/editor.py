@@ -25,6 +25,7 @@ class NodeEditor(QtWidgets.QWidget):
         self._scene.addView(self._view)
         self._view.setupMouseRightBtnWidget()
         self._view.addDebugBtn()
+        self._view.addRunBtn()
         self.layout.addWidget(self._view)
         self.show()
 

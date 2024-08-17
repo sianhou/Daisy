@@ -95,6 +95,9 @@ class ParamItem(QGraphicsItem):
             # TODO(housian)
             pass
 
+    def getValue(self):
+        return self._value
+
     def setValue(self, value):
         self._value = value
 

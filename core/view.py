@@ -8,7 +8,7 @@ from core.node.dln import DLN
 from core.node.node import NodeBase
 from core.port.port import PortBase, InputPort, OutputPort
 from core.widget import MouseRightBtnWidget
-from dlpkg.op import Linear
+from dlpkg.op import Int
 from dlpkg.opscan import OpListHandle
 
 
@@ -231,12 +231,38 @@ class EditorView(QGraphicsView):
 
         self._debug_btn.clicked.connect(self.debugFunc)
 
+    def addRunBtn(self):
+        self._run_btn = QPushButton('Run')
+        self._run_btn_proxy = QGraphicsProxyWidget()
+        self._run_btn_proxy.setWidget(self._run_btn)
+        self._scene.addItem(self._run_btn_proxy)
+        self._run_btn_proxy.setPos(100, 300)
+
+        self._run_btn.clicked.connect(self.runFunc)
+
     def debugFunc(self):
 
-        for i in range(20):
-            for j in range(20):
-                cls = Linear()
-                self.addNode(cls, pos=(-800 + i * 200, -400 + j * 60))
+        int0 = Int()
+        self.addNode(int0, pos=(-600, -300))
+
+        int1 = Int()
+        self.addNode(int1, pos=(-300, -300))
+
+        # for i in range(20):
+        #     for j in range(20):
+        #         cls = Linear()
+        #         self.addNode(cls, pos=(-800 + i * 200, -400 + j * 60))
+
+    def runFunc(self):
+        selected_items = self._scene.selectedItems()
+
+        selected_nodes = [item for item in selected_items if isinstance(item, DLN)]
+
+        if len(selected_nodes) == 0:
+            print('No DLN nodes selected')
+        else:
+            for node in selected_nodes:
+                node.run()
 
         # for node in self.getNodesFromScene():
         #     node.updateParams()
