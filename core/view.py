@@ -8,7 +8,7 @@ from core.node.dln import DLN
 from core.node.node import NodeBase
 from core.port.port import PortBase, InputPort, OutputPort
 from core.widget import MouseRightBtnWidget
-from dlpkg.op import Int
+from dlpkg.op import Int, Add
 from dlpkg.opscan import OpListHandle
 
 
@@ -247,6 +247,9 @@ class EditorView(QGraphicsView):
 
         int1 = Int()
         self.addNode(int1, pos=(-300, -300))
+
+        add = Add()
+        self.addNode(add, pos=(-450, 0))
 
         # for i in range(20):
         #     for j in range(20):

@@ -1,7 +1,7 @@
 from torch import nn
 
 from core.node.dln import DLN
-from core.paramcard import ParamItem, ParamItemList
+from core.paramcard import ParamItem, ParamItemList, InputParamItem, OutputParamItem
 
 
 class Linear(DLN):
@@ -34,13 +34,14 @@ class Int(DLN):
     num_output_ports = 1
 
     def setupParams(self):
-        self._params = [
-            ParamItem(title='value', type=int),
+        self._input_params = []
+        self._output_params = [
+            OutputParamItem(title='x', type=int)
         ]
 
     def run(self):
         self.updateParams()
-        print(f"value = {self._params[0].getValue()}")
+        print(f"One[info]: value = {self._output_params[0].getValue()}")
 
     def forward(self, x):
         print(f"value = {x}")
@@ -54,14 +55,37 @@ class Add(DLN):
     num_output_ports = 1
 
     def setupParams(self):
-        self._params = [
-            ParamItem(title='x', type=int),
-            ParamItem(title='y', type=int),
-            ParamItem(title='z', type=int),
+        self._input_params = [
+            InputParamItem(title='x', type=int),
+            InputParamItem(title='y', type=int)
         ]
+        self._output_params = [
+            OutputParamItem(title='z', type=int)
+        ]
+        #
+        # self._params = [
+        #
+        #     ,
+        # ]
 
     def run(self):
-        pass
+        x, y, z = None, None, None
+        if len(self._input_params[0]._port._edges) == 0:
+            self._input_params[0].getValueFromInputWidget()
+            x = self._input_params[0].getValue()
+        else:
+            self._input_params[0]._port._edges[0]._source_port._param_item.getValueFromInputWidget()
+            x = self._input_params[0]._port._edges[0]._source_port._param_item.getValue()
+
+        if len(self._input_params[1]._port._edges) == 0:
+            self._input_params[1].getValueFromInputWidget()
+            y = self._input_params[1].getValue()
+        else:
+            self._input_params[1]._port._edges[0]._source_port._param_item.getValueFromInputWidget()
+            y = self._input_params[1]._port._edges[0]._source_port._param_item.getValue()
+
+        z = x + y
+        print(f"Add[info]: value = {z}")
 
 
 if __name__ == '__main__':

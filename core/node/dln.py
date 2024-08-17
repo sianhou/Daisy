@@ -6,7 +6,7 @@ from PySide6.QtCore import QRectF
 from PySide6.QtGui import QBrush, QPen, QColor, QFont, QPainterPath, Qt
 from PySide6.QtWidgets import QGraphicsTextItem
 
-from core import ParamItem, ParamItemList, ParamCard
+from core import ParamItem, ParamCard, InputParamItem, OutputParamItem
 from core.node.node import NodeBase
 from core.port.port import OutputPort, InputPort
 from env.config import EditorConfig, NodeConfig
@@ -29,15 +29,24 @@ class DLN(NodeBase):
         if Python_version < (3, 9):
             self._input_ports: List[InputPort] = []
             self._output_ports: List[OutputPort] = []
+
+            self._input_params: List[InputParamItem] = []
+            self._output_params: List[OutputParamItem] = []
+
         else:
             self._input_ports: list[InputPort] = []
             self._output_ports: list[OutputPort] = []
-        self._params: ParamItemList = ParamItemList()
+
+            self._input_params: list[InputParamItem] = []
+            self._output_params: list[OutputParamItem] = []
+
+        # self._input_params: ParamItemList = ParamItemList()
+        # self._output_params: ParamItemList = ParamItemList()
 
         self.setup(width=160)
         self.setTitle(title=self.model_name, font_size=EditorConfig.node_title_font_size)
-        self.setupIOPorts()
         self.setupParams()
+        self.setupIOPorts()
         self.setupParamCard()
 
         self._model = None
@@ -104,11 +113,23 @@ class DLN(NodeBase):
     def setupIOPorts(self):
         # setup variables
         self.addInputPortList([InputPort() for _ in range(self.num_input_ports)])
+        for i in range(self.num_input_ports):
+            self._input_params[i].setPort(self._input_ports[i])
+            self._input_ports[i].setParamItem(self._input_params[i])
+
         self.addOutputPortList([OutputPort() for _ in range(self.num_output_ports)])
+        for i in range(self.num_output_ports):
+            self._output_params[i].setPort(self._output_ports[i])
+            self._output_ports[i].setParamItem(self._output_params[i])
+
         self.update()
 
     def setupParamCard(self):
-        self._paramcard = ParamCard(self._params)
+
+        # TOOD(housian): remove this combin in future
+        _params = self._input_params + self._output_params
+
+        self._paramcard = ParamCard(_params)
         self._paramcard.addToParaentNode(self)
         self._paramcard.setPos(0, self._node_height + 10)
         self._paramcard.hide()
@@ -158,7 +179,12 @@ class DLN(NodeBase):
         return QRectF(0, 0, self._node_width, self._node_height)
 
     def updateParams(self):
-        for param in self._params:
+        for param in self._input_params:
+            param.getValueFromInputWidget()
+            if param._title == '!!! overwrite_weight':
+                param._input_widget.setCheckState(Qt.Unchecked)
+
+        for param in self._output_params:
             param.getValueFromInputWidget()
             if param._title == '!!! overwrite_weight':
                 param._input_widget.setCheckState(Qt.Unchecked)

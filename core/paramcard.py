@@ -3,6 +3,7 @@ from PySide6.QtGui import QBrush, QColor, QPen, QPainterPath, QFont, QFontMetric
 from PySide6.QtWidgets import QGraphicsItem, QGraphicsTextItem, QCheckBox, QLineEdit, QGraphicsProxyWidget, \
     QGraphicsSceneMouseEvent
 
+from core.port import InputPort, OutputPort
 from env.config import EditorConfig
 
 
@@ -108,6 +109,24 @@ class ParamItem(QGraphicsItem):
         if self.scene() is not None:
             self.ungrabMouse()
         super().mouseReleaseEvent(event)
+
+
+class InputParamItem(ParamItem):
+    def __init__(self, title='', type=int, port=InputPort(), parent=None):
+        super(InputParamItem, self).__init__(title=title, type=type, parent=parent)
+        self._port = port
+
+    def setPort(self, port: InputPort = None):
+        self._port = port
+
+
+class OutputParamItem(ParamItem):
+    def __init__(self, title='', type=int, port=OutputPort(), parent=None):
+        super(OutputParamItem, self).__init__(title=title, type=type, parent=parent)
+        self._port = port
+
+    def setPort(self, port: OutputPort = None):
+        self._port = port
 
 
 class ParamItemList(list):

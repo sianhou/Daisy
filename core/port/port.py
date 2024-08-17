@@ -18,6 +18,7 @@ class PortBase(QGraphicsItem):
         self._default_brush = QBrush(QColor(EditorConfig.background_color))
         self._parent_node = None
         self._edges = []
+        self._param_item = None
 
     def getParentNode(self):
         return self._parent_node
@@ -60,6 +61,9 @@ class PortBase(QGraphicsItem):
         if self.scene() is not None:
             self.ungrabMouse()
         super().mouseReleaseEvent(event)
+
+    def setParamItem(self, param):
+        self._param_item = param
 
 
 class InputPort(PortBase):
